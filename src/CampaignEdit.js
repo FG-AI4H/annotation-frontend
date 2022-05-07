@@ -1,19 +1,20 @@
 import React, {useEffect, useState} from 'react';
 import AppNavbar from './AppNavbar';
-import {Link as RouterLink} from 'react-router-dom';
+import {Link as RouterLink, useParams} from 'react-router-dom';
 import CampaignChart from "./CampaignChart";
 import CampaignProgress from "./CampaignProgress";
 import {Auth} from "aws-amplify";
 import CampaignClient from "./api/CampaignClient";
-import * as Loader from "react-loader-spinner";
 import CampaignForm from "./components/CampaignForm";
 import CampaignUsers from "./components/CampaignUsers";
 import {Box, Button, Container, Grid, Tab, Tabs, Typography} from "@mui/material";
 import CampaignTask from "./components/CampaignTask";
 import {TabPanel} from "./components/TabPanel";
 import {a11yProps} from "./components/allyProps";
+import OCISpinner from "./components/OCISpinner";
 
-const CampaignEdit = (props) => {
+const CampaignEdit = () => {
+    let params = useParams();
 
     const emptyItem = {
         name: '',
@@ -32,9 +33,9 @@ const CampaignEdit = (props) => {
         Auth.currentAuthenticatedUser({
             bypassCache: false
         }).then(response => {
-            if (props.match.params.id !== 'new') {
+            if (params.id !== 'new') {
                 const campaignClient = new CampaignClient(response.signInUserSession.accessToken.jwtToken);
-                campaignClient.fetchCampaignById(props.match.params.id)
+                campaignClient.fetchCampaignById(params.id)
                     .then(
                         response => {
                             setIsLoading(false);
@@ -45,17 +46,12 @@ const CampaignEdit = (props) => {
 
         }).catch(err => console.log(err));
 
-    }, [props.match.params.id])
+    }, [params.id])
 
     const title = <h2>{item.campaignUUID ? 'Edit Campaign' : 'Add Campaign'}</h2>;
 
     if (isLoading) {
-        return (<div className="loading"><Loader.Puff
-            color="#00a5e3"
-            height={100}
-            width={100}
-            timeout={3000} //3 secs
-        /></div>);
+        return (<OCISpinner/>);
     }
 
     const handleChange = (event, newValue) => {
@@ -64,7 +60,7 @@ const CampaignEdit = (props) => {
 
     return <div>
         <AppNavbar/>
-        <Container sx={{ mt: 5 }}>
+        <Container maxWidth="xl" sx={{ mt: 5 }}>
             {title}
 
             {item.campaignUUID &&

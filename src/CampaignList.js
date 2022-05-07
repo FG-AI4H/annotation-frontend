@@ -3,6 +3,7 @@ import AppNavbar from './AppNavbar';
 import {Auth} from "aws-amplify";
 import CampaignClient from "./api/CampaignClient";
 import {
+    Box,
     Button,
     Container,
     IconButton,
@@ -16,8 +17,9 @@ import {
     TableRow
 } from "@mui/material";
 import {Link as RouterLink} from "react-router-dom";
-import * as Loader from "react-loader-spinner";
+
 import {Replay} from "@mui/icons-material";
+import OCISpinner from "./components/OCISpinner";
 
 class CampaignList extends Component {
 
@@ -62,12 +64,7 @@ class CampaignList extends Component {
         const {campaigns, isLoading} = this.state;
 
         if (isLoading) {
-            return (<div className="loading"><Loader.Puff
-                color="#00a5e3"
-                height={100}
-                width={100}
-                timeout={3000} //3 secs
-            /></div>);
+           return (<OCISpinner/>);
         }
 
         const campaignList = campaigns.map(campaign => {
@@ -86,13 +83,14 @@ class CampaignList extends Component {
         });
 
         return (
-            <div>
+            <>
                 <AppNavbar/>
-                <Container sx={{ mt: 5 }}>
-                    <div className="float-end">
+                <Container maxWidth="xl" sx={{ mt: 5 }}>
+                    <Box sx={{ display: 'flex',justifyContent: 'flex-end' }}>
                         <IconButton onClick={() => this.componentDidMount()}><Replay /></IconButton>{' '}
                         <Button component={RouterLink} color="success" to={"/campaigns/new"}>Add Campaign</Button>
-                    </div>
+                    </Box>
+
                     <h3>Campaigns</h3>
                     <TableContainer component={Paper}>
                         <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -111,7 +109,7 @@ class CampaignList extends Component {
 
                    <Button component={RouterLink} color="secondary" to="/annotation">Back</Button>
                 </Container>
-            </div>
+            </>
         );
     }
 }

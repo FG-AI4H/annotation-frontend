@@ -3,20 +3,18 @@ import AppNavbar from "./AppNavbar";
 
 import UserListComponent from "./components/UserListComponent";
 import {Container, Grid, Paper} from "@mui/material";
-import {ociStyles} from "./customStyle";
 
 
 const UserList = () => {
 
-    const classes = ociStyles();
 
     return (
         <div>
             <AppNavbar/>
-            <Container maxWidth="lg" className={classes.container}>
+            <Container maxWidth="lg" >
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
-                        <Paper className={classes.paper}>
+                        <Paper>
                             <UserListComponent title="Users"/>
                         </Paper>
                     </Grid>

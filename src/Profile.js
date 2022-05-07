@@ -1,8 +1,8 @@
 import {Auth} from "aws-amplify";
 import React, {Component} from 'react';
 import AppNavbar from "./AppNavbar";
-import * as Loader from "react-loader-spinner";
 import {Container} from "@mui/material";
+import OCISpinner from "./components/OCISpinner";
 
 
 class Profile extends Component {
@@ -31,12 +31,7 @@ class Profile extends Component {
         const {isLoading, username} = this.state;
 
         if (isLoading) {
-            return (<div className="loading"><Loader.Puff
-                color="#00a5e3"
-                height={100}
-                width={100}
-                timeout={3000} //3 secs
-            /></div>);
+            return (<OCISpinner/>);
         }
 
         return (

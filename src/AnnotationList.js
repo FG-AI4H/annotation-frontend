@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Link as RouterLink, Link} from 'react-router-dom';
+import {Link as RouterLink} from 'react-router-dom';
 import {Auth} from "aws-amplify";
 import TaskClient from "./api/TaskClient";
 import {

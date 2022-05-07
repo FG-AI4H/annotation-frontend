@@ -6,22 +6,26 @@ import {Auth} from "aws-amplify";
 import UserClient from "./api/UserClient";
 
 import {
+    Box,
     Button,
-    Checkbox, Container,
+    Checkbox,
+    Container,
     FormControl,
     FormControlLabel,
+    Grid,
     IconButton,
     InputLabel,
     MenuItem,
     Select,
     Stack,
-    TextField,
-    Grid, Box, Tabs, Tab
+    Tab,
+    Tabs,
+    TextField
 } from "@mui/material";
-import * as Loader from "react-loader-spinner";
 import {Add} from "@mui/icons-material";
 import {a11yProps} from "./components/allyProps";
 import {TabPanel} from "./components/TabPanel";
+import OCISpinner from "./components/OCISpinner";
 
 const UserEdit = (props) => {
 
@@ -132,12 +136,7 @@ const UserEdit = (props) => {
     }
 
     if (isLoading) {
-        return (<div className="loading"><Loader.Puff
-            color="#00a5e3"
-            height={100}
-            width={100}
-            timeout={3000} //3 secs
-        /></div>);
+        return (<OCISpinner/>);
     }
 
     return (

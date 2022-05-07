@@ -1,24 +1,28 @@
 import React, {Component} from "react";
 import {Auth} from "aws-amplify";
 import UserClient from "../api/UserClient";
-import * as Loader from "react-loader-spinner";
 import {
+    Box,
     Button,
-    FormControl, Link,
+    FormControl,
+    Grid,
+    Link,
     Paper,
     Stack,
-    Table, TableBody,
+    Tab,
+    Table,
+    TableBody,
     TableCell,
     TableContainer,
     TableHead,
     TableRow,
     Tabs,
-    Tab,
-    TextField, Box, Grid
+    TextField
 } from "@mui/material";
 import {Link as RouterLink} from "react-router-dom";
 import {a11yProps} from "./allyProps";
 import {TabPanel} from "./TabPanel";
+import OCISpinner from "./OCISpinner";
 
 class CampaignUsers extends Component {
 
@@ -150,12 +154,7 @@ class CampaignUsers extends Component {
         const {campaign, isLoading, availableUsers, annotatorFilter, tabValue} = this.state;
 
         if (isLoading) {
-            return (<div className="loading"><Loader.Puff
-                color="#00a5e3"
-                height={100}
-                width={100}
-                timeout={3000} //3 secs
-            /></div>);
+            return (<OCISpinner/>);
         }
 
         const availableAnnotatorList = availableUsers.filter(user => user.annotatorRole !== undefined).map(user => {

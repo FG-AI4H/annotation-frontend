@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import * as Loader from "react-loader-spinner";
 import {
     Button,
     Container,
@@ -13,6 +12,7 @@ import {
     TableRow
 } from "@mui/material";
 import {Link as RouterLink} from "react-router-dom";
+import OCISpinner from "./components/OCISpinner";
 
 class AnnotationTaskList extends Component {
 
@@ -40,12 +40,7 @@ class AnnotationTaskList extends Component {
         const tasks = this.props.tasks;
 
         if(!tasks){
-            return (<div className="loading"><Loader.Puff
-                color="#00a5e3"
-                height={80}
-                width={80}
-                timeout={3000} //3 secs
-            /></div>);
+            return (<OCISpinner/>);
         }
 
         const taskList = tasks.map(task => {

@@ -2,9 +2,9 @@ import React, {Component} from "react";
 import {Link as RouterLink, Link} from "react-router-dom";
 import {Auth} from "aws-amplify";
 import UserClient from "../api/UserClient";
-import * as Loader from "react-loader-spinner";
 import {
-    Button, Grid,
+    Button,
+    Grid,
     IconButton,
     Paper,
     Stack,
@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import Title from "../Title";
 import {Replay} from "@mui/icons-material";
+import OCISpinner from "./OCISpinner";
 
 class UserListComponent extends Component {
 
@@ -45,12 +46,7 @@ class UserListComponent extends Component {
         const {users, isLoading} = this.state;
 
         if (isLoading) {
-            return (<div className="loading"><Loader.Puff
-                color="#00a5e3"
-                height={100}
-                width={100}
-                timeout={3000} //3 secs
-            /></div>);
+            return (<OCISpinner/>);
         }
 
         const userList = users.map(user => {

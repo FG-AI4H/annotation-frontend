@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import AppNavbar from './AppNavbar';
-import * as Loader from "react-loader-spinner";
 import {Auth} from "aws-amplify";
 import TaskClient from "./api/TaskClient";
 import {
@@ -18,6 +17,7 @@ import {
 } from "@mui/material";
 import {Link as RouterLink} from "react-router-dom";
 import {Replay} from "@mui/icons-material";
+import OCISpinner from "./components/OCISpinner";
 
 class TaskList extends Component {
 
@@ -72,12 +72,7 @@ class TaskList extends Component {
         const {me} = this.props;
 
         if (isLoading) {
-            return (<div className="loading"><Loader.Puff
-                color="#00a5e3"
-                height={100}
-                width={100}
-                timeout={3000} //3 secs
-            /></div>);
+            return (<OCISpinner/>);
         }
 
         const taskList = tasks.map(task => {

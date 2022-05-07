@@ -28,7 +28,8 @@ const theme = createTheme({
       primary: '#fff',
       secondary: grey[500],
     },
-  }
+  },
+
 });
 
 

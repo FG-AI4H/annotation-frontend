@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import './App.css';
 import AppNavbar from './AppNavbar';
 import {Link as RouterLink} from 'react-router-dom';
-import {Button, Card, CardActions, CardContent, Grid, Typography} from "@mui/material";
+import {Button, Card, CardActions, CardContent, Container, Grid, Typography} from "@mui/material";
 
 
 class AnnotationHome extends Component {
@@ -10,14 +10,19 @@ class AnnotationHome extends Component {
         return (
             <div>
                 <AppNavbar/>
-                <Grid container>
+                <Container maxWidth="xl" sx={{ mt: 5 }}>
+                <Grid container
+                      spacing={2}
+                      direction="row"
+                      justifyContent="space-evenly"
+                      alignItems="stretch" sx={{ mt: 5 }}>
                     <Grid item xs={12}>
                         <h1 className="header">Welcome To The FG-AI4H Annotation Tool</h1>
                     </Grid>
                     <Grid item xs={12}>
                         <h5>Please choose an option</h5>
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={12} md={4}>
                     <Card>
                         <CardContent>
                             <Typography gutterBottom variant="h5" component="div">
@@ -33,7 +38,7 @@ class AnnotationHome extends Component {
                         </CardActions>
                     </Card>
                         </Grid>
-                        <Grid item xs={3}>
+                        <Grid item xs={12} md={4}>
                             <Card>
                                 <CardContent>
                                     <Typography gutterBottom variant="h5" component="div">
@@ -49,7 +54,7 @@ class AnnotationHome extends Component {
                                 </CardActions>
                             </Card>
                         </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={12} md={4}>
 
                         <Card>
                             <CardContent>
@@ -67,6 +72,7 @@ class AnnotationHome extends Component {
                         </Card>
                     </Grid>
                 </Grid>
+                </Container>
             </div>
         );
     }
