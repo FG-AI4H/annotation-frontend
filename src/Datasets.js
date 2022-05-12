@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {ExpandMore,Redo} from "@mui/icons-material";
+import {ExpandMore, Redo, Replay} from "@mui/icons-material";
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -24,6 +24,8 @@ import {
 } from "@mui/material";
 
 import Title from './Title';
+import SecretsManager from "./helpers/SecretManager";
+import {Link as RouterLink} from "react-router-dom";
 
 const modalMode = Object.freeze({ _EDIT: 'edit', _READ: 'read' })
 
@@ -130,9 +132,11 @@ export default function Datasets(props) {
             const dataset = { ...formState }
             const authSession = await Auth.currentSession()
 
+            //const fhirAPIKey = await SecretsManager.getSecret("fhirAPIKey");
+
             const headers = {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + authSession.accessToken.jwtToken,
+                'Authorization': 'Bearer ' + authSession.getAccessToken().getJwtToken(),
                 'X-Api-Key': 'fmIhJxclgb3GKFdoOG0tB4ZvvV2K4GeZab3WgZLr'
             }
 
@@ -203,7 +207,10 @@ export default function Datasets(props) {
                 fetchDatasets()
                 setFormState(initialState)
                 handleModalClose()
-            })
+            },err => {
+                    setBackdropOpen(false)
+                    console.log(err)
+                })
 
         } catch (err) {
             setBackdropOpen(false)
@@ -538,6 +545,9 @@ export default function Datasets(props) {
 
             <Stack direction="row" spacing={2} sx={{ mt: 5 }}>
                 <Button variant="contained" onClick={handleModalClose}>{readOnlyMode ? "Close" : "Cancel"}</Button>
+                {!readOnlyMode &&
+                    <Button variant="contained" onClick={addDataset}>Add</Button>
+                }
             </Stack>
 
 
@@ -551,13 +561,16 @@ export default function Datasets(props) {
 
     return (
         <React.Fragment>
+            <Box sx={{ display: 'flex',justifyContent: 'flex-end' }}>
+                <Button onClick={() => handleModalOpen(modalMode._EDIT,{})}  color="success" >Add Dataset</Button>
+            </Box>
 
             <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
                         <TableRow>
                             <TableCell width="40%">Name</TableCell>
-                            <TableCell width="30%">Data Owner</TableCell>
+                            <TableCell width="30%">Description</TableCell>
                             <TableCell width="30%">Last Updated</TableCell>
                         </TableRow>
                     </TableHead>
@@ -565,7 +578,7 @@ export default function Datasets(props) {
                         {datasets.map((dataset) => (
                             <TableRow key={dataset.id}>
                                 <TableCell><Link href="#" onClick={() => viewDataset(dataset.id)}>{dataset.name}</Link></TableCell>
-                                <TableCell>{dataset.metadata?.dataOwner}</TableCell>
+                                <TableCell>{dataset.description}</TableCell>
                                 <TableCell>{(new Date(Date.parse(dataset.updatedAt))).toLocaleString(navigator.language)}</TableCell>
                             </TableRow>
                         ))}
