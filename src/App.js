@@ -17,6 +17,7 @@ import UserEdit from "./UserEdit";
 import CssBaseline from '@mui/material/CssBaseline';
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import {grey} from "@mui/material/colors";
+import DatasetEdit from "./DatasetEdit";
 
 const theme = createTheme({
   palette: {
@@ -43,7 +44,8 @@ class App extends React.Component {
 
             <Routes>
               <Route path='/' exact={true} element={<Home/>}/>
-              <Route path='/dashboard' exact={true} element={<DataStoreHome/>}/>
+              <Route path='/datasets' exact={true} element={<DataStoreHome/>}/>
+              <Route path='/datasets/:id' exact={true} element={<DatasetEdit/>}/>
 
               <Route path='/annotation' exact={true} element={<AnnotationHome/>}/>
               <Route path='/tasks' exact={true} element={<TaskList/>}/>

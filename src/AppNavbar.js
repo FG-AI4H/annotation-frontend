@@ -87,7 +87,7 @@ const AppNavBar = () => {
                         </Button>
                         <Button
                             key='DataStore'
-                            onClick={() => navigate('/dashboard')}
+                            onClick={() => navigate('/datasets')}
                             sx={{ my: 2, color: 'white', display: 'block' }}
                         >
                             DataStore
