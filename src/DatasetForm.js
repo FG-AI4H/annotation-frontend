@@ -10,9 +10,11 @@ import axios from "axios";
 import uuid from "react-uuid";
 import {API, graphqlOperation} from "aws-amplify";
 import {createDataset} from "./graphql/mutations";
+import OCISpinner from "./components/OCISpinner";
 
 const DatasetForm = (props) =>{
 
+    const [isLoading, setIsLoading] = useState(false);
     const [readOnlyMode, setReadOnlyMode] = useState(true);
     const [formState, setFormState] = useState(initialDataset);
 
@@ -42,6 +44,7 @@ const DatasetForm = (props) =>{
     async function addDataset() {
         try {
             if (!formState.name || !formState.description) return
+            setIsLoading(true);
             const dataset = { ...formState }
             const authSession = await Auth.currentSession()
 
@@ -54,8 +57,6 @@ const DatasetForm = (props) =>{
             }
 
             const file = dataset.selectedFile[0]
-
-            setBackdropOpen(true)
 
             //push zip file to S3 using FHIR Binary API endpoint
             axios.post('https://vno8vyh8x5.execute-api.eu-central-1.amazonaws.com/dev/Binary', {
@@ -115,24 +116,28 @@ const DatasetForm = (props) =>{
 
                     return API.graphql(graphqlOperation(createDataset, { input: datasetUpload }))
                 }).then(res => {
-
+                setIsLoading(false);
                 alert('Dataset uploaded to S3 and data is saved')
-                fetchDatasets()
                 setFormState(initialDataset)
             },err => {
+                setIsLoading(false);
                 console.log(err)
             })
 
         } catch (err) {
+            setIsLoading(false);
             alert('error creating dataset')
             setFormState(initialDataset)
         }
     }
 
+    if (isLoading) {
+        return (<OCISpinner/>);
+    }
 
     //HTML part of "Add Dataset" modal
     return (
-
+<>
             <form noValidate autoComplete="off">
                 <TextField fullWidth margin={"normal"}
                            label="Name"
@@ -422,6 +427,12 @@ const DatasetForm = (props) =>{
 
             </form>
 
+            <Stack direction="row" spacing={2} sx={{ mt: 5 }}>
+                {!readOnlyMode &&
+                <Button variant="contained" onClick={addDataset}>Add</Button>
+                }
+            </Stack>
+</>
 
     );
 

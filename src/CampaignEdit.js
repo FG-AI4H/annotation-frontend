@@ -43,6 +43,9 @@ const CampaignEdit = () => {
                         }
                     );
             }
+            else {
+                setIsLoading(false);
+            }
 
         }).catch(err => console.log(err));
 

@@ -1,34 +1,36 @@
 import React, {useEffect, useState} from 'react'
-import {ExpandMore, Redo, Replay} from "@mui/icons-material";
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import axios from 'axios';
 import {API, graphqlOperation} from 'aws-amplify'
-import {createDataset} from './graphql/mutations'
 import {getDataset, listDatasets} from './graphql/queries'
-import uuid from 'react-uuid'
-import Auth from '@aws-amplify/auth';
+
 import {
     Backdrop,
     Box,
     Button,
     CircularProgress,
-    FilledInput,
-    FormControl, IconButton,
-    InputLabel, Link,
+    Link,
     Modal, Paper, Snackbar, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
     TextField,
     Typography,
     Grid
 } from "@mui/material";
 
-import AWS from "aws-sdk";
 import {initialDataset} from "./DatasetEdit";
 import {Link as RouterLink} from "react-router-dom";
 import DatasetForm from "./DatasetForm";
 
 const modalMode = Object.freeze({ _EDIT: 'edit', _READ: 'read' })
+
+export const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: "50%",
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+};
 
 //dataset metadata specification as per
 // p.19: https://extranet.itu.int/sites/itu-t/focusgroups/ai4h/docs/FGAI4H-J-049.pdf
@@ -42,17 +44,6 @@ export default function Datasets(props) {
 
     const [backdropOpen, setBackdropOpen] = useState(false);
 
-    const style = {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: "50%",
-        bgcolor: 'background.paper',
-        border: '2px solid #000',
-        boxShadow: 24,
-        p: 4,
-    };
 
     //Load at page load
     useEffect(() => {
@@ -100,9 +91,6 @@ export default function Datasets(props) {
 
     return (
         <React.Fragment>
-            <Box sx={{ display: 'flex',justifyContent: 'flex-end' }}>
-                <Button onClick={() => handleModalOpen(modalMode._EDIT,{})}  color="success" >Add Dataset</Button>
-            </Box>
 
             <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">

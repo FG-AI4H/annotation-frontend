@@ -4,11 +4,14 @@ import CampaignClient from "./api/CampaignClient";
 import {Link as RouterLink, useParams} from "react-router-dom";
 import AWS from "aws-sdk";
 import {getDataset} from "./graphql/queries";
+import DatasetItemModal from "./DatasetItemModal.js"
+import 'react-medium-image-zoom/dist/styles.css'
 import {
+    Box,
     Button,
-    Container, ImageList, ImageListItem, ImageListItemBar,
+    Container, FormControlLabel, ImageList, ImageListItem, ImageListItemBar,
     Paper,
-    Stack,
+    Stack, Switch,
     Table,
     TableBody,
     TableCell,
@@ -19,6 +22,7 @@ import {
 import AppNavbar from "./AppNavbar";
 import OCISpinner from "./components/OCISpinner";
 import DatasetForm from "./DatasetForm";
+import {initialItem} from "./DatasetItemModal";
 
 export const initialDataset = {
     name: '',
@@ -60,8 +64,11 @@ const DatasetEdit = () => {
     let params = useParams();
 
     const [isLoading, setIsLoading] = useState(false);
+    const [isItemsAsList, setIsItemsAsList] = useState(false);
     const [dataset, setDatatset] = useState(initialDataset);
     const [items, setItems] = useState([]);
+    const [currentItem, setCurrentItem] = useState(initialItem);
+    const [open, setOpen] = useState(false);
 
     useEffect( () =>{
         setIsLoading(true);
@@ -72,16 +79,19 @@ const DatasetEdit = () => {
             if (params.id !== 'new') {
                 API.graphql({ query: getDataset, variables: {id: params.id} }).then(datasetData => {
                     setDatatset(datasetData.data.getDataset);
-                    fetchBinary();
+                    fetchBinary(datasetData.data.getDataset.storageLocation.replace('fhir-service-dev-fhirbinarybucket-yjeth32swz5m.s3.eu-central-1.amazonaws.com/',''));
                     setIsLoading(false);
                 })
+            }
+            else {
+                setIsLoading(false);
             }
 
         }).catch(err => console.log(err));
 
-    }, [params.id])
+    }, [])
 
-    async function fetchBinary(){
+    async function fetchBinary(storageLocation){
 
         const authSession = await Auth.currentSession()
 
@@ -97,12 +107,12 @@ const DatasetEdit = () => {
 
         let s3 = new AWS.S3({apiVersion: '2006-03-01', params: {Bucket: 'fhir-service-dev-fhirbinarybucket-yjeth32swz5m'}})
 
-        s3.listObjectsV2({Prefix: 'cell-Images-2-WHO-2020-12-30/'},async function(err, data) {
+        s3.listObjectsV2({Prefix: storageLocation},async function(err, data) {
             if (err) {
                 return alert('There was an error listing your albums: ' + err.message);
             } else {
 
-                let bucketUrl = 'https://fhir-service-dev-fhirbinarybucket-yjeth32swz5m.s3.amazonaws.com/';
+                let bucketUrl = 'https://fhir-service-dev-fhirbinarybucket-yjeth32swz5m.s3.amazonaws.com/'
 
                 let items = data.Contents.filter(item => item.Size > 0);
 
@@ -128,30 +138,52 @@ const DatasetEdit = () => {
         });
     }
 
+    function handleModalOpen(state){
+        setCurrentItem(state);
+        setOpen(true);
+    }
+
+    const handleModalClose = () => {
+        setOpen(false);
+    }
+
+
     const itemList = items.map(item => {
-        return <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-            <TableCell style={{whiteSpace: 'nowrap'}}>{item.photoUrl}</TableCell>
+        return <TableRow key={item.photoKey} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+            <TableCell style={{whiteSpace: 'nowrap'}}>{item.photoKey}</TableCell>
+            <TableCell style={{whiteSpace: 'nowrap'}}>
+                <Stack direction={"row"} spacing={2} justifyContent="flex-end">
+                    <Button onClick={() => handleModalOpen(item)}>View</Button>
+                </Stack>
+            </TableCell>
 
         </TableRow>
 
     });
 
     const photos =
-            <ImageList>
+            <ImageList cols={3} gap={10}>
                 {items.map((item) => (
-                    <ImageListItem key={item.photoKey}>
-                        <img
-                            src={`data:image/png;base64,${item.photoData}`}
-                            srcSet={`data:image/png;base64,${item.photoData}`}
-                            alt={item.title}
-                            loading="lazy"
-                        />
+<>
+                    <ImageListItem key={item.photoKey} sx={{cursor:"pointer"}}>
+
+                            <img
+                                src={`data:image/png;base64,${item.photoData}`}
+                                srcSet={`data:image/png;base64,${item.photoData}`}
+                                alt={item.title}
+                                loading="lazy"
+                                onClick={() => handleModalOpen(item)}
+                            />
+
                         <ImageListItemBar
                             title={item.photoKey}
                             subtitle={<span>by: {item.author}</span>}
                             position="below"
                         />
                     </ImageListItem>
+
+</>
+
                 ))}
             </ImageList>
 
@@ -162,28 +194,58 @@ const DatasetEdit = () => {
         return (<OCISpinner/>);
     }
 
+    const handleToggleChange = (event) => {
+        setIsItemsAsList(event.target.checked);
+    };
+
     return(
         <>
             <AppNavbar/>
             <Container maxWidth="xl" sx={{ mt: 5 }}>
                 {title}
                 <DatasetForm readOnlyMode={false} formState={dataset}/>
+                {params.id !== 'new' &&
+                    <>
+                    <Stack direction="row" spacing={2}>
 
                         <h3>Items</h3>
-                        <TableContainer component={Paper}>
-                            <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell width={"100%"}>Link</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {itemList}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
 
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={isItemsAsList}
+                                    onChange={handleToggleChange}
+                                />
+                            }
+                            label="Show preview"
+                        />
+                    </Stack>
+
+                {!isItemsAsList ?
+                    <TableContainer component={Paper}>
+                    <Table sx={{minWidth: 650}} aria-label="simple table">
+                    <TableHead>
+                    <TableRow>
+                    <TableCell width={"80%"}>Key</TableCell>
+                    <TableCell width={"20%"} align={"right"}>Actions</TableCell>
+                    </TableRow>
+                    </TableHead>
+                    <TableBody>
+                {itemList}
+                    </TableBody>
+                    </Table>
+                    </TableContainer>
+                    :
+                    <>
                 {photos}
+                    </>
+                }
+                    <DatasetItemModal item={currentItem} open={open} handleClose={handleModalClose}/>
+                    </>
+
+                }
+
+
 
             </Container>
         </>

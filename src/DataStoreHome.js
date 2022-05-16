@@ -16,6 +16,7 @@ export default function DataStoreHome(props) {
             <Container maxWidth="xl" sx={{ mt: 5 }}>
                 <Box sx={{ display: 'flex',justifyContent: 'flex-end' }}>
                     <IconButton onClick={() => this.componentDidMount()}><Replay /></IconButton>{' '}
+                    <Button component={RouterLink} color="success" to={"/datasets/new"}>Add Dataset</Button>
                 </Box>
                 <h3>Datasets</h3>
 
