@@ -1,11 +1,11 @@
 import React, {Component} from "react";
-import {Link as RouterLink, Link} from "react-router-dom";
+import {Link as RouterLink} from "react-router-dom";
 import {Auth} from "aws-amplify";
 import UserClient from "../api/UserClient";
-import * as Loader from "react-loader-spinner";
 import {
-    Button, Grid,
-    IconButton,
+    Backdrop,
+    Button,
+    CircularProgress,
     Paper,
     Stack,
     Table,
@@ -15,8 +15,6 @@ import {
     TableHead,
     TableRow
 } from "@mui/material";
-import Title from "../Title";
-import {Replay} from "@mui/icons-material";
 
 class UserListComponent extends Component {
 
@@ -44,14 +42,6 @@ class UserListComponent extends Component {
         const {title} = this.props;
         const {users, isLoading} = this.state;
 
-        if (isLoading) {
-            return (<div className="loading"><Loader.Puff
-                color="#00a5e3"
-                height={100}
-                width={100}
-                timeout={3000} //3 secs
-            /></div>);
-        }
 
         const userList = users.map(user => {
             return <TableRow key={user.idpID} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
@@ -68,11 +58,10 @@ class UserListComponent extends Component {
 
         return (
             <>
-                <Title>{title}</Title>
-                <Grid container justifyContent="flex-end">
-                    <IconButton onClick={() => this.componentDidMount()}><Replay/></IconButton>{' '}
-                    <Button color="success" tag={Link} to="/users/new">Add User</Button>
-                </Grid>
+                <Backdrop open={isLoading}>
+                    <CircularProgress color="inherit" />
+                </Backdrop>
+
                 <TableContainer component={Paper}>
                     <Table sx={{ minWidth: 650 }} aria-label="simple table">
                         <TableHead>

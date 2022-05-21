@@ -1,29 +1,36 @@
 import React, {useEffect, useState} from "react";
 import AppNavbar from "./AppNavbar";
 
-import {Link as RouterLink} from "react-router-dom";
+import {Link as RouterLink, useParams} from "react-router-dom";
 import {Auth} from "aws-amplify";
 import UserClient from "./api/UserClient";
 
 import {
+    Backdrop,
+    Box,
     Button,
-    Checkbox, Container,
+    Checkbox,
+    CircularProgress,
+    Container,
     FormControl,
     FormControlLabel,
+    Grid,
     IconButton,
     InputLabel,
     MenuItem,
     Select,
     Stack,
-    TextField,
-    Grid, Box, Tabs, Tab
+    Tab,
+    Tabs,
+    TextField
 } from "@mui/material";
-import * as Loader from "react-loader-spinner";
 import {Add} from "@mui/icons-material";
 import {a11yProps} from "./components/allyProps";
 import {TabPanel} from "./components/TabPanel";
 
 const UserEdit = (props) => {
+
+    let params = useParams();
 
     const emptyItem = {
         name: '',
@@ -40,9 +47,9 @@ const UserEdit = (props) => {
         Auth.currentAuthenticatedUser({
             bypassCache: false
         }).then(response => {
-            if (props.match.params.id !== 'new') {
+            if (params.id !== 'new') {
                 const client = new UserClient(response.signInUserSession.accessToken.jwtToken);
-                client.fetchUserById(props.match.params.id)
+                client.fetchUserById(params.id)
                     .then(
                         response => {
 
@@ -66,7 +73,7 @@ const UserEdit = (props) => {
 
         }).catch(err => console.log(err));
 
-    }, [props.match.params.id])
+    }, [params.id])
 
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
@@ -131,21 +138,16 @@ const UserEdit = (props) => {
         props.history.push('/userManagement');
     }
 
-    if (isLoading) {
-        return (<div className="loading"><Loader.Puff
-            color="#00a5e3"
-            height={100}
-            width={100}
-            timeout={3000} //3 secs
-        /></div>);
-    }
 
     return (
         <div>
         <AppNavbar/>
-        <Container className={'pt-5'}>
+            <Backdrop open={isLoading}>
+                <CircularProgress color="inherit" />
+            </Backdrop>
+            <Container maxWidth="xl" sx={{ mt: 5 }}>
             <h2>{item.userUUID ? 'Edit User' : 'Add User'}</h2>
-            <Grid xs={12}>
+            <Grid item xs={12}>
                     <FormControl fullWidth margin={"normal"} >
                         <TextField
                             id="username"
@@ -173,10 +175,10 @@ const UserEdit = (props) => {
                     </Stack>
 
             </Grid>
-            <Grid xs={12}>
+            <Grid item xs={12}>
                     <h3>Roles</h3>
 
-                <Grid xs={6}>
+                <Grid item xs={6}>
                             <h4>Annotation Platform</h4>
                             <FormControl fullWidth margin={"normal"}>
                                 <FormControlLabel control={<Checkbox name="annotation_annotator_role" id="annotation_annotator_role" checked={item.annotation_annotator_role} onChange={handleChange}/>} label="Annotator" />
@@ -187,7 +189,7 @@ const UserEdit = (props) => {
                             </FormControl>
 
                 </Grid>
-                <Grid xs={6}>
+                <Grid item xs={6}>
 
 
                             <h4>Data Platform</h4>
@@ -197,7 +199,7 @@ const UserEdit = (props) => {
                 </Grid>
 
             </Grid>
-            <Grid xs={12}>
+            <Grid item xs={12}>
                 <Box sx={{ width: '100%' }}>
                     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                         <Tabs
@@ -211,7 +213,7 @@ const UserEdit = (props) => {
                         </Tabs>
                     </Box>
                     <TabPanel value={tabValue} index={0}>
-                        <Grid xs={12}>
+                        <Grid item xs={12}>
                             <FormControl fullWidth margin={"normal"} >
                                 <TextField
                                     type={"date"}
@@ -227,7 +229,7 @@ const UserEdit = (props) => {
                     </TabPanel>
                     {(item.annotation_annotator_role || item.annotation_reviewer_role || item.annotation_supervisor_role || item.annotation_manager_role || item.annotation_admin_role) &&
                     <TabPanel value={tabValue} index={1}>
-                        <Grid xs={6}>
+                        <Grid item xs={6}>
                             <FormControl fullWidth margin={"normal"}>
                                 <InputLabel id="kind-label">Degree</InputLabel>
                                 <Select
@@ -247,7 +249,7 @@ const UserEdit = (props) => {
 
 
                         </Grid>
-                        <Grid xs={6}>
+                        <Grid item xs={6}>
                             <TextField fullWidth margin={"normal"}
                                        id="studyCountry"
                                        name="studyCountry"
@@ -255,7 +257,7 @@ const UserEdit = (props) => {
                                        label="Study Country"
                                        onChange={handleChange}
                             />
-                            <Grid xs={12}>
+                            <Grid item xs={12}>
 
                                 <TextField fullWidth margin={"normal"}
                                            id="workCountry"
@@ -265,7 +267,7 @@ const UserEdit = (props) => {
                                            onChange={handleChange}
                                 />
                             </Grid>
-                            <Grid xs={6}>
+                            <Grid item xs={6}>
                                 <TextField fullWidth margin={"normal"}
                                            type={"number"}
                                            id="yearsInPractice"
@@ -276,7 +278,7 @@ const UserEdit = (props) => {
                                 />
 
                             </Grid>
-                            <Grid xs={12} className="d-flex align-items-end">
+                            <Grid item xs={12} className="d-flex align-items-end">
 
                                 <Stack direction="row" spacing={2}>
                                     <IconButton ><Add/>&nbsp;Expertise</IconButton>
@@ -284,7 +286,7 @@ const UserEdit = (props) => {
 
                             </Grid>
                         </Grid>
-                        <Grid xs={6}>
+                        <Grid item xs={6}>
 
                             <TextField fullWidth margin={"normal"}
                                        id="timezone"
@@ -294,7 +296,7 @@ const UserEdit = (props) => {
                                        onChange={handleChange}
                             />
                         </Grid>
-                        <Grid xs={6}>
+                        <Grid item xs={6}>
                             <TextField fullWidth margin={"normal"}
                                        type={"number"}
                                        id="availabilityPerWeek"
@@ -304,7 +306,7 @@ const UserEdit = (props) => {
                                        onChange={handleChange}
                             />
                         </Grid>
-                        <Grid xs={6}>
+                        <Grid item xs={6}>
                             <TextField fullWidth margin={"normal"}
                                        type={"number"}
                                        id="selfAssessment"
@@ -314,7 +316,7 @@ const UserEdit = (props) => {
                                        onChange={handleChange}
                             />
                         </Grid>
-                        <Grid xs={6}>
+                        <Grid item xs={6}>
                             <TextField fullWidth margin={"normal"}
                                        type={"number"}
                                        id="expectedSalary"

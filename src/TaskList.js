@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
 import AppNavbar from './AppNavbar';
-import * as Loader from "react-loader-spinner";
 import {Auth} from "aws-amplify";
 import TaskClient from "./api/TaskClient";
 import {
+    Backdrop,
+    Box,
     Button,
+    CircularProgress,
     Container,
     IconButton,
     Paper,
@@ -71,14 +73,6 @@ class TaskList extends Component {
         const {tasks, isLoading} = this.state;
         const {me} = this.props;
 
-        if (isLoading) {
-            return (<div className="loading"><Loader.Puff
-                color="#00a5e3"
-                height={100}
-                width={100}
-                timeout={3000} //3 secs
-            /></div>);
-        }
 
         const taskList = tasks.map(task => {
 
@@ -100,14 +94,16 @@ class TaskList extends Component {
         return (
             <div>
                 <AppNavbar/>
-                <Container className={'pt-5'}>
-
-                    <div className={'float-end'}>
+                <Backdrop open={isLoading}>
+                    <CircularProgress color="inherit" />
+                </Backdrop>
+                <Container maxWidth="xl" sx={{ mt: 5 }}>
+                    <Box sx={{ display: 'flex',justifyContent: 'flex-end' }}>
                         <IconButton onClick={() => this.componentDidMount()} size={"medium"}><Replay fontSize="inherit"/></IconButton>{' '}
                         {!me &&
                         <Button component={RouterLink} color="success" to={"/tasks/me"}>Add Task</Button>
                         }
-                    </div>
+                    </Box>
 
                     <h3>{me ? 'My Tasks' : 'Tasks'}</h3>
 

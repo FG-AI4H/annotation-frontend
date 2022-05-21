@@ -1,4 +1,4 @@
-import React, {Component, useState} from "react";
+import React, {useState} from "react";
 import Alert from "@mui/material/Alert";
 import {FormControl, Grid, InputLabel, MenuItem, Select, Snackbar, Typography} from "@mui/material";
 import {Auth} from "aws-amplify";
