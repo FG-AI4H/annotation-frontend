@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {
     Button,
     Container,
@@ -14,16 +14,9 @@ import {
 import {Link as RouterLink} from "react-router-dom";
 import OCISpinner from "./components/OCISpinner";
 
-class AnnotationTaskList extends Component {
+const AnnotationTaskList = (props) => {
 
-    constructor(props) {
-        super(props);
-        this.state = {tasks: []};
-        this.remove = this.remove.bind(this);
-    }
-
-
-    async remove(id) {
+    async function remove(id) {
         await fetch(`https://annotation.ai4h.net/annotationtasks/${id}`, {
             method: 'DELETE',
             headers: {
@@ -31,34 +24,31 @@ class AnnotationTaskList extends Component {
                 'Content-Type': 'application/json'
             }
         }).then(() => {
-            let updatedTasks = [...this.state.tasks].filter(i => i.id !== id);
-            this.setState({tasks: updatedTasks});
+            let updatedTasks = [...props.tasks].filter(i => i.id !== id);
+            props.tasks = updatedTasks;
         });
     }
 
-    render() {
-        const tasks = this.props.tasks;
+    if(!props.tasks){
+        return (<OCISpinner/>);
+    }
 
-        if(!tasks){
-            return (<OCISpinner/>);
-        }
+    const taskList = props.tasks.map(task => {
+        return <TableRow key={task.annotationTaskUUID} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+            <TableCell style={{whiteSpace: 'nowrap'}}>{task.kind}</TableCell>
+            <TableCell style={{whiteSpace: 'nowrap'}}>{task.title}</TableCell>
+            <TableCell style={{whiteSpace: 'nowrap'}}>{task.description}</TableCell>
+            <TableCell>
+                <Stack direction={"row"} spacing={2} justifyContent="flex-end">
+                    <Button component={RouterLink} size="small" to={"/annotations/" + task.annotationTaskUUID}>Edit</Button>
+                    <Button size="small" color={"error"} onClick={() => remove(task.annotationTaskUUID)}>Delete</Button>
+                </Stack>
 
-        const taskList = tasks.map(task => {
-            return <TableRow key={task.annotationTaskUUID} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell style={{whiteSpace: 'nowrap'}}>{task.kind}</TableCell>
-                <TableCell style={{whiteSpace: 'nowrap'}}>{task.title}</TableCell>
-                <TableCell style={{whiteSpace: 'nowrap'}}>{task.description}</TableCell>
-                <TableCell>
-                    <Stack direction={"row"} spacing={2} justifyContent="flex-end">
-                        <Button component={RouterLink} size="small" to={"/annotations/" + task.annotationTaskUUID}>Edit</Button>
-                        <Button component={RouterLink} size="small" color={"error"} onClick={() => this.remove(task.annotationTaskUUID)}>Delete</Button>
-                    </Stack>
+            </TableCell>
+        </TableRow>
+    });
 
-                </TableCell>
-            </TableRow>
-        });
-
-        return (
+    return (
             <div>
                 <Container className={'pt-5'}>
 
@@ -82,6 +72,6 @@ class AnnotationTaskList extends Component {
                 </Container>
             </div>
         );
-    }
+
 }
 export default AnnotationTaskList;

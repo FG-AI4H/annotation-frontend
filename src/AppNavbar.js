@@ -45,7 +45,7 @@ const AppNavBar = () => {
         try {
             Auth.signOut().then( () => {
                 setAuth(false);
-                navigate('/login');
+                navigate('/');
             });
         } catch (error) {
             console.log('error signing out: ', error);

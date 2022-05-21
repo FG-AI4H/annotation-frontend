@@ -1,9 +1,9 @@
-import {Backdrop, Box, Button, CircularProgress, Grid, InputLabel, Stack, TextField, Typography} from "@mui/material";
+import {Box, Button, Grid, InputLabel, Stack, TextField} from "@mui/material";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import {ExpandMore} from "@mui/icons-material";
 import AccordionDetails from "@mui/material/AccordionDetails";
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {initialDataset} from "./DatasetEdit";
 import Auth from "@aws-amplify/auth";
 import axios from "axios";
@@ -15,14 +15,8 @@ import OCISpinner from "./components/OCISpinner";
 const DatasetForm = (props) =>{
 
     const [isLoading, setIsLoading] = useState(false);
-    const [readOnlyMode, setReadOnlyMode] = useState(true);
-    const [formState, setFormState] = useState(initialDataset);
-
-    //Load at page load
-    useEffect(() => {
-        setFormState(props.formState);
-        setReadOnlyMode(props.readOnlyMode);
-    }, [props])
+    const [readOnlyMode, setReadOnlyMode] = useState(props.readOnlyMode);
+    const [formState, setFormState] = useState(props.formState);
 
 
     //Update input field in "Add Dataset" Modal

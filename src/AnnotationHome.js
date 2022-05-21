@@ -8,7 +8,7 @@ import {Button, Card, CardActions, CardContent, Container, Grid, Typography} fro
 class AnnotationHome extends Component {
     render() {
         return (
-            <div>
+            <>
                 <AppNavbar/>
                 <Container maxWidth="xl" sx={{ mt: 5 }}>
                 <Grid container
@@ -73,7 +73,7 @@ class AnnotationHome extends Component {
                     </Grid>
                 </Grid>
                 </Container>
-            </div>
+            </>
         );
     }
 }

@@ -3,6 +3,7 @@ import AppNavbar from './AppNavbar';
 import {Auth} from "aws-amplify";
 import TaskClient from "./api/TaskClient";
 import {
+    Box,
     Button,
     Container,
     IconButton,
@@ -95,14 +96,13 @@ class TaskList extends Component {
         return (
             <div>
                 <AppNavbar/>
-                <Container className={'pt-5'}>
-
-                    <div className={'float-end'}>
+                <Container maxWidth="xl" sx={{ mt: 5 }}>
+                    <Box sx={{ display: 'flex',justifyContent: 'flex-end' }}>
                         <IconButton onClick={() => this.componentDidMount()} size={"medium"}><Replay fontSize="inherit"/></IconButton>{' '}
                         {!me &&
                         <Button component={RouterLink} color="success" to={"/tasks/me"}>Add Task</Button>
                         }
-                    </div>
+                    </Box>
 
                     <h3>{me ? 'My Tasks' : 'Tasks'}</h3>
 

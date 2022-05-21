@@ -8,10 +8,16 @@ import {
     Button,
     CircularProgress,
     Link,
-    Modal, Paper, Snackbar, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-    TextField,
-    Typography,
-    Grid
+    Modal,
+    Paper,
+    Stack,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Typography
 } from "@mui/material";
 
 import {initialDataset} from "./DatasetEdit";

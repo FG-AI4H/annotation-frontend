@@ -64,11 +64,6 @@ class UserListComponent extends Component {
 
         return (
             <>
-                <Title>{title}</Title>
-                <Grid container justifyContent="flex-end">
-                    <IconButton onClick={() => this.componentDidMount()}><Replay/></IconButton>{' '}
-                    <Button color="success" tag={Link} to="/users/new">Add User</Button>
-                </Grid>
                 <TableContainer component={Paper}>
                     <Table sx={{ minWidth: 650 }} aria-label="simple table">
                         <TableHead>

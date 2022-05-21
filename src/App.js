@@ -34,9 +34,8 @@ const theme = createTheme({
 });
 
 
-class App extends React.Component {
+function App({ signOut, user }) {
 
-  render() {
     return (
         <ThemeProvider theme={theme}>
           <CssBaseline />
@@ -49,9 +48,7 @@ class App extends React.Component {
 
               <Route path='/annotation' exact={true} element={<AnnotationHome/>}/>
               <Route path='/tasks' exact={true} element={<TaskList/>}/>
-              <Route path='/myTasks' exact={true} render={(props) => (
-                  <TaskList {...props} me={true} />
-              )}/>
+              <Route path='/myTasks' exact={true} element={<TaskList me={true} />}/>
               <Route path='/tasks/:id' element={<TaskEdit/>}/>
               <Route path='/campaigns' exact={true} element={<CampaignList/>}/>
               <Route path='/campaigns/:id' element={<CampaignEdit/>}/>
@@ -72,7 +69,6 @@ class App extends React.Component {
           </Router>
         </ThemeProvider>
     );
-  }
 }
 
 export default withAuthenticator(App);

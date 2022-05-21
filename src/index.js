@@ -6,6 +6,7 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
+import '@aws-amplify/ui-react/styles.css';
 
 
 import Amplify from 'aws-amplify';
@@ -17,10 +18,11 @@ Amplify.configure(awsconfig);
 const container = document.getElementById('root');
 const root = createRoot(container);
 
+
 root.render(
-    <React.StrictMode>
+   // <React.StrictMode>
         <App />
-    </React.StrictMode>
+   // </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

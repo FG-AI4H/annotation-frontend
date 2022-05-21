@@ -1,17 +1,5 @@
-import React, {useEffect, useState} from "react";
-import {
-    Backdrop,
-    Box,
-    Button,
-    CardMedia,
-    CircularProgress,
-    Container,
-    Grid,
-    Modal,
-    Stack, TextField,
-    Typography
-} from "@mui/material";
-import DatasetForm from "./DatasetForm";
+import React from "react";
+import {Box, Button, Grid, Modal, Stack, TextField, Typography} from "@mui/material";
 
 export const style = {
     position: 'absolute',
@@ -27,8 +15,8 @@ export const style = {
 };
 
 export const initialItem = {
-    title: undefined,
-    itemUrl: undefined,
+    title: '',
+    itemUrl: '',
     photoData: undefined
 }
 
