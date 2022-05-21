@@ -6,9 +6,11 @@ import {Auth} from "aws-amplify";
 import UserClient from "./api/UserClient";
 
 import {
+    Backdrop,
     Box,
     Button,
     Checkbox,
+    CircularProgress,
     Container,
     FormControl,
     FormControlLabel,
@@ -25,7 +27,6 @@ import {
 import {Add} from "@mui/icons-material";
 import {a11yProps} from "./components/allyProps";
 import {TabPanel} from "./components/TabPanel";
-import OCISpinner from "./components/OCISpinner";
 
 const UserEdit = (props) => {
 
@@ -137,13 +138,13 @@ const UserEdit = (props) => {
         props.history.push('/userManagement');
     }
 
-    if (isLoading) {
-        return (<OCISpinner/>);
-    }
 
     return (
         <div>
         <AppNavbar/>
+            <Backdrop open={isLoading}>
+                <CircularProgress color="inherit" />
+            </Backdrop>
             <Container maxWidth="xl" sx={{ mt: 5 }}>
             <h2>{item.userUUID ? 'Edit User' : 'Add User'}</h2>
             <Grid item xs={12}>

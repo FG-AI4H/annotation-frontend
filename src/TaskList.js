@@ -3,8 +3,10 @@ import AppNavbar from './AppNavbar';
 import {Auth} from "aws-amplify";
 import TaskClient from "./api/TaskClient";
 import {
+    Backdrop,
     Box,
     Button,
+    CircularProgress,
     Container,
     IconButton,
     Paper,
@@ -18,7 +20,6 @@ import {
 } from "@mui/material";
 import {Link as RouterLink} from "react-router-dom";
 import {Replay} from "@mui/icons-material";
-import OCISpinner from "./components/OCISpinner";
 
 class TaskList extends Component {
 
@@ -72,9 +73,6 @@ class TaskList extends Component {
         const {tasks, isLoading} = this.state;
         const {me} = this.props;
 
-        if (isLoading) {
-            return (<OCISpinner/>);
-        }
 
         const taskList = tasks.map(task => {
 
@@ -96,6 +94,9 @@ class TaskList extends Component {
         return (
             <div>
                 <AppNavbar/>
+                <Backdrop open={isLoading}>
+                    <CircularProgress color="inherit" />
+                </Backdrop>
                 <Container maxWidth="xl" sx={{ mt: 5 }}>
                     <Box sx={{ display: 'flex',justifyContent: 'flex-end' }}>
                         <IconButton onClick={() => this.componentDidMount()} size={"medium"}><Replay fontSize="inherit"/></IconButton>{' '}

@@ -6,7 +6,8 @@ import {getDataset} from "./graphql/queries";
 import DatasetItemModal from "./DatasetItemModal.js"
 import 'react-medium-image-zoom/dist/styles.css'
 import {
-    Button,
+    Backdrop,
+    Button, CircularProgress,
     Container,
     FormControlLabel,
     ImageList,
@@ -172,6 +173,7 @@ const DatasetEdit = () => {
         const authSession = await Auth.currentSession()
 
         if (authSession != null) {
+            setIsLoading(true)
             // Add the User's Id Token to the Cognito credentials login map.
             AWS.config.credentials = new AWS.CognitoIdentityCredentials({
                 IdentityPoolId: 'eu-central-1:8500a16d-459b-496d-8e87-0e3dea7e3bf6',
@@ -200,6 +202,7 @@ const DatasetEdit = () => {
             let detailItem = {...state}
             detailItem.photoData = base64String;
             setCurrentItem(detailItem);
+            setIsLoading(false)
             setOpen(true);
         }
     }
@@ -252,10 +255,6 @@ const DatasetEdit = () => {
 
     const title = <h2>{dataset.id ? 'Edit Dataset' : 'Add Dataset'}</h2>;
 
-    if (isLoading) {
-        return (<OCISpinner/>);
-    }
-
     const handleToggleChange = (event) => {
         setIsItemsAsList(event.target.checked);
     };
@@ -268,6 +267,9 @@ const DatasetEdit = () => {
     return(
         <>
             <AppNavbar/>
+            <Backdrop open={isLoading}>
+                <CircularProgress color="inherit" />
+            </Backdrop>
             <Container maxWidth="xl" sx={{ mt: 5 }}>
                 {title}
                 <DatasetForm readOnlyMode={false} formState={dataset}/>

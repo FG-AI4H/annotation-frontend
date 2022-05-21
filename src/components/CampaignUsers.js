@@ -262,7 +262,7 @@ class CampaignUsers extends Component {
                         <Grid item xs={12}>
 
                                 <Grid item xs={6}>
-                                        <FormControl fullWidth sx={{ mt: 5 }}>
+                                        <FormControl fullWidth margin={"normal"}>
                                             <TextField
                                                 type="number"
                                                 id="yearsInPractice"
@@ -275,7 +275,7 @@ class CampaignUsers extends Component {
 
                                     </Grid>
                                 <Grid item xs={6}>
-                                        <FormControl fullWidth sx={{ mt: 5 }}>
+                                        <FormControl fullWidth margin={"normal"}>
                                             <TextField
                                                 type="number"
                                                 id="selfAssessment"
@@ -294,7 +294,7 @@ class CampaignUsers extends Component {
 
                         </Grid>
                     </Grid>
-                    <Grid container className='mt-5'>
+                    <Grid container sx={{ mt: 5 }} spacing={2}>
                         <Grid item xs={6}>
                             <h3>Available supervisors</h3>
                             <TableContainer component={Paper}>
@@ -313,7 +313,7 @@ class CampaignUsers extends Component {
                                 </Table>
                             </TableContainer>
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item xs={6}>
                             <h3>Selected supervisors</h3>
                             <TableContainer component={Paper}>
                                 <Table aria-label="simple table">
@@ -340,10 +340,11 @@ class CampaignUsers extends Component {
                         </Grid>
                     </Grid>
                     <Grid container>
+                        <Grid item xs={12}>
 
 
                             <Grid item xs={6}>
-                                    <FormControl fullWidth sx={{ mt: 5 }}>
+                                    <FormControl fullWidth margin={"normal"}>
                                         <TextField
                                             type="number"
                                             id="yearsInPractice"
@@ -356,7 +357,7 @@ class CampaignUsers extends Component {
 
                             </Grid>
                         <Grid item xs={6}>
-                                    <FormControl fullWidth sx={{ mt: 5 }}>
+                                    <FormControl fullWidth margin={"normal"}>
                                         <TextField
                                             type="number"
                                             id="selfAssessment"
@@ -373,7 +374,8 @@ class CampaignUsers extends Component {
                             </Stack>
 
                     </Grid>
-                    <Grid container className='mt-5'>
+                    </Grid>
+                    <Grid container sx={{ mt: 5 }} spacing={2}>
                         <Grid item xs={6}>
                             <h3>Available annotators</h3>
                             <TableContainer component={Paper}>
@@ -424,7 +426,7 @@ class CampaignUsers extends Component {
                         <Grid item xs={12}>
 
                                 <Grid item xs={6}>
-                                        <FormControl fullWidth sx={{ mt: 5 }}>
+                                        <FormControl fullWidth margin={"normal"}>
                                             <TextField
                                                 type="number"
                                                 id="yearsInPractice"
@@ -437,7 +439,7 @@ class CampaignUsers extends Component {
 
                                     </Grid>
                                      <Grid item xs={6}>
-                                        <FormControl fullWidth sx={{ mt: 5 }}>
+                                        <FormControl fullWidth margin={"normal"}>
                                             <TextField
                                                 type="number"
                                                 id="selfAssessment"
@@ -456,8 +458,8 @@ class CampaignUsers extends Component {
 
                         </Grid>
                     </Grid>
-                    <Grid container className='mt-5'>
-                        <Grid item xs={12}>
+                    <Grid container sx={{ mt: 5 }} spacing={2}>
+                        <Grid item xs={6}>
                             <h3>Available reviewers</h3>
                             <TableContainer component={Paper}>
                                 <Table aria-label="simple table">
@@ -475,7 +477,7 @@ class CampaignUsers extends Component {
                                 </Table>
                             </TableContainer>
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item xs={6}>
                             <h3>Selected reviewers</h3>
                             <TableContainer component={Paper}>
                                 <Table aria-label="simple table">

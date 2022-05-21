@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React from "react";
 import AppNavbar from "./AppNavbar";
 import {Button, Card, CardActions, CardContent, Container, Grid, Typography} from "@mui/material";
 import {Link as RouterLink} from 'react-router-dom';

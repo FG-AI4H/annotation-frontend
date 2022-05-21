@@ -3,8 +3,9 @@ import AppNavbar from './AppNavbar';
 import {Auth} from "aws-amplify";
 import CampaignClient from "./api/CampaignClient";
 import {
+    Backdrop,
     Box,
-    Button,
+    Button, CircularProgress,
     Container,
     IconButton,
     Paper,
@@ -63,10 +64,6 @@ class CampaignList extends Component {
     render() {
         const {campaigns, isLoading} = this.state;
 
-        if (isLoading) {
-           return (<OCISpinner/>);
-        }
-
         const campaignList = campaigns.map(campaign => {
             return <TableRow key={campaign.campaignUUID} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell style={{whiteSpace: 'nowrap'}}>{campaign.name}</TableCell>
@@ -85,6 +82,9 @@ class CampaignList extends Component {
         return (
             <>
                 <AppNavbar/>
+                <Backdrop open={isLoading}>
+                    <CircularProgress color="inherit" />
+                </Backdrop>
                 <Container maxWidth="xl" sx={{ mt: 5 }}>
                     <Box sx={{ display: 'flex',justifyContent: 'flex-end' }}>
                         <IconButton onClick={() => this.componentDidMount()}><Replay /></IconButton>{' '}

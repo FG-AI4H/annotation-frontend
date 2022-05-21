@@ -1,6 +1,7 @@
 import React from 'react';
 import {
-    Button,
+    Backdrop,
+    Button, CircularProgress,
     Container,
     Paper,
     Stack,
@@ -29,10 +30,6 @@ const AnnotationTaskList = (props) => {
         });
     }
 
-    if(!props.tasks){
-        return (<OCISpinner/>);
-    }
-
     const taskList = props.tasks.map(task => {
         return <TableRow key={task.annotationTaskUUID} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
             <TableCell style={{whiteSpace: 'nowrap'}}>{task.kind}</TableCell>
@@ -50,6 +47,11 @@ const AnnotationTaskList = (props) => {
 
     return (
             <div>
+
+                <Backdrop open={!props.tasks}>
+                    <CircularProgress color="inherit" />
+                </Backdrop>
+
                 <Container className={'pt-5'}>
 
                     <h3>Annotation Tasks</h3>
