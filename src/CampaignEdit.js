@@ -11,7 +11,6 @@ import {Backdrop, Box, Button, CircularProgress, Container, Grid, Tab, Tabs, Typ
 import CampaignTask from "./components/CampaignTask";
 import {TabPanel} from "./components/TabPanel";
 import {a11yProps} from "./components/allyProps";
-import OCISpinner from "./components/OCISpinner";
 import CampaignDataset from "./components/CampaignDataset";
 
 const CampaignEdit = () => {
@@ -61,7 +60,7 @@ const CampaignEdit = () => {
 
     return <div>
         <AppNavbar/>
-        <Backdrop open={isLoading}>
+        <Backdrop open={isLoading} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
             <CircularProgress color="inherit" />
         </Backdrop>
         <Container maxWidth="xl" sx={{ mt: 5 }}>

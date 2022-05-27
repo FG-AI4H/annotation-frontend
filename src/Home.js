@@ -27,9 +27,10 @@ class Home extends Component {
                         <Grid item xs={12} md={4}>
                             <Card sx={{height: 1}}>
                                 <CardMedia
+
                                     component="img"
                                     height="180"
-                                    image="https://picsum.photos/id/341/286/180"
+                                    image="home_annotation.png"
                                 />
                                 <CardContent>
                                     <Typography gutterBottom variant="h5" component="div">
@@ -50,7 +51,7 @@ class Home extends Component {
                                 <CardMedia
                                     component="img"
                                     height="180"
-                                    image="https://picsum.photos/id/1073/286/180"
+                                    image="home_datasets.png"
                                 />
                                 <CardContent>
                                     <Typography gutterBottom variant="h5" component="div">
@@ -71,7 +72,7 @@ class Home extends Component {
                                 <CardMedia
                                     component="img"
                                     height="180"
-                                    image="https://picsum.photos/id/36/286/180"
+                                    image="home_eval.png"
                                 />
                                 <CardContent>
                                     <Typography gutterBottom variant="h5" component="div">

@@ -31,7 +31,7 @@ class Profile extends Component {
 
         return (
             <div>
-                <Backdrop open={isLoading}>
+                <Backdrop open={isLoading} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
                     <CircularProgress color="inherit" />
                 </Backdrop>
                 <AppNavbar/>

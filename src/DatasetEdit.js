@@ -1,18 +1,21 @@
 import React, {useEffect, useState} from "react";
-import {API, Auth} from "aws-amplify";
-import {Link as RouterLink, useParams} from "react-router-dom";
+import {Auth} from "aws-amplify";
+import {useParams} from "react-router-dom";
 import AWS from "aws-sdk";
-import {getDataset} from "./graphql/queries";
 import DatasetItemModal from "./DatasetItemModal.js"
 import 'react-medium-image-zoom/dist/styles.css'
 import {
-    Backdrop, Box,
-    Button, CircularProgress,
-    Container, FormControl,
-    FormControlLabel, IconButton,
+    Backdrop,
+    Button,
+    CircularProgress,
+    Container,
+    FormControl,
+    FormControlLabel,
     ImageList,
     ImageListItem,
-    ImageListItemBar, InputLabel, OutlinedInput,
+    ImageListItemBar,
+    InputLabel,
+    OutlinedInput,
     Paper,
     Stack,
     Switch,
@@ -21,14 +24,13 @@ import {
     TableCell,
     TableContainer,
     TableHead,
-    TableRow, TextField
+    TableRow
 } from "@mui/material";
 import AppNavbar from "./AppNavbar";
-import OCISpinner from "./components/OCISpinner";
 import DatasetForm from "./DatasetForm";
 import {initialItem} from "./DatasetItemModal";
 import axios from "axios";
-import {Replay} from "@mui/icons-material";
+import DatasetClient from "./api/DatasetClient";
 
 export const initialDataset = {
     name: '',
@@ -94,9 +96,10 @@ const DatasetEdit = () => {
                     setIsLoading(false);
                 }
 
-                API.graphql({ query: getDataset, variables: {id: params.id} }).then(datasetData => {
-                    setDatatset(datasetData.data.getDataset);
-                    const prefix = datasetData.data.getDataset.storageLocation.replace('fhir-service-dev-fhirbinarybucket-yjeth32swz5m.s3.eu-central-1.amazonaws.com/','');
+                const client = new DatasetClient(response.signInUserSession.accessToken.jwtToken);
+                client.fetchDatasetById(params.id).then(datasetData => {
+                    setDatatset(datasetData.data);
+                    const prefix = datasetData.data.storageLocation.replace('fhir-service-dev-fhirbinarybucket-yjeth32swz5m.s3.eu-central-1.amazonaws.com/','');
 
                     fetchData(prefix)
                         // make sure to catch any error
@@ -255,7 +258,7 @@ const DatasetEdit = () => {
         </ImageList>
 
 
-    const title = <h2>{dataset.id ? 'Edit Dataset' : 'Add Dataset'}</h2>;
+    const title = <h2>{dataset.datasetUUID ? 'Edit Dataset' : 'Add Dataset'}</h2>;
 
     const handleToggleChange = (event) => {
         setIsItemsAsList(event.target.checked);
@@ -274,7 +277,7 @@ const DatasetEdit = () => {
     return(
         <>
             <AppNavbar/>
-            <Backdrop open={isLoading}>
+            <Backdrop open={isLoading} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
                 <CircularProgress color="inherit" />
             </Backdrop>
             <Container maxWidth="xl" sx={{ mt: 5 }}>

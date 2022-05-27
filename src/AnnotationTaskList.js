@@ -1,7 +1,8 @@
 import React from 'react';
 import {
     Backdrop,
-    Button, CircularProgress,
+    Button,
+    CircularProgress,
     Container,
     Paper,
     Stack,
@@ -13,7 +14,6 @@ import {
     TableRow
 } from "@mui/material";
 import {Link as RouterLink} from "react-router-dom";
-import OCISpinner from "./components/OCISpinner";
 
 const AnnotationTaskList = (props) => {
 
@@ -48,7 +48,8 @@ const AnnotationTaskList = (props) => {
     return (
             <div>
 
-                <Backdrop open={!props.tasks}>
+
+                <Backdrop open={!props.tasks} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
                     <CircularProgress color="inherit" />
                 </Backdrop>
 

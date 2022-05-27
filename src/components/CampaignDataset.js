@@ -2,7 +2,7 @@ import {
     Backdrop,
     Box,
     Button,
-    CircularProgress, IconButton, Link,
+    CircularProgress,
     Modal,
     Paper,
     Stack,
@@ -16,10 +16,10 @@ import {
 } from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {Link as RouterLink} from "react-router-dom";
-import Datasets, {style} from "../Datasets";
-import {API, graphqlOperation} from "aws-amplify";
-import {listDatasets} from "../graphql/queries";
-import {Check, Replay} from "@mui/icons-material";
+import {style} from "../Datasets";
+import {Auth} from "aws-amplify";
+import {Check} from "@mui/icons-material";
+import DatasetClient from "../api/DatasetClient";
 
 const CampaignDataset = (props) => {
 
@@ -36,16 +36,13 @@ const CampaignDataset = (props) => {
 
     //Open "Add / Edit Dataset" modal
     const handleModalOpen = async () => {
-        try {
-            const datasetsData = await API.graphql(graphqlOperation(listDatasets))
-            const datasets = datasetsData.data.listDatasets.items
-            setDatasets(datasets);
-            setOpen(true);
-        } catch (err) {
-            console.log(err)
-            console.log('error fetching datasets')
-        }
 
+        const token = await Auth.currentAuthenticatedUser({bypassCache: false})
+
+        const client = new DatasetClient(token.signInUserSession.accessToken.jwtToken);
+        const result = await client.fetchDatasetList();
+        setDatasets(result?.data._embedded.dataset)
+        setOpen(true)
     };
 
     //Close "Add / Edit Dataset" modal

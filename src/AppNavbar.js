@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import {Auth} from "aws-amplify";
-import {AppBar, Avatar, Box, Button, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography} from "@mui/material";
+import {AppBar, Avatar, Box, Button, IconButton, Menu, MenuItem, Toolbar, Tooltip} from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
 import {useNavigate} from "react-router-dom";
 
