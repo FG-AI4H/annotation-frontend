@@ -67,14 +67,13 @@ const AppNavBar = () => {
                         <MenuIcon />
                     </IconButton>
 
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="div"
-                        sx={{ display: { xs: 'none', sm: 'block' } }}
-                    >
-                        FG-AI4H Platform
-                    </Typography>
+                    <img
+                        alt=""
+                        src="/AI4H_logo_blue_transparent.png"
+                        height="30"
+                        className="d-inline-block align-top"
+                    />
+
                     {auth && (
                        <>
                     <Box sx={{ ml:'30px',flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
