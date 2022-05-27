@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {API, graphqlOperation} from 'aws-amplify'
-import {getDataset, listDatasets} from './graphql/queries'
+import {Auth} from 'aws-amplify'
 
 import {
     Backdrop,
@@ -23,6 +22,7 @@ import {
 import {initialDataset} from "./DatasetEdit";
 import {Link as RouterLink} from "react-router-dom";
 import DatasetForm from "./DatasetForm";
+import DatasetClient from "./api/DatasetClient";
 
 const modalMode = Object.freeze({ _EDIT: 'edit', _READ: 'read' })
 
@@ -53,29 +53,27 @@ export default function Datasets(props) {
 
     //Load at page load
     useEffect(() => {
-        fetchDatasets();
+        Auth.currentAuthenticatedUser({
+            bypassCache: false
+        }).then(response => {
+            const client = new DatasetClient(response.signInUserSession.accessToken.jwtToken);
+            client.fetchDatasetList()
+                .then(
+                    response => {
+                        setDatasets(response?.data._embedded.dataset)
+                    })
+
+        }).catch(err => console.log(err));
     }, [])
 
-    //Fetch all datasets from backend
-    async function fetchDatasets() {
-        try {
-            const datasetsData = await API.graphql(graphqlOperation(listDatasets))
-            const datasets = datasetsData.data.listDatasets.items
-            setDatasets(datasets)
-        } catch (err) {
-            console.log(err)
-            console.log('error fetching datasets')
-        }
-    }
 
     async function fetchDataset(uuid) {
-        try {
-            const datasetData = await API.graphql({ query: getDataset, variables: {id: uuid} });
-            return datasetData.data.getDataset;
-        } catch (err) {
-            console.log(err)
-            console.log('error fetching datasets')
-        }
+        const token = await Auth.currentAuthenticatedUser({bypassCache: false})
+
+        const client = new DatasetClient(token.signInUserSession.accessToken.jwtToken);
+        const result = await client.fetchDatasetById(uuid);
+        return result.data
+        
     }
 
     async function viewDataset(datasetID) {
@@ -110,14 +108,14 @@ export default function Datasets(props) {
                     </TableHead>
                     <TableBody>
                         {datasets.map((dataset) => (
-                            <TableRow key={dataset.id}>
-                                <TableCell><Link href="#" onClick={() => viewDataset(dataset.id)}>{dataset.name}</Link></TableCell>
+                            <TableRow key={dataset.datasetUUID}>
+                                <TableCell><Link href="#" onClick={() => viewDataset(dataset.datasetUUID)}>{dataset.name}</Link></TableCell>
                                 <TableCell>{dataset.description}</TableCell>
                                 <TableCell>{(new Date(Date.parse(dataset.updatedAt))).toLocaleString(navigator.language)}</TableCell>
                                 <TableCell>
                                     <Stack direction={"row"} spacing={2} justifyContent="flex-end">
-                                        <Button component={RouterLink} size="small" color="primary" to={"/datasets/" + dataset.id}>Edit</Button>
-                                        <Button size="small" color="error" onClick={() => this.remove(dataset.id)}>Delete</Button>
+                                        <Button component={RouterLink} size="small" color="primary" to={"/datasets/" + dataset.datasetUUID}>Edit</Button>
+                                        <Button size="small" color="error" onClick={() => this.remove(dataset.datasetUUID)}>Delete</Button>
                                     </Stack>
                                 </TableCell>
                             </TableRow>

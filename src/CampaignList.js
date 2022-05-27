@@ -5,7 +5,8 @@ import CampaignClient from "./api/CampaignClient";
 import {
     Backdrop,
     Box,
-    Button, CircularProgress,
+    Button,
+    CircularProgress,
     Container,
     IconButton,
     Paper,
@@ -20,7 +21,6 @@ import {
 import {Link as RouterLink} from "react-router-dom";
 
 import {Replay} from "@mui/icons-material";
-import OCISpinner from "./components/OCISpinner";
 
 class CampaignList extends Component {
 
@@ -82,7 +82,7 @@ class CampaignList extends Component {
         return (
             <>
                 <AppNavbar/>
-                <Backdrop open={isLoading}>
+                <Backdrop open={isLoading} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
                     <CircularProgress color="inherit" />
                 </Backdrop>
                 <Container maxWidth="xl" sx={{ mt: 5 }}>

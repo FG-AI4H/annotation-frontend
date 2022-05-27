@@ -1,10 +1,8 @@
 import React, {Component} from "react";
-import UserList from "./UserList";
 import {Link as RouterLink} from "react-router-dom";
 import {Box, Button, Container, Grid, IconButton, Paper} from "@mui/material";
 import AppNavbar from "./AppNavbar";
 import {Replay} from "@mui/icons-material";
-import Datasets from "./Datasets";
 import UserListComponent from "./components/UserListComponent";
 
 class UserManagement extends Component {

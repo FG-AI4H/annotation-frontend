@@ -7,10 +7,8 @@ import React, {useEffect, useState} from "react";
 import {initialDataset} from "./DatasetEdit";
 import Auth from "@aws-amplify/auth";
 import axios from "axios";
-import uuid from "react-uuid";
-import {API, graphqlOperation} from "aws-amplify";
-import {createDataset, updateDataset as graphqlUpdateDataset} from "./graphql/mutations";
 import {Link as RouterLink, useParams} from "react-router-dom";
+import DatasetClient from "./api/DatasetClient";
 
 const DatasetForm = (props) =>{
 
@@ -75,111 +73,132 @@ const DatasetForm = (props) =>{
         }
 
         const file = dataset.selectedFile[0]
+        setIsLoading(true);
 
-        //push zip file to S3 using FHIR Binary API endpoint
-        axios.post('https://vno8vyh8x5.execute-api.eu-central-1.amazonaws.com/dev/Binary', {
-            'resourceType': 'Binary',
-            'contentType': 'application/zip',
-            'securityContext': {
-                'reference': 'DocumentReference/benchmarking-data'
-            }
-        }, {
-            headers: headers
-        })
-            .then(res => {
-                //use presigned S3 URL from FHIR Binary API endpoint to push data to actual S3 bucket
-                return axios.put(res.data.presignedPutUrl, file, {
-                    headers: {
-                        'Content-Type': file.type
-                    }
-                })
-            })
-            .then(res => {
-                const url = new URL(res.config.url)
-                const filepath = url.hostname + '/' + file.name.replace('.zip', '/')
+        Auth.currentAuthenticatedUser({
+            bypassCache: false
+        }).then(response => {
+            const client = new DatasetClient(response.signInUserSession.accessToken.jwtToken);
 
-                const datasetUpload = {
-                    id: uuid(),
-                    name: dataset.name,
-                    description: dataset.description,
-                    storageLocation: filepath,
-                    metadata: {
-                        version: '1.0',
-                        dataOwner: dataset.metadata?.dataOwner,
-                        dataSource: dataset.metadata?.dataSource,
-                        dataSampleSize: dataset.metadata?.dataSampleSize,
-                        dataType: dataset.metadata?.dataType,
-                        dataUpdateVersion: dataset.metadata?.dataUpdateVersion,
-                        dataAcquisitionSensingModality: dataset.metadata?.dataAcquisitionSensingModality,
-                        dataAcquisitionSensingDeviceType: dataset.metadata?.dataAcquisitionSensingDeviceType,
-                        dataCollectionPlace: dataset.metadata?.dataCollectionPlace,
-                        dataCollectionPeriod: dataset.metadata?.dataCollectionPeriod,
-                        datCollectionAuthorsAgency: dataset.metadata?.datCollectionAuthorsAgency,
-                        dataCollectionFundingAgency: dataset.metadata?.dataCollectionFundingAgency,
-                        dataSamplingRate: dataset.metadata?.dataSamplingRate,
-                        dataDimension: dataset.metadata?.dataDimension,
-                        dataResolutionPrecision: dataset.metadata?.dataResolutionPrecision,
-                        dataPrivacyDeIdentificationProtocol: dataset.metadata?.dataPrivacyDeIdentificationProtocol,
-                        dataSafetySecurityProtocol: dataset.metadata?.dataSafetySecurityProtocol,
-                        dataAssumptionsConstraintsDependencies: dataset.metadata?.dataAssumptionsConstraintsDependencies,
-                        dataExclusionCriteria: dataset.metadata?.dataExclusionCriteria,
-                        dataAcceptanceStandardsCompliance: dataset.metadata?.dataAcceptanceStandardsCompliance,
-                        dataPreprocessingTechniques: dataset.metadata?.dataPreprocessingTechniques,
-                        dataAnnotationProcessTool: dataset.metadata?.dataAnnotationProcessTool,
-                        dataBiasAndVarianceMinimization: dataset.metadata?.dataBiasAndVarianceMinimization,
-                        trainTuningEvalDatasetPartitioningRatio: dataset.metadata?.trainTuningEvalDatasetPartitioningRatio,
-                        dataRegistryURL: dataset.metadata?.dataRegistryURL
-                    }
+            //push zip file to S3 using FHIR Binary API endpoint
+            axios.post('https://vno8vyh8x5.execute-api.eu-central-1.amazonaws.com/dev/Binary', {
+                'resourceType': 'Binary',
+                'contentType': 'application/zip',
+                'securityContext': {
+                    'reference': 'DocumentReference/benchmarking-data'
                 }
+            }, {
+                headers: headers
+            })
+                .then(res => {
+                    //use presigned S3 URL from FHIR Binary API endpoint to push data to actual S3 bucket
+                    return axios.put(res.data.presignedPutUrl, file, {
+                        headers: {
+                            'Content-Type': file.type
+                        }
+                    })
+                })
+                .then(res => {
+                    const url = new URL(res.config.url)
+                    const filepath = url.hostname + '/' + file.name.replace('.zip', '/')
 
-                return API.graphql(graphqlOperation(createDataset, { input: datasetUpload }))
-            }).then(res => {
-            setIsLoading(false);
-            alert('Dataset uploaded to S3 and data is saved')
-            setFormState(initialDataset)
-        },err => {
-            setIsLoading(false);
-            console.log(err)
+                    const datasetUpload = {
+                        name: dataset.name,
+                        description: dataset.description,
+                        storageLocation: filepath,
+                        metadata: {
+                            version: '1.0',
+                            dataOwner: dataset.metadata?.dataOwner,
+                            dataSource: dataset.metadata?.dataSource,
+                            dataSampleSize: dataset.metadata?.dataSampleSize,
+                            dataType: dataset.metadata?.dataType,
+                            dataUpdateVersion: dataset.metadata?.dataUpdateVersion,
+                            dataAcquisitionSensingModality: dataset.metadata?.dataAcquisitionSensingModality,
+                            dataAcquisitionSensingDeviceType: dataset.metadata?.dataAcquisitionSensingDeviceType,
+                            dataCollectionPlace: dataset.metadata?.dataCollectionPlace,
+                            dataCollectionPeriod: dataset.metadata?.dataCollectionPeriod,
+                            datCollectionAuthorsAgency: dataset.metadata?.datCollectionAuthorsAgency,
+                            dataCollectionFundingAgency: dataset.metadata?.dataCollectionFundingAgency,
+                            dataSamplingRate: dataset.metadata?.dataSamplingRate,
+                            dataDimension: dataset.metadata?.dataDimension,
+                            dataResolutionPrecision: dataset.metadata?.dataResolutionPrecision,
+                            dataPrivacyDeIdentificationProtocol: dataset.metadata?.dataPrivacyDeIdentificationProtocol,
+                            dataSafetySecurityProtocol: dataset.metadata?.dataSafetySecurityProtocol,
+                            dataAssumptionsConstraintsDependencies: dataset.metadata?.dataAssumptionsConstraintsDependencies,
+                            dataExclusionCriteria: dataset.metadata?.dataExclusionCriteria,
+                            dataAcceptanceStandardsCompliance: dataset.metadata?.dataAcceptanceStandardsCompliance,
+                            dataPreprocessingTechniques: dataset.metadata?.dataPreprocessingTechniques,
+                            dataAnnotationProcessTool: dataset.metadata?.dataAnnotationProcessTool,
+                            dataBiasAndVarianceMinimization: dataset.metadata?.dataBiasAndVarianceMinimization,
+                            trainTuningEvalDatasetPartitioningRatio: dataset.metadata?.trainTuningEvalDatasetPartitioningRatio,
+                            dataRegistryURL: dataset.metadata?.dataRegistryURL
+                        }
+                    }
+
+                    client.addDataset(datasetUpload).then(
+                        response => {return response}
+                    )
+
+                }).then(res => {
+                setIsLoading(false);
+                alert('Dataset uploaded to S3 and data is saved')
+                setFormState(initialDataset)
+            }, err => {
+                setIsLoading(false);
+                console.log(err)
+            })
         })
     }
 
     async function updateDataset(dataset) {
-        const datasetUpload = {
-            id: dataset.id,
-            name: dataset.name,
-            description: dataset.description,
-            storageLocation: dataset.storageLocation,
-            metadata: {
-                version: '1.0',
-                dataOwner: dataset.metadata?.dataOwner,
-                dataSource: dataset.metadata?.dataSource,
-                dataSampleSize: dataset.metadata?.dataSampleSize,
-                dataType: dataset.metadata?.dataType,
-                dataUpdateVersion: dataset.metadata?.dataUpdateVersion,
-                dataAcquisitionSensingModality: dataset.metadata?.dataAcquisitionSensingModality,
-                dataAcquisitionSensingDeviceType: dataset.metadata?.dataAcquisitionSensingDeviceType,
-                dataCollectionPlace: dataset.metadata?.dataCollectionPlace,
-                dataCollectionPeriod: dataset.metadata?.dataCollectionPeriod,
-                datCollectionAuthorsAgency: dataset.metadata?.datCollectionAuthorsAgency,
-                dataCollectionFundingAgency: dataset.metadata?.dataCollectionFundingAgency,
-                dataSamplingRate: dataset.metadata?.dataSamplingRate,
-                dataDimension: dataset.metadata?.dataDimension,
-                dataResolutionPrecision: dataset.metadata?.dataResolutionPrecision,
-                dataPrivacyDeIdentificationProtocol: dataset.metadata?.dataPrivacyDeIdentificationProtocol,
-                dataSafetySecurityProtocol: dataset.metadata?.dataSafetySecurityProtocol,
-                dataAssumptionsConstraintsDependencies: dataset.metadata?.dataAssumptionsConstraintsDependencies,
-                dataExclusionCriteria: dataset.metadata?.dataExclusionCriteria,
-                dataAcceptanceStandardsCompliance: dataset.metadata?.dataAcceptanceStandardsCompliance,
-                dataPreprocessingTechniques: dataset.metadata?.dataPreprocessingTechniques,
-                dataAnnotationProcessTool: dataset.metadata?.dataAnnotationProcessTool,
-                dataBiasAndVarianceMinimization: dataset.metadata?.dataBiasAndVarianceMinimization,
-                trainTuningEvalDatasetPartitioningRatio: dataset.metadata?.trainTuningEvalDatasetPartitioningRatio,
-                dataRegistryURL: dataset.metadata?.dataRegistryURL
-            }
-        }
+        Auth.currentAuthenticatedUser({
+            bypassCache: false
+        }).then(response => {
+            const client = new DatasetClient(response.signInUserSession.accessToken.jwtToken);
 
-        API.graphql(graphqlOperation(graphqlUpdateDataset, { input: datasetUpload }))
-        setIsLoading(false);
+            const datasetUpload = {
+                datasetUUID: dataset.datasetUUID,
+                name: dataset.name,
+                description: dataset.description,
+                storageLocation: dataset.storageLocation,
+                metadata: {
+                    metadataUUID: dataset.metadata?.metadataUUID,
+                    version: '1.0',
+                    dataOwner: dataset.metadata?.dataOwner,
+                    dataSource: dataset.metadata?.dataSource,
+                    dataSampleSize: dataset.metadata?.dataSampleSize,
+                    dataType: dataset.metadata?.dataType,
+                    dataUpdateVersion: dataset.metadata?.dataUpdateVersion,
+                    dataAcquisitionSensingModality: dataset.metadata?.dataAcquisitionSensingModality,
+                    dataAcquisitionSensingDeviceType: dataset.metadata?.dataAcquisitionSensingDeviceType,
+                    dataCollectionPlace: dataset.metadata?.dataCollectionPlace,
+                    dataCollectionPeriod: dataset.metadata?.dataCollectionPeriod,
+                    datCollectionAuthorsAgency: dataset.metadata?.datCollectionAuthorsAgency,
+                    dataCollectionFundingAgency: dataset.metadata?.dataCollectionFundingAgency,
+                    dataSamplingRate: dataset.metadata?.dataSamplingRate,
+                    dataDimension: dataset.metadata?.dataDimension,
+                    dataResolutionPrecision: dataset.metadata?.dataResolutionPrecision,
+                    dataPrivacyDeIdentificationProtocol: dataset.metadata?.dataPrivacyDeIdentificationProtocol,
+                    dataSafetySecurityProtocol: dataset.metadata?.dataSafetySecurityProtocol,
+                    dataAssumptionsConstraintsDependencies: dataset.metadata?.dataAssumptionsConstraintsDependencies,
+                    dataExclusionCriteria: dataset.metadata?.dataExclusionCriteria,
+                    dataAcceptanceStandardsCompliance: dataset.metadata?.dataAcceptanceStandardsCompliance,
+                    dataPreprocessingTechniques: dataset.metadata?.dataPreprocessingTechniques,
+                    dataAnnotationProcessTool: dataset.metadata?.dataAnnotationProcessTool,
+                    dataBiasAndVarianceMinimization: dataset.metadata?.dataBiasAndVarianceMinimization,
+                    trainTuningEvalDatasetPartitioningRatio: dataset.metadata?.trainTuningEvalDatasetPartitioningRatio,
+                    dataRegistryURL: dataset.metadata?.dataRegistryURL
+                }
+            }
+
+            client.updateDataset(datasetUpload).then(
+                response => {
+                    setIsLoading(false);
+                    return response
+                }
+            )
+        })
+
 
     }
 
@@ -187,7 +206,7 @@ const DatasetForm = (props) =>{
     return (
 <>
 
-    <Backdrop open={isLoading}>
+    <Backdrop open={isLoading} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <CircularProgress color="inherit" />
     </Backdrop>
 
