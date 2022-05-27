@@ -25,7 +25,7 @@ class Home extends Component {
                           justifyContent="space-evenly"
                           alignItems="stretch" sx={{ mt: 5 }}>
                         <Grid item xs={12} md={4}>
-                            <Card>
+                            <Card sx={{height: 1}}>
                                 <CardMedia
                                     component="img"
                                     height="180"
@@ -46,7 +46,7 @@ class Home extends Component {
                             </Card>
                         </Grid>
                         <Grid item xs={12} md={4}>
-                            <Card>
+                            <Card sx={{height: 1}}>
                                 <CardMedia
                                     component="img"
                                     height="180"
@@ -57,12 +57,12 @@ class Home extends Component {
                                         Data Platform
                                     </Typography>
                                     <Typography variant="body2" color="text.secondary">
-                                        Provides safe and secure storage of medical data; serves as an interface to access this data; and offers data governance that complies with data protection laws. Medical data storage requires adherence to strict guidelines that preserve the privacy and safety of patients. The Data Platform provides data storage guidelines that consider these constraints.
+                                        Provides safe and secure storage of medical data; serves as an interface to access this data; and offers data governance that complies with data protection laws. Medical data storage requires adherence to strict guidelines that preserve the privacy and safety of patients. The Data Platform provides data storage guidelines that consider these constraints.<br/><br/>
                                     </Typography>
 
                                 </CardContent>
                                 <CardActions>
-                                    <Button component={RouterLink} color="primary" to="/dashboard">Manage Data</Button>
+                                    <Button component={RouterLink} color="primary" to="/datasets">Manage Data</Button>
                                 </CardActions>
                             </Card>
                         </Grid>

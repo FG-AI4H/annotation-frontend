@@ -1,18 +1,18 @@
 import React, {useEffect, useState} from "react";
 import {API, Auth} from "aws-amplify";
-import {useParams} from "react-router-dom";
+import {Link as RouterLink, useParams} from "react-router-dom";
 import AWS from "aws-sdk";
 import {getDataset} from "./graphql/queries";
 import DatasetItemModal from "./DatasetItemModal.js"
 import 'react-medium-image-zoom/dist/styles.css'
 import {
-    Backdrop,
+    Backdrop, Box,
     Button, CircularProgress,
-    Container,
-    FormControlLabel,
+    Container, FormControl,
+    FormControlLabel, IconButton,
     ImageList,
     ImageListItem,
-    ImageListItemBar,
+    ImageListItemBar, InputLabel, OutlinedInput,
     Paper,
     Stack,
     Switch,
@@ -21,13 +21,14 @@ import {
     TableCell,
     TableContainer,
     TableHead,
-    TableRow
+    TableRow, TextField
 } from "@mui/material";
 import AppNavbar from "./AppNavbar";
 import OCISpinner from "./components/OCISpinner";
 import DatasetForm from "./DatasetForm";
 import {initialItem} from "./DatasetItemModal";
 import axios from "axios";
+import {Replay} from "@mui/icons-material";
 
 export const initialDataset = {
     name: '',
@@ -77,6 +78,7 @@ const DatasetEdit = () => {
     const [isMoreItems, setIsMoreItems] = useState(false);
     const [nextContinuationToken, setNextContinuationToken] = useState(null);
     const [itemSize, setItemSize] = useState(489);
+    const [fetchSize, setFetchSize] = useState(21);
 
 
     useEffect( () =>{
@@ -129,7 +131,7 @@ const DatasetEdit = () => {
                 params: {Bucket: 'fhir-service-dev-fhirbinarybucket-yjeth32swz5m'}
             })
 
-            const listedObjects = await s3.listObjectsV2({Prefix: prefix, MaxKeys: 20, ContinuationToken: nextContinuationToken || undefined}).promise();
+            const listedObjects = await s3.listObjectsV2({Prefix: prefix, MaxKeys: fetchSize, ContinuationToken: nextContinuationToken || undefined}).promise();
             if (listedObjects.Contents.length === 0) return;
 
             if (!listedObjects.IsTruncated) {
@@ -264,6 +266,11 @@ const DatasetEdit = () => {
 
     }
 
+    const handleFetchSizeChange = (event) => {
+        setFetchSize(event.target.value);
+
+    }
+
     return(
         <>
             <AppNavbar/>
@@ -288,6 +295,23 @@ const DatasetEdit = () => {
                             }
                             label="Show preview"
                         />
+                        {nextContinuationToken &&
+                        <>
+                            <FormControl>
+                                <InputLabel htmlFor="component-size">Fetch size</InputLabel>
+                                <OutlinedInput
+                                    type={'number'}
+                                    id="component-size"
+                                    value={fetchSize}
+                                    onChange={handleFetchSizeChange}
+                                    label="Fetch size"
+                                />
+                            </FormControl>
+                            <Button
+                                onClick={() => fetchBinary(dataset?.storageLocation?.replace('fhir-service-dev-fhirbinarybucket-yjeth32swz5m.s3.eu-central-1.amazonaws.com/', ''))}>Next</Button>
+                        </>
+
+                        }
 
                         {/*<FormControl>
                             <InputLabel htmlFor="component-size">Item size</InputLabel>
