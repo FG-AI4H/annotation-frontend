@@ -116,6 +116,7 @@ const DatasetEdit = () => {
 
     async function fetchBinary(prefix){
 
+        setIsLoading(true)
         const authSession = await Auth.currentSession()
 
         if (authSession != null) {
@@ -169,6 +170,7 @@ const DatasetEdit = () => {
             }));
 
             setItems(items);
+            setIsLoading(false)
 
         }
     }
