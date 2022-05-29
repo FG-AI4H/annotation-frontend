@@ -27,7 +27,9 @@ const emptyItem = {
     name: '',
     email: '',
     taskUUID: undefined,
-    readOnly: true
+    readOnly: true,
+    annotationTasks: [],
+    annotations: []
 };
 
 const TaskEdit = (props) => {
