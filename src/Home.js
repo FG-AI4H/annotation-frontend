@@ -86,7 +86,7 @@ class Home extends Component {
 
                                 </CardContent>
                                 <CardActions>
-                                    <Button component={RouterLink} color="primary" to="/benchmark">Start Evaluation</Button>
+                                    <Button color="primary" onClick={() => window.open('https://health.aiaudit.org/','_blank')}>Start Evaluation</Button>
                                 </CardActions>
                             </Card>
                         </Grid>

@@ -93,7 +93,7 @@ const AppNavBar = () => {
                         </Button>
                         <Button
                             key='Evaluation'
-                            onClick={() => navigate('/benchmark')}
+                            onClick={() => window.open('https://health.aiaudit.org/','_blank')}
                             sx={{ my: 2, color: 'white', display: 'block' }}
                         >
                             Evaluation
