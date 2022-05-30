@@ -57,18 +57,18 @@ const CampaignDataset = (props) => {
     }
 
     const removeSelectDataset = (dataset) => {
-        let updatedDatasets = [...selectedDatasets].filter(i => i.id !== dataset.id);
+        let updatedDatasets = [...selectedDatasets].filter(i => i.datasetUUID !== dataset.datasetUUID);
         setSelectedDatasets(updatedDatasets);
     }
 
     const datatsetList = selectedDatasets.map(dataset => {
-        return <TableRow key={dataset.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+        return <TableRow key={dataset.datasetUUID} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
             <TableCell style={{whiteSpace: 'nowrap'}}>{dataset.name}</TableCell>
             <TableCell style={{whiteSpace: 'nowrap'}}>{dataset.description}</TableCell>
             <TableCell style={{whiteSpace: 'nowrap'}}>{dataset.size}</TableCell>
             <TableCell>
                 <Stack direction={"row"} spacing={2} justifyContent="flex-end">
-                    <Button component={RouterLink} size="small" color="primary" to={"/datasets/" + dataset.id}>View</Button>
+                    <Button component={RouterLink} size="small" color="primary" to={"/datasets/" + dataset.datasetUUID}>View</Button>
                     <Button size="small" color="error" onClick={() => removeSelectDataset(dataset)}>Remove</Button>
                 </Stack>
 
@@ -127,13 +127,13 @@ const CampaignDataset = (props) => {
                             </TableHead>
                             <TableBody>
                                 {datasets.map((dataset) => (
-                                    <TableRow key={dataset.id}>
+                                    <TableRow key={dataset.datasetUUID}>
                                         <TableCell>{dataset.name}</TableCell>
                                         <TableCell>{dataset.description}</TableCell>
                                         <TableCell>{(new Date(Date.parse(dataset.updatedAt))).toLocaleString(navigator.language)}</TableCell>
                                         <TableCell>
                                             <Stack direction={"row"} spacing={2} justifyContent="flex-end">
-                                                {selectedDatasets.filter(i => i.id === dataset.id).length === 0 ?
+                                                {selectedDatasets.filter(i => i.datasetUUID === dataset.datasetUUID).length === 0 ?
                                                     <Button size="small" color="primary" onClick={() => handleAddDataset(dataset)}>Add</Button>
                                                     :
                                                     <Check />
