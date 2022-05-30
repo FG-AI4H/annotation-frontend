@@ -27,6 +27,28 @@ class Home extends Component {
                         <Grid item xs={12} md={4}>
                             <Card sx={{height: 1}}>
                                 <CardMedia
+                                    component="img"
+                                    height="180"
+                                    image="home_datasets.png"
+                                />
+                                <CardContent>
+                                    <Typography gutterBottom variant="h5" component="div">
+                                        Data Platform
+                                    </Typography>
+                                    <Typography variant="body2" color="text.secondary">
+                                        Provides safe and secure storage of medical data; serves as an interface to access this data; and offers data governance that complies with data protection laws. Medical data storage requires adherence to strict guidelines that preserve the privacy and safety of patients. The Data Platform provides data storage guidelines that consider these constraints.<br/><br/>
+                                    </Typography>
+
+                                </CardContent>
+                                <CardActions>
+                                    <Button component={RouterLink} color="primary" to="/datasets">Manage Data</Button>
+                                </CardActions>
+                            </Card>
+                        </Grid>
+
+                        <Grid item xs={12} md={4}>
+                            <Card sx={{height: 1}}>
+                                <CardMedia
 
                                     component="img"
                                     height="180"
@@ -46,27 +68,7 @@ class Home extends Component {
                                 </CardActions>
                             </Card>
                         </Grid>
-                        <Grid item xs={12} md={4}>
-                            <Card sx={{height: 1}}>
-                                <CardMedia
-                                    component="img"
-                                    height="180"
-                                    image="home_datasets.png"
-                                />
-                                <CardContent>
-                                    <Typography gutterBottom variant="h5" component="div">
-                                        Data Platform
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        Provides safe and secure storage of medical data; serves as an interface to access this data; and offers data governance that complies with data protection laws. Medical data storage requires adherence to strict guidelines that preserve the privacy and safety of patients. The Data Platform provides data storage guidelines that consider these constraints.<br/><br/>
-                                    </Typography>
 
-                                </CardContent>
-                                <CardActions>
-                                    <Button component={RouterLink} color="primary" to="/datasets">Manage Data</Button>
-                                </CardActions>
-                            </Card>
-                        </Grid>
                         <Grid item xs={12} md={4}>
                             <Card>
                                 <CardMedia
