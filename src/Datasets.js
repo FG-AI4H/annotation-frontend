@@ -42,21 +42,21 @@ export const style = {
 // p.19: https://extranet.itu.int/sites/itu-t/focusgroups/ai4h/docs/FGAI4H-J-049.pdf
 // and p. 4: https://extranet.itu.int/sites/itu-t/focusgroups/ai4h/_layouts/15/WopiFrame.aspx?sourcedoc=%7B3DAE32A1-24FF-4F4D-A735-F378056BA6CF%7D&file=FGAI4H-J-048.docx&action=default&CT=1610025396926&OR=DocLibClassicUI
 
-export default function Datasets(props) {
+export default function Datasets(_props) {
 
     const [datasets, setDatasets] = useState([])
     const [formState, setFormState] = useState(initialDataset)
     const [open, setOpen] = useState(false);
 
-    const [backdropOpen, setBackdropOpen] = useState(false);
+    const [backdropOpen] = useState(false);
 
 
     //Load at page load
     useEffect(() => {
         Auth.currentAuthenticatedUser({
             bypassCache: false
-        }).then(response => {
-            const client = new DatasetClient(response.signInUserSession.accessToken.jwtToken);
+        }).then(currentUser => {
+            const client = new DatasetClient(currentUser.signInUserSession.accessToken.jwtToken);
             client.fetchDatasetList()
                 .then(
                     response => {
@@ -82,7 +82,7 @@ export default function Datasets(props) {
     }
 
     //Open "Add / Edit Dataset" modal
-    const handleModalOpen = (mode, state) => {
+    const handleModalOpen = (_mode, state) => {
         setOpen(true);
         setFormState(state)
     };
@@ -107,7 +107,7 @@ export default function Datasets(props) {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {datasets.map((dataset) => (
+                        {datasets?.map((dataset) => (
                             <TableRow key={dataset.datasetUUID}>
                                 <TableCell><Link href="#" onClick={() => viewDataset(dataset.datasetUUID)}>{dataset.name}</Link></TableCell>
                                 <TableCell>{dataset.description}</TableCell>

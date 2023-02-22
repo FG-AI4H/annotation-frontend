@@ -34,13 +34,13 @@ class CampaignList extends Component {
         this.setState({isLoading: true});
         Auth.currentAuthenticatedUser({
             bypassCache: false
-        }).then(response => {
-            const client = new CampaignClient(response.signInUserSession.accessToken.jwtToken);
+        }).then(currentUser => {
+            const client = new CampaignClient(currentUser.signInUserSession.accessToken.jwtToken);
             client.fetchCampaignList()
                 .then(
-                    response =>
+                    campaignListResponse =>
                         this.setState(
-                            {campaigns: response?.data._embedded.campaign, isLoading: false}
+                            {campaigns: campaignListResponse?.data?._embedded?.campaign, isLoading: false}
                         ));
         }).catch(err => console.log(err));
 
@@ -49,11 +49,11 @@ class CampaignList extends Component {
     async remove(id) {
         Auth.currentAuthenticatedUser({
             bypassCache: false
-        }).then(response => {
-            const client = new CampaignClient(response.signInUserSession.accessToken.jwtToken);
+        }).then(currentUser => {
+            const client = new CampaignClient(currentUser.signInUserSession.accessToken.jwtToken);
             client.removeCampaign(id)
                 .then(
-                    response => {
+                    _response => {
                         let updatedCampaigns = [...this.state.campaigns].filter(i => i.campaignUUID !== id);
                         this.setState({campaigns: updatedCampaigns});
                     });
@@ -64,7 +64,7 @@ class CampaignList extends Component {
     render() {
         const {campaigns, isLoading} = this.state;
 
-        const campaignList = campaigns.map(campaign => {
+        const campaignList = campaigns?.map(campaign => {
             return <TableRow key={campaign.campaignUUID} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell style={{whiteSpace: 'nowrap'}}>{campaign.name}</TableCell>
                 <TableCell>{campaign.description}</TableCell>
@@ -102,8 +102,10 @@ class CampaignList extends Component {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {campaignList}
+                                {campaignList?.length > 0 ? campaignList : <tr><td colSpan={5}>No campaign available</td></tr>
+                                }
                             </TableBody>
+
                         </Table>
                     </TableContainer>
 

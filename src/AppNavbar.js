@@ -9,7 +9,7 @@ const AppNavBar = () => {
     const navigate = useNavigate();
 
     const [auth, setAuth] = React.useState(false);
-    const [anchorElNav, setAnchorElNav] = React.useState(null);
+    const [admin, setAdmin] = React.useState(false);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
     const [username,setUsername] = React.useState(null);
 
@@ -19,23 +19,18 @@ const AppNavBar = () => {
             }).then(data => {
                 setAuth(true);
                 setUsername(data.username);
-            }, error => {
+                setAdmin(data.signInUserSession.accessToken.payload["cognito:groups"].some(g => (g === "ADMIN")));
+            }, _error => {
                 setAuth(false);
         })
         }
     );
 
 
-    const handleOpenNavMenu = (event) => {
-        setAnchorElNav(event.currentTarget);
-    };
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);
     };
 
-    const handleCloseNavMenu = () => {
-        setAnchorElNav(null);
-    };
 
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
@@ -98,13 +93,16 @@ const AppNavBar = () => {
                         >
                             Evaluation
                         </Button>
-                        <Button
-                            key='Admin'
-                            onClick={() => navigate('/admin')}
-                            sx={{ my: 2, color: 'white', display: 'block' }}
-                        >
-                            Admin
-                        </Button>
+
+                        {admin ?
+                            <Button
+                                key='Admin'
+                                onClick={() => navigate('/admin')}
+                                sx={{my: 2, color: 'white', display: 'block'}}
+                            >
+                                Admin
+                            </Button> : <React.Fragment />
+                        }
                     </Box>
 
                     <Box sx={{ flexGrow: 0 }}>
