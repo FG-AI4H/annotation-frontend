@@ -11,7 +11,7 @@ class UserClient {
     async fetchUserList() {
         console.log("Fetching users");
 
-        return callApiWithToken(this.accessToken, this.config.USER_URL)
+        return callApiWithToken(this.accessToken, `${this.config.ADMIN_URL}/users`)
             .then(([response, json]) => {
                 if (!response.ok) {
                     return { success: false, error: json };

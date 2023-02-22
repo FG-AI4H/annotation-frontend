@@ -1,0 +1,22 @@
+{
+  "authSelections": "userPoolOnly",
+  "resourceName": "annotationfrontend37262c9f",
+  "serviceType": "imported",
+  "region": "eu-central-1",
+  "authProvidersUserPool": [],
+  "requiredAttributes": [
+    "email"
+  ],
+  "passwordPolicyMinLength": 8,
+  "passwordPolicyCharacters": [
+    "Requires Lowercase",
+    "Requires Uppercase",
+    "Requires Numbers",
+    "Requires Symbols"
+  ],
+  "mfaConfiguration": "OFF",
+  "autoVerifiedAttributes": [
+    "email"
+  ],
+  "mfaTypes": []
+}

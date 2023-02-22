@@ -43,7 +43,7 @@ class UserListComponent extends Component {
         const {users, isLoading} = this.state;
 
 
-        const userList = users.map(user => {
+        const userList = users?.map(user => {
             return <TableRow key={user.idpID} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell style={{whiteSpace: 'nowrap'}}>{user.username}</TableCell>
                 <TableCell style={{whiteSpace: 'nowrap'}}>{user.email}</TableCell>
