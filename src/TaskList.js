@@ -34,14 +34,14 @@ class TaskList extends Component {
 
         Auth.currentAuthenticatedUser({
             bypassCache: false
-        }).then(response => {
-            const client = new TaskClient(response.signInUserSession.accessToken.jwtToken);
+        }).then(currentUser => {
+            const client = new TaskClient(currentUser.signInUserSession.accessToken.jwtToken);
             if(this.props.me){
                 client.fetchMyTaskList()
                     .then(
                         response =>
                             this.setState(
-                                {tasks:  response?.data._embedded ? response?.data._embedded?.task : [], isLoading: false}
+                                {tasks:  response?.data?._embedded?.task, isLoading: false}
                             ));
             }
             else {
@@ -49,7 +49,7 @@ class TaskList extends Component {
                     .then(
                         response =>
                             this.setState(
-                                {tasks:  response?.data._embedded ? response?.data._embedded?.task : [], isLoading: false}
+                                {tasks:  response?.data?._embedded?.task, isLoading: false}
                             ));
             }
         }).catch(err => console.log(err));
@@ -58,11 +58,11 @@ class TaskList extends Component {
     async remove(id) {
         Auth.currentAuthenticatedUser({
             bypassCache: false
-        }).then(response => {
-            const client = new TaskClient(response.signInUserSession.accessToken.jwtToken);
+        }).then(currentUser => {
+            const client = new TaskClient(currentUser.signInUserSession.accessToken.jwtToken);
             client.removeTask(id)
                 .then(
-                    response => {
+                    _response => {
                         let updatedTasks = [...this.state.tasks].filter(i => i.taskUUID !== id);
                         this.setState({tasks: updatedTasks});
                     });
@@ -119,7 +119,7 @@ class TaskList extends Component {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {taskList.length > 0 ? taskList : <tr><td colSpan={5}>No task available</td></tr>
+                                {taskList?.length > 0 ? taskList : <tr><td colSpan={5}>No task available</td></tr>
                                 }
                             </TableBody>
                         </Table>
