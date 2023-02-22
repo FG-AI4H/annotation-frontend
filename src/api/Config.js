@@ -2,6 +2,7 @@ class Config {
     SCHEME = process.env.REACT_APP_SCHEME ? process.env.REACT_APP_SCHEME : "http";
     HOST = process.env.REACT_APP_HOST ? process.env.REACT_APP_HOST : "localhost";
     PORT = process.env.REACT_APP_PORT ? (process.env.REACT_APP_PORT === "80" ? "" : process.env.REACT_APP_PORT) : ":8080";
+    ADMIN_URL = `${this.SCHEME}://${this.HOST}${this.PORT}/api/v1/admin`;
     MESSAGE_URL = `${this.SCHEME}://${this.HOST}${this.PORT}/api/v1/messages`;
     USER_URL = `${this.SCHEME}://${this.HOST}${this.PORT}/api/v1/users`;
     CAMPAIGN_URL = `${this.SCHEME}://${this.HOST}${this.PORT}/api/v1/campaigns`;
