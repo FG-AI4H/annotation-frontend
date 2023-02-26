@@ -108,11 +108,10 @@ const CampaignEdit = () => {
 
             }
             {!item.campaignUUID &&
-            <>
-                <Grid item xs={12}>
+                <>
+                    <Grid item xs={12}>
                         <CampaignForm campaign={item}/>
                     </Grid>
-                    <CampaignUsers campaign={item}/>
                 </>
 
             }

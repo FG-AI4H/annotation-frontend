@@ -1,8 +1,23 @@
 import React, {useState} from "react";
 import Alert from "@mui/material/Alert";
-import {FormControl, Grid, InputLabel, MenuItem, Select, Snackbar, Typography} from "@mui/material";
+import {
+    Avatar, Box,
+    FormControl,
+    Grid, IconButton,
+    InputLabel,
+    List, ListItem, ListItemAvatar, ListItemText,
+    MenuItem,
+    Select,
+    Snackbar, Stack,
+    TextField,
+    Typography
+} from "@mui/material";
 import {Auth} from "aws-amplify";
 import CampaignClient from "../api/CampaignClient";
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import DescriptionIcon from '@mui/icons-material/Description';
+
 
 const CampaignTask = (props) => {
 
@@ -62,7 +77,7 @@ const CampaignTask = (props) => {
             </Snackbar>
 
             <Grid xs={12}>
-                    <Typography gutterBottom variant="h5" component="div">Define your tasks</Typography>
+                    <Typography gutterBottom variant="h5" component="div">Define your task</Typography>
                     <FormControl fullWidth margin={"normal"}>
                         <InputLabel >Task type</InputLabel>
                         <Select
@@ -73,11 +88,30 @@ const CampaignTask = (props) => {
                             onChange={handleChange}
                         >
                             <MenuItem value={"semantic_segmentation"}>[Image] - Semantic Segmentation</MenuItem>
+                            <MenuItem value={"image_classification"}>[Image] - Image Classification</MenuItem>
+                            <MenuItem value={"object_detection"}>[Image] - Object Detection</MenuItem>
+                            <MenuItem value={"pose_estimation"}>[Image] - Pose Estimation</MenuItem>
+                        </Select>
+                    </FormControl>
+
+                    <FormControl fullWidth margin={"normal"}>
+                        <InputLabel >Annotation method</InputLabel>
+                        <Select
+                            id="annotationMethod"
+                            name="annotationMethod"
+                            value={campaign.annotationMethod}
+                            label="Annotation method"
+                            onChange={handleChange}
+                        >
+                            <MenuItem value={"full_image"}>[Image] - Full image</MenuItem>
                             <MenuItem value={"bounding_boxes"}>[Image] - Bounding boxes</MenuItem>
-                            <MenuItem value={"3d_cuboids"}>[Image] - 3D cuboids</MenuItem>
-                            <MenuItem value={"polygons"}>[Image] - Polygons</MenuItem>
-                            <MenuItem value={"lines_splines"}>[Image] - Lines and splines</MenuItem>
-                            <MenuItem value={"time_series"}>Time Series</MenuItem>
+                            <MenuItem value={"polygons"}>[Image] - Polygonal segmentation</MenuItem>
+                            <MenuItem value={"keypoint"}>[Image] - Keypoint</MenuItem>
+                            <MenuItem value={"ploylines"}>[Image] - Polylines</MenuItem>
+                            <MenuItem value={"elispe_circle"}>[Image] - Elipse and circle</MenuItem>
+                            <MenuItem value={"cuboid"}>[Image] - Cuboid</MenuItem>
+                            <MenuItem value={"straight_lines"}>[Image] - Straight lines</MenuItem>
+                            <MenuItem value={"quadratic_curves"}>[Image] - Quadratic curves</MenuItem>
                         </Select>
                     </FormControl>
 
@@ -94,9 +128,75 @@ const CampaignTask = (props) => {
                         </Select>
                     </FormControl>
 
+                    <FormControl fullWidth margin={"normal"}>
+                        <TextField
+                            multiline
+                            rows={4}
+                            id="annotationInstructions"
+                            name="annotationInstructions"
+                            value={campaign.annotationInstructions || ''}
+                            label="Annotation instructions"
+                            onChange={handleChange}
+                        />
+                    </FormControl>
+
+                <Stack direction="row" spacing={2} sx={{ mt: 5 }}>
+                    <Typography gutterBottom variant="h5" component="div">Annotation Guidelines</Typography>
+                    <IconButton edge="end" aria-label="add"><AddIcon /></IconButton>
+                </Stack>
+
+                <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
+                    <ListItem
+                        secondaryAction={
+                            <IconButton edge="end" aria-label="delete">
+                                <DeleteIcon />
+                            </IconButton>
+                        }
+                    >
+                        <ListItemAvatar>
+                            <Avatar>
+                                <DescriptionIcon />
+                            </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText primary="FG-AI4H Guideline 1" secondary="Jan 9, 2018" />
+                    </ListItem>
+                    <ListItem
+                        secondaryAction={
+                            <IconButton edge="end" aria-label="delete">
+                                <DeleteIcon />
+                            </IconButton>
+                        }
+                    >
+                        <ListItemAvatar>
+                            <Avatar>
+                                <DescriptionIcon />
+                            </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText primary="FG-AI4H Guideline 2" secondary="Jan 7, 2023" />
+                    </ListItem>
+                    <ListItem
+                        secondaryAction={
+                            <IconButton edge="end" aria-label="delete">
+                                <DeleteIcon />
+                            </IconButton>
+                        }
+                    >
+                        <ListItemAvatar>
+                            <Avatar>
+                                <DescriptionIcon />
+                            </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText primary="FG-AI4H Guideline 3" secondary="July 20, 2022" />
+                    </ListItem>
+                </List>
+
             </Grid>
 
+
+
         </div>
+
+
     );
 
 }
