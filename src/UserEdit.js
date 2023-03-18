@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import AppNavbar from "./AppNavbar";
 
-import {Link as RouterLink, useParams} from "react-router-dom";
+import {Link as RouterLink, useNavigate, useParams} from "react-router-dom";
 import {Auth} from "aws-amplify";
 import UserClient from "./api/UserClient";
 
@@ -31,10 +31,14 @@ import {TabPanel} from "./components/TabPanel";
 const UserEdit = (props) => {
 
     let params = useParams();
+    const navigate = useNavigate();
 
     const emptyItem = {
         name: '',
-        email: ''
+        email: '',
+        annotation_annotator_role: false,
+        annotation_reviewer_role: false,
+        annotation_supervisor_role: false
     };
 
     const [item, setItem] = useState(emptyItem);
@@ -54,17 +58,17 @@ const UserEdit = (props) => {
                         response => {
 
                             let user = response?.data;
-                            user.annotation_annotator_role = user.annotatorRole != undefined
-                            user.yearsInPractice = user.annotatorRole?.yearsInPractice
-                            user.degree = user.annotatorRole?.degree
-                            user.workCountry = user.annotatorRole?.workCountry
-                            user.studyCountry = user.annotatorRole?.studyCountry
-                            user.selfAssessment = user.annotatorRole?.selfAssessment
-                            user.expectedSalary = user.annotatorRole?.expectedSalary
+                            user.annotation_annotator_role = user.annotator_role?.id !== undefined
+                            user.years_in_practice = user.annotator_role?.years_in_practice
+                            user.degree = user.annotator_role?.degree
+                            user.work_country = user.annotator_role?.work_country
+                            user.study_country = user.annotator_role?.study_country
+                            user.self_assessment = user.annotator_role?.self_assessment
+                            user.expected_salary = user.annotator_role?.expected_salary
 
 
-                            user.annotation_reviewer_role = user.reviewerRole != undefined
-                            user.annotation_supervisor_role = user.supervisorRole != undefined
+                            user.annotation_reviewer_role = user.reviewer_role?.id !== undefined
+                            user.annotation_supervisor_role = user.supervisor_role?.id !== undefined
 
                             setItem(user);
                             setIsLoading(false);
@@ -97,23 +101,24 @@ const UserEdit = (props) => {
         event.preventDefault();
 
         if(item.annotation_annotator_role){
-            item.annotatorRole = {
-                yearsInPractice: item.yearsInPractice,
-                workCountry: item.workCountry,
-                studyCountry: item.studyCountry,
-                selfAssessment: item.selfAssessment,
-                expectedSalary: item.expectedSalary,
+            item.annotator_role = {
+                id: item.annotator_role?.id,
+                years_in_practice: item.years_in_practice,
+                work_country: item.work_country,
+                study_country: item.study_country,
+                self_assessment: item.self_assessment,
+                expected_salary: item.expected_salary,
                 degree: item.degree
             }
         }
         if(item.annotation_reviewer_role){
-            item.reviewerRole = {
-
+            item.reviewer_role = {
+                id: item.reviewer_role?.id,
             }
         }
         if(item.annotation_supervisor_role){
-            item.supervisorRole = {
-
+            item.supervisor_role = {
+                id: item.supervisor_role?.id,
             }
         }
 
@@ -121,7 +126,7 @@ const UserEdit = (props) => {
             bypassCache: false
         }).then(response => {
             const client = new UserClient(response.signInUserSession.accessToken.jwtToken);
-            if(item.userUUID) {
+            if(item.id) {
                 client.updateUser(item)
                     .then(
                         response => setItem(response?.data)
@@ -134,8 +139,7 @@ const UserEdit = (props) => {
             }
         }).catch(err => console.log(err));
 
-
-        props.history.push('/userManagement');
+        navigate('/userManagement');
     }
 
 
@@ -146,7 +150,7 @@ const UserEdit = (props) => {
                 <CircularProgress color="inherit" />
             </Backdrop>
             <Container maxWidth="xl" sx={{ mt: 5 }}>
-            <h2>{item.userUUID ? 'Edit User' : 'Add User'}</h2>
+            <h2>{item.id ? 'Edit User' : 'Add User'}</h2>
             <Grid item xs={12}>
                     <FormControl fullWidth margin={"normal"} >
                         <TextField
@@ -181,8 +185,8 @@ const UserEdit = (props) => {
                 <Grid item xs={6}>
                             <h4>Annotation Platform</h4>
                             <FormControl fullWidth margin={"normal"}>
-                                <FormControlLabel control={<Checkbox name="annotation_annotator_role" id="annotation_annotator_role" checked={item.annotation_annotator_role} onChange={handleChange}/>} label="Annotator" />
-                                <FormControlLabel control={<Checkbox name="annotation_reviewer_role" id="annotation_reviewer_role" checked={item.annotation_reviewer_role} onChange={handleChange}/>} label="Reviewer" />
+                                <FormControlLabel control={<Checkbox name="annotation_annotator_role" id="annotation_annotator_role" defaultValue={false} checked={item.annotation_annotator_role} onChange={handleChange}/>} label="Annotator" />
+                                <FormControlLabel control={<Checkbox name="annotation_reviewer_role" id="annotation_reviewer_role" defaultValue={false} checked={item.annotation_reviewer_role} onChange={handleChange}/>} label="Reviewer" />
                                 <FormControlLabel control={<Checkbox name="annotation_supervisor_role" id="annotation_supervisor_role" checked={item.annotation_supervisor_role} onChange={handleChange}/>} label="Supervisor" />
                                 <FormControlLabel control={<Checkbox name="annotation_manager_role" id="annotation_manager_role" checked={item.annotation_manager_role} onChange={handleChange}/>} label="Campaign Manager" />
                                 <FormControlLabel control={<Checkbox name="annotation_admin_role" id="annotation_admin_role" checked={item.annotation_admin_role} onChange={handleChange}/>} label="Admin" />
@@ -251,18 +255,18 @@ const UserEdit = (props) => {
                         </Grid>
                         <Grid item xs={6}>
                             <TextField fullWidth margin={"normal"}
-                                       id="studyCountry"
-                                       name="studyCountry"
-                                       value={item.studyCountry}
+                                       id="study_country"
+                                       name="study_country"
+                                       value={item.study_country}
                                        label="Study Country"
                                        onChange={handleChange}
                             />
                             <Grid item xs={12}>
 
                                 <TextField fullWidth margin={"normal"}
-                                           id="workCountry"
-                                           name="workCountry"
-                                           value={item.studyCountry}
+                                           id="work_country"
+                                           name="work_country"
+                                           value={item.study_country}
                                            label="Working Country"
                                            onChange={handleChange}
                                 />
@@ -270,9 +274,9 @@ const UserEdit = (props) => {
                             <Grid item xs={6}>
                                 <TextField fullWidth margin={"normal"}
                                            type={"number"}
-                                           id="yearsInPractice"
-                                           name="yearsInPractice"
-                                           value={item.yearsInPractice}
+                                           id="years_in_practice"
+                                           name="years_in_practice"
+                                           value={item.years_in_practice}
                                            label="Years in practice"
                                            onChange={handleChange}
                                 />
@@ -309,9 +313,9 @@ const UserEdit = (props) => {
                         <Grid item xs={6}>
                             <TextField fullWidth margin={"normal"}
                                        type={"number"}
-                                       id="selfAssessment"
-                                       name="selfAssessment"
-                                       value={item.selfAssessment}
+                                       id="self_assessment"
+                                       name="self_assessment"
+                                       value={item.self_assessment}
                                        label="Self Assessment"
                                        onChange={handleChange}
                             />
@@ -319,9 +323,9 @@ const UserEdit = (props) => {
                         <Grid item xs={6}>
                             <TextField fullWidth margin={"normal"}
                                        type={"number"}
-                                       id="expectedSalary"
-                                       name="expectedSalary"
-                                       value={item.expectedSalary}
+                                       id="expected_salary"
+                                       name="expected_salary"
+                                       value={item.expected_salary}
                                        label="Expected compensation ($ per hour)"
                                        onChange={handleChange}
                             />

@@ -72,19 +72,20 @@ const AppNavBar = () => {
                     {auth && (
                        <>
                     <Box sx={{ ml:'30px',flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                        <Button
-                            key='Annotation'
-                            onClick={() => navigate('/annotation')}
-                            sx={{ my: 2, color: 'white', display: 'block' }}
-                        >
-                            Annotation
-                        </Button>
+
                         <Button
                             key='DataStore'
                             onClick={() => navigate('/datasets')}
                             sx={{ my: 2, color: 'white', display: 'block' }}
                         >
                             DataStore
+                        </Button>
+                        <Button
+                            key='Annotation'
+                            onClick={() => navigate('/annotation')}
+                            sx={{ my: 2, color: 'white', display: 'block' }}
+                        >
+                            Annotation
                         </Button>
                         <Button
                             key='Evaluation'

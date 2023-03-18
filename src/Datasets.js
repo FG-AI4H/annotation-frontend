@@ -60,7 +60,7 @@ export default function Datasets(_props) {
             client.fetchDatasetList()
                 .then(
                     response => {
-                        setDatasets(response?.data._embedded.dataset)
+                        setDatasets(response?.data)
                     })
 
         }).catch(err => console.log(err));
@@ -108,14 +108,14 @@ export default function Datasets(_props) {
                     </TableHead>
                     <TableBody>
                         {datasets?.map((dataset) => (
-                            <TableRow key={dataset.datasetUUID}>
-                                <TableCell><Link href="#" onClick={() => viewDataset(dataset.datasetUUID)}>{dataset.name}</Link></TableCell>
+                            <TableRow key={dataset.id}>
+                                <TableCell><Link href="#" onClick={() => viewDataset(dataset.id)}>{dataset.name}</Link></TableCell>
                                 <TableCell>{dataset.description}</TableCell>
                                 <TableCell>{(new Date(Date.parse(dataset.updatedAt))).toLocaleString(navigator.language)}</TableCell>
                                 <TableCell>
                                     <Stack direction={"row"} spacing={2} justifyContent="flex-end">
-                                        <Button component={RouterLink} size="small" color="primary" to={"/datasets/" + dataset.datasetUUID}>Edit</Button>
-                                        <Button size="small" color="error" onClick={() => this.remove(dataset.datasetUUID)}>Delete</Button>
+                                        <Button component={RouterLink} size="small" color="primary" to={"/datasets/" + dataset.id}>Edit</Button>
+                                        <Button size="small" color="error" onClick={() => this.remove(dataset.id)}>Delete</Button>
                                     </Stack>
                                 </TableCell>
                             </TableRow>

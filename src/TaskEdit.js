@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import AppNavbar from './AppNavbar';
-import {Link as RouterLink, useParams} from 'react-router-dom';
+import {Link as RouterLink, useNavigate, useParams} from 'react-router-dom';
 import AnnotationTaskList from "./AnnotationTaskList";
 import SampleList from "./SampleList";
 import AnnotationList from "./AnnotationList";
@@ -26,8 +26,8 @@ import Alert from "@mui/material/Alert";
 const emptyItem = {
     name: '',
     email: '',
-    taskUUID: undefined,
-    readOnly: true,
+    id: undefined,
+    read_only: true,
     annotationTasks: [],
     annotations: []
 };
@@ -38,6 +38,8 @@ const TaskEdit = (props) => {
     const [isLoading, setIsLoading] = useState(false);
     const [item, setItem] = useState(emptyItem);
     const [updated, setUpdated] = useState(false);
+
+    const navigate = useNavigate();
 
     useEffect( () => {
         setIsLoading(true);
@@ -95,11 +97,10 @@ const TaskEdit = (props) => {
 
         }).catch(err => console.log(err));
 
-
-        props.history.push('/tasks');
+        navigate('/tasks');
     }
 
-    const title = <h2>{item.taskUUID ? 'Edit Task' : 'Add Task'}</h2>;
+    const title = <h2>{item.id ? 'Edit Task' : 'Add Task'}</h2>;
 
     return (
         <div>
@@ -124,14 +125,14 @@ const TaskEdit = (props) => {
                         label="Kind"
                         onChange={handleChange}
                     >
-                        <MenuItem value={"create"}>Create</MenuItem>
-                        <MenuItem value={"correct"}>Correct</MenuItem>
-                        <MenuItem value={"review"}>Review</MenuItem>
+                        <MenuItem value={"CREATE"}>Create</MenuItem>
+                        <MenuItem value={"CORRECT"}>Correct</MenuItem>
+                        <MenuItem value={"REVIEW"}>Review</MenuItem>
                     </Select>
             </FormControl>
 
             <FormControl fullWidth>
-                <FormControlLabel control={<Checkbox name="readOnly" id="readOnly" checked={item.readOnly} onChange={handleChange}/>} label="Read only" />
+                <FormControlLabel control={<Checkbox name="read_only" id="read_only" checked={item.read_only} onChange={handleChange}/>} label="Read only" />
             </FormControl>
 
             <FormControl fullWidth>
@@ -145,16 +146,23 @@ const TaskEdit = (props) => {
                 />
             </FormControl>
 
-                <AnnotationTaskList tasks={item.annotationTasks}/>
+                <AnnotationTaskList tasks={item.annotation_tasks}/>
+            {params.id !== 'new' &&
+            <>
                 <SampleList samples={item.samples}/>
                 <AnnotationList annotations={item.annotations}/>
+            </>
+            }
 
             <FormGroup sx={{ mt: 5 }}>
 
                 <Stack direction="row" spacing={2}>
                     <Button color="primary" onClick={e => handleSubmit(e)}>Save</Button>
                     <Button component={RouterLink} color="secondary" to={"/tasks"}>Cancel</Button>
-                    <Button color="success" onClick={()=> window.open("https://dev.visian.org/?origin=who&taskId=" + item.taskUUID, "_blank")}>Annotate</Button>
+                    {params.id !== 'new' && item.campaign_status === 'RUNNING' &&
+                    <Button color="success"
+                            onClick={() => window.open("https://dev.visian.org/?origin=who&taskId=" + item.id, "_blank")}>Annotate</Button>
+                    }
                 </Stack>
 
             </FormGroup>

@@ -4,7 +4,7 @@ import {
     Button,
     CircularProgress,
     Modal,
-    Paper,
+    Paper, Snackbar,
     Stack,
     Table,
     TableBody,
@@ -20,28 +20,37 @@ import {style} from "../Datasets";
 import {Auth} from "aws-amplify";
 import {Check} from "@mui/icons-material";
 import DatasetClient from "../api/DatasetClient";
+import CampaignClient from "../api/CampaignClient";
+import Alert from "@mui/material/Alert";
 
 const CampaignDataset = (props) => {
 
     const [isLoading, setIsLoading] = useState(false);
+    const [updated, setUpdated] = useState(false);
     const [open, setOpen] = useState(false);
     const [datasets, setDatasets] = useState([]);
-    const [selectedDatasets, setSelectedDatasets] = useState(props.datasets)
+    const [selectedDatasets, setSelectedDatasets] = useState([]);
+    const [campaign, setCampaign] = useState(props.campaign);
 
-    useEffect( () => {
-        setSelectedDatasets(props.datasets)
-    },[props.datasets]);
+    useEffect(() => {
+        Auth.currentAuthenticatedUser({
+            bypassCache: false
+        }).then(currentUser => {
+            const client = new DatasetClient(currentUser.signInUserSession.accessToken.jwtToken);
+            client.fetchDatasetList()
+                .then(
+                    response => {
+                        setDatasets(response?.data)
+                        let updatedDatasets = [...response?.data].filter(i => i.id == props.datasetsUUID);
+                        setSelectedDatasets(updatedDatasets);
+                    })
 
+        }).catch(err => console.log(err));
+    }, [])
 
 
     //Open "Add / Edit Dataset" modal
     const handleModalOpen = async () => {
-
-        const token = await Auth.currentAuthenticatedUser({bypassCache: false})
-
-        const client = new DatasetClient(token.signInUserSession.accessToken.jwtToken);
-        const result = await client.fetchDatasetList();
-        setDatasets(result?.data._embedded.dataset)
         setOpen(true)
     };
 
@@ -50,6 +59,31 @@ const CampaignDataset = (props) => {
         setOpen(false);
     };
 
+    async function handleSubmit(event) {
+        event.preventDefault();
+        campaign.datasets = selectedDatasets.map(d => d.id);
+
+        Auth.currentAuthenticatedUser({
+            bypassCache: false
+        }).then(response => {
+            const client = new CampaignClient(response.signInUserSession.accessToken.jwtToken);
+
+            client.updateCampaign(campaign)
+                .then(
+                    response => setUpdated(true))
+
+        }).catch(err => console.log(err));
+
+    }
+
+    function handleClose(event, reason){
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setUpdated(false);
+    }
+
     const handleAddDataset = (dataset) => {
         let updatedList = [...selectedDatasets];
         updatedList.push(dataset);
@@ -57,18 +91,18 @@ const CampaignDataset = (props) => {
     }
 
     const removeSelectDataset = (dataset) => {
-        let updatedDatasets = [...selectedDatasets].filter(i => i.datasetUUID !== dataset.datasetUUID);
+        let updatedDatasets = [...selectedDatasets].filter(i => i.id !== dataset.id);
         setSelectedDatasets(updatedDatasets);
     }
 
     const datatsetList = selectedDatasets.map(dataset => {
-        return <TableRow key={dataset.datasetUUID} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+        return <TableRow key={dataset.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
             <TableCell style={{whiteSpace: 'nowrap'}}>{dataset.name}</TableCell>
             <TableCell style={{whiteSpace: 'nowrap'}}>{dataset.description}</TableCell>
-            <TableCell style={{whiteSpace: 'nowrap'}}>{dataset.size}</TableCell>
+            <TableCell style={{whiteSpace: 'nowrap'}}>{dataset.metadata.data_sample_size}</TableCell>
             <TableCell>
                 <Stack direction={"row"} spacing={2} justifyContent="flex-end">
-                    <Button component={RouterLink} size="small" color="primary" to={"/datasets/" + dataset.datasetUUID}>View</Button>
+                    <Button component={RouterLink} size="small" color="primary" to={"/datasets/" + dataset.id}>View</Button>
                     <Button size="small" color="error" onClick={() => removeSelectDataset(dataset)}>Remove</Button>
                 </Stack>
 
@@ -78,6 +112,15 @@ const CampaignDataset = (props) => {
 
     return (
         <>
+            <Snackbar open={updated} autoHideDuration={6000} onClose={handleClose} anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right'
+            }}>
+                <Alert severity="success" sx={{ width: '100%' }} onClose={handleClose}>
+                    Campaign updated successfully!
+                </Alert>
+            </Snackbar>
+
             <Backdrop open={isLoading}>
                 <CircularProgress color="inherit" />
             </Backdrop>
@@ -104,6 +147,11 @@ const CampaignDataset = (props) => {
                 </Table>
             </TableContainer>
 
+            <Stack direction="row" spacing={2}>
+                <Button color="primary" onClick={e => handleSubmit(e)}>Save</Button>
+                <Button component={RouterLink} color="secondary" to="/campaigns">Cancel</Button>
+            </Stack>
+
             <Modal
                 open={open}
                 onClose={handleModalClose}
@@ -127,13 +175,13 @@ const CampaignDataset = (props) => {
                             </TableHead>
                             <TableBody>
                                 {datasets.map((dataset) => (
-                                    <TableRow key={dataset.datasetUUID}>
+                                    <TableRow key={dataset.id}>
                                         <TableCell>{dataset.name}</TableCell>
                                         <TableCell>{dataset.description}</TableCell>
                                         <TableCell>{(new Date(Date.parse(dataset.updatedAt))).toLocaleString(navigator.language)}</TableCell>
                                         <TableCell>
                                             <Stack direction={"row"} spacing={2} justifyContent="flex-end">
-                                                {selectedDatasets.filter(i => i.datasetUUID === dataset.datasetUUID).length === 0 ?
+                                                {selectedDatasets.filter(i => i.id === dataset.id).length === 0 ?
                                                     <Button size="small" color="primary" onClick={() => handleAddDataset(dataset)}>Add</Button>
                                                     :
                                                     <Check />

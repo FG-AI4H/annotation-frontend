@@ -7,6 +7,7 @@ class Config {
     USER_URL = `${this.SCHEME}://${this.HOST}${this.PORT}/api/v1/users`;
     CAMPAIGN_URL = `${this.SCHEME}://${this.HOST}${this.PORT}/api/v1/campaigns`;
     TASK_URL = `${this.SCHEME}://${this.HOST}${this.PORT}/api/v1/tasks`;
+    ANNOATATION_TASK_URL = `${this.SCHEME}://${this.HOST}${this.PORT}/api/v1/annotation_tasks`;
     ANNOTATION_URL = `${this.SCHEME}://${this.HOST}${this.PORT}/api/v1/annotations`;
     DATASET_URL = `${this.SCHEME}://${this.HOST}${this.PORT}/api/v1/datasets`;
     ACCESS_TOKEN = "accessToken";

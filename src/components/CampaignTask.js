@@ -1,14 +1,14 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import Alert from "@mui/material/Alert";
 import {
-    Avatar, Box,
-    FormControl,
+    Avatar, Box, Button,
+    FormControl, FormControlLabel,
     Grid, IconButton,
     InputLabel,
     List, ListItem, ListItemAvatar, ListItemText,
-    MenuItem,
+    MenuItem, Paper,
     Select,
-    Snackbar, Stack,
+    Snackbar, Stack, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
     TextField,
     Typography
 } from "@mui/material";
@@ -17,6 +17,8 @@ import CampaignClient from "../api/CampaignClient";
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DescriptionIcon from '@mui/icons-material/Description';
+import {Link as RouterLink} from "react-router-dom";
+import {Replay} from "@mui/icons-material";
 
 
 const CampaignTask = (props) => {
@@ -26,6 +28,15 @@ const CampaignTask = (props) => {
     const [loading, setLoading] = useState(false);
 
 
+    useEffect(() => {
+        setCampaign(props.campaign);
+    }, [props.campaign]);
+
+    //Update input field in "Add Dataset" Modal
+    function setInput(key, value) {
+        setCampaign({ ...campaign, [key]: value })
+    }
+    
     function handleClose(event, reason){
         if (reason === 'clickaway') {
             return;
@@ -36,21 +47,8 @@ const CampaignTask = (props) => {
         );
     }
 
-    function handleChange(event) {
-        const target = event.target;
-        let value = target.value;
-        const name = target.name;
-
-        if(target.type === 'checkbox'){
-            value = target.checked;
-        }
-
-        campaign[name] = value;
-    }
-
     async function handleSubmit(event) {
         event.preventDefault();
-        const {campaign} = this.state;
 
         Auth.currentAuthenticatedUser({
             bypassCache: false
@@ -76,16 +74,16 @@ const CampaignTask = (props) => {
                 </Alert>
             </Snackbar>
 
-            <Grid xs={12}>
+            <Grid>
                     <Typography gutterBottom variant="h5" component="div">Define your task</Typography>
                     <FormControl fullWidth margin={"normal"}>
-                        <InputLabel >Task type</InputLabel>
+                        <InputLabel >Annotation type</InputLabel>
                         <Select
-                            id="annotationKind"
-                            name="annotationKind"
-                            value={campaign.annotationKind}
+                            id="annotation_kind"
+                            name="annotation_kind"
+                            value={campaign.annotation_kind}
                             label="Task type"
-                            onChange={handleChange}
+                            onChange={event => setInput('annotation_kind', event.target.value)}
                         >
                             <MenuItem value={"semantic_segmentation"}>[Image] - Semantic Segmentation</MenuItem>
                             <MenuItem value={"image_classification"}>[Image] - Image Classification</MenuItem>
@@ -97,11 +95,11 @@ const CampaignTask = (props) => {
                     <FormControl fullWidth margin={"normal"}>
                         <InputLabel >Annotation method</InputLabel>
                         <Select
-                            id="annotationMethod"
-                            name="annotationMethod"
-                            value={campaign.annotationMethod}
+                            id="annotation_method"
+                            name="annotation_method"
+                            value={campaign.annotation_method}
                             label="Annotation method"
-                            onChange={handleChange}
+                            onChange={event => setInput('annotation_method', event.target.value)}
                         >
                             <MenuItem value={"full_image"}>[Image] - Full image</MenuItem>
                             <MenuItem value={"bounding_boxes"}>[Image] - Bounding boxes</MenuItem>
@@ -118,32 +116,100 @@ const CampaignTask = (props) => {
                     <FormControl fullWidth margin={"normal"}>
                         <InputLabel >Annotation tool</InputLabel>
                         <Select
-                            id="annotationTool"
-                                name="annotationTool"
-                            value={campaign.annotationTool}
+                            id="annotation_tool"
+                            name="annotation_tool"
+                            value={campaign.annotation_tool}
                             label="Annotation tool"
-                            onChange={handleChange}
+                            onChange={event => setInput('annotation_tool', event.target.value)}
                         >
                             <MenuItem value={"visian"}>[Image] - Visian</MenuItem>
                         </Select>
                     </FormControl>
 
+                <FormControl fullWidth margin={"normal"}>
+                    <InputLabel >Pre-annotation engine</InputLabel>
+                    <Select
+                        id="pre_annotation_tool"
+                        name="pre_annotation_tool"
+                        value={campaign.pre_annotation_tool}
+                        label="Pre-annotation tool"
+                        onChange={event => setInput('pre_annotation_tool', event.target.value)}
+                    >
+                        <MenuItem value="">
+                            <em>None</em>
+                        </MenuItem>
+                        <MenuItem value={"hpi"}>HPI</MenuItem>
+                    </Select>
+                </FormControl>
+
+                <FormControl fullWidth margin={"normal"}>
+                    <InputLabel >Pre-annotation model</InputLabel>
+                    <Select
+                        id="pre_annotation_model"
+                        name="pre_annotation_model"
+                        value={campaign.pre_annotation_model}
+                        label="Pre-annotation model"
+                        disabled={!campaign.pre_annotation_tool}
+                        onChange={event => setInput('pre_annotation_model', event.target.value)}
+                    >
+                        <MenuItem value="">
+                            <em>None</em>
+                        </MenuItem>
+                        <MenuItem value={"hpi_v1"}>HPI_V1</MenuItem>
+                    </Select>
+                </FormControl>
+
+                <FormControl fullWidth margin={"normal"}>
+                    <InputLabel >Quality control</InputLabel>
+                    <Select
+                        id="quality_control"
+                        name="quality_control"
+                        value={campaign.quality_control}
+                        label="Quality control"
+                        onChange={event => setInput('quality_control', event.target.value)}
+                    >
+                        <MenuItem value="">
+                            <em>None</em>
+                        </MenuItem>
+                        <MenuItem value={"SELF"}>Self-review</MenuItem>
+                        <MenuItem value={"PEER"}>Peer-review</MenuItem>
+                        <MenuItem value={"AUTOMATED"}>Automated-cheks</MenuItem>
+                    </Select>
+                </FormControl>
+
+                <FormControl fullWidth margin={"normal"}>
+                    <TextField type={'number'} inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                               id="min_annotation"
+                               name="min_annotation"
+                               value={campaign.min_annotation}
+                               label={'Minimum number of annotations per dataset item'}
+                               onChange={event => setInput('min_annotation', event.target.value)}/>
+
+                </FormControl>
+
                     <FormControl fullWidth margin={"normal"}>
                         <TextField
                             multiline
                             rows={4}
-                            id="annotationInstructions"
-                            name="annotationInstructions"
-                            value={campaign.annotationInstructions || ''}
+                            id="annotation_instructions"
+                            name="annotation_instructions"
+                            value={campaign.annotation_instructions || ''}
                             label="Annotation instructions"
-                            onChange={handleChange}
+                            onChange={event => setInput('annotation_instructions', event.target.value)}
                         />
                     </FormControl>
 
+                <Stack direction="row" spacing={2}>
+                    <Button color="primary" onClick={e => handleSubmit(e)}>Save</Button>
+                    <Button component={RouterLink} color="secondary" to="/campaigns">Cancel</Button>
+                </Stack>
+
                 <Stack direction="row" spacing={2} sx={{ mt: 5 }}>
                     <Typography gutterBottom variant="h5" component="div">Annotation Guidelines</Typography>
-                    <IconButton edge="end" aria-label="add"><AddIcon /></IconButton>
                 </Stack>
+                <Box sx={{ display: 'flex',justifyContent: 'flex-end' }}>
+                    <Button component={RouterLink} color="success" to={"/campaigns/new"}>Add guideline</Button>
+                </Box>
 
                 <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
                     <ListItem
@@ -189,6 +255,33 @@ const CampaignTask = (props) => {
                         <ListItemText primary="FG-AI4H Guideline 3" secondary="July 20, 2022" />
                     </ListItem>
                 </List>
+
+                <Stack direction="row" spacing={2} sx={{ mt: 5 }}>
+                    <Typography gutterBottom variant="h5" component="div">Annotation Classes</Typography>
+
+                </Stack>
+                <Box sx={{ display: 'flex',justifyContent: 'flex-end' }}>
+                    <Button component={RouterLink} color="success" to={"/campaigns/new"}>Add class label</Button>
+                </Box>
+
+                <TableContainer component={Paper}>
+                    <Table aria-label="simple table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell width={"30%"}>Name</TableCell>
+                                <TableCell width={"40%"}>Description</TableCell>
+                                <TableCell width={"10%"} align={"right"}>Actions</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {campaign.class_label}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+                <FormControlLabel control={<Switch id="is_instance_label"
+                                                   name="is_instance_label"
+                                                   value={campaign.is_instance_label}
+                                                   onChange={event => setInput('is_instance_label', event.target.value)}/>} label="Enable instance labels" />
 
             </Grid>
 

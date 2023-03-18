@@ -38,6 +38,41 @@ const AdminHome = (props) => {
                            <Button component={RouterLink} color="primary" to="/userManagement">User management</Button>
                         </CardActions>
                     </Card>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                    <Card>
+                        <CardContent>
+                            <Typography gutterBottom variant="h5" component="div">
+                                Annotation Tasks
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                Manage annotation tasks.
+                            </Typography>
+
+                        </CardContent>
+                        <CardActions>
+
+                            <Button component={RouterLink} color="primary" to="/annotationTasks">Task management</Button>
+                        </CardActions>
+                    </Card>
+
+                </Grid>
+                    <Grid item xs={12} md={4}>
+                    <Card>
+                        <CardContent>
+                            <Typography gutterBottom variant="h5" component="div">
+                                Annotation Tools
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                Manage annotation tools.
+                            </Typography>
+
+                        </CardContent>
+                        <CardActions>
+
+                            <Button component={RouterLink} color="primary" to="/annotationTools">Tool management</Button>
+                        </CardActions>
+                    </Card>
 
                 </Grid>
             </Grid>

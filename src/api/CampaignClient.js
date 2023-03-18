@@ -40,9 +40,39 @@ class CampaignClient {
     }
 
     async updateCampaign(campaign) {
-        console.log("Updating campaign for Id: " + campaign.campaignUUID);
+        console.log("Updating campaign for Id: " + campaign.id);
 
-        return postApiWithToken(this.accessToken, `${this.config.CAMPAIGN_URL}/${campaign.campaignUUID}`,campaign,"PUT")
+        return postApiWithToken(this.accessToken, `${this.config.CAMPAIGN_URL}/${campaign.id}`,campaign,"PUT")
+            .then(([response, json]) => {
+                if (!response.ok) {
+                    return { success: false, error: json };
+                }
+                return { success: true, data: json };
+            })
+            .catch((e) => {
+                this.handleError(e);
+            });
+    }
+
+    async generateTasks(campaignId) {
+        console.log("Generate tasks for campaign Id: " + campaignId);
+
+        return postApiWithToken(this.accessToken, `${this.config.CAMPAIGN_URL}/${campaignId}/generate_tasks`, {},"POST")
+            .then(([response, json]) => {
+                if (!response.ok) {
+                    return { success: false, error: json };
+                }
+                return { success: true, data: json };
+            })
+            .catch((e) => {
+                this.handleError(e);
+            });
+    }
+
+    async startCampaign(campaignId) {
+        console.log("Start campaign for Id: " + campaignId);
+
+        return postApiWithToken(this.accessToken, `${this.config.CAMPAIGN_URL}/${campaignId}/start`,{},"POST")
             .then(([response, json]) => {
                 if (!response.ok) {
                     return { success: false, error: json };
@@ -69,10 +99,10 @@ class CampaignClient {
             });
     }
 
-    async removeCampaign(campaignUUID) {
-        console.log("Deleting campaign for Id: " + campaignUUID);
+    async removeCampaign(id) {
+        console.log("Deleting campaign for Id: " + id);
 
-        return callApiWithToken(this.accessToken, `${this.config.CAMPAIGN_URL}/${campaignUUID}`,"DELETE")
+        return callApiWithToken(this.accessToken, `${this.config.CAMPAIGN_URL}/${id}`,"DELETE")
             .then(([response, json]) => {
                 if (!response.ok) {
                     return { success: false, error: json };

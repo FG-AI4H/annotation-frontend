@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Backdrop,
     Button,
@@ -14,8 +14,12 @@ import {
     TableRow
 } from "@mui/material";
 import {Link as RouterLink} from "react-router-dom";
+import {Auth} from "aws-amplify";
+import TaskClient from "./api/TaskClient";
 
 const AnnotationTaskList = (props) => {
+
+    const [isLoading, setIsLoading] = useState(false);
 
     async function remove(id) {
         await fetch(`https://annotation.ai4h.net/annotationtasks/${id}`, {
@@ -30,15 +34,14 @@ const AnnotationTaskList = (props) => {
         });
     }
 
-    const taskList = props.tasks.map(task => {
-        return <TableRow key={task.annotationTaskUUID} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+    const taskList = props.tasks?.map(task => {
+        return <TableRow key={task.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
             <TableCell style={{whiteSpace: 'nowrap'}}>{task.kind}</TableCell>
             <TableCell style={{whiteSpace: 'nowrap'}}>{task.title}</TableCell>
             <TableCell style={{whiteSpace: 'nowrap'}}>{task.description}</TableCell>
             <TableCell>
                 <Stack direction={"row"} spacing={2} justifyContent="flex-end">
-                    <Button component={RouterLink} size="small" to={"/annotations/" + task.annotationTaskUUID}>Edit</Button>
-                    <Button size="small" color={"error"} onClick={() => remove(task.annotationTaskUUID)}>Delete</Button>
+                    <Button size="small" color={"error"} onClick={() => remove(task.id)}>Delete</Button>
                 </Stack>
 
             </TableCell>
@@ -49,7 +52,7 @@ const AnnotationTaskList = (props) => {
             <div>
 
 
-                <Backdrop open={!props.tasks} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+                <Backdrop open={isLoading} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
                     <CircularProgress color="inherit" />
                 </Backdrop>
 

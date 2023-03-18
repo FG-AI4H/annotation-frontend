@@ -29,11 +29,11 @@ class UserListComponent extends Component {
             bypassCache: false
         }).then(response => {
             const client = new UserClient(response.signInUserSession.accessToken.jwtToken);
-            client.fetchUserList()
+            client.fetchAdminUserList()
                 .then(
                     response =>
                         this.setState(
-                            {users: response?.data._embedded.user, isLoading: false}
+                            {users: response?.data, isLoading: false}
                         ));
         }).catch(err => console.log(err));
     }
@@ -49,7 +49,7 @@ class UserListComponent extends Component {
                 <TableCell style={{whiteSpace: 'nowrap'}}>{user.email}</TableCell>
                 <TableCell>
                     <Stack direction={"row"} spacing={2} justifyContent="flex-end">
-                        <Button component={RouterLink} size="small" to={"/users/" + user.userUUID}>Edit</Button>
+                        <Button component={RouterLink} size="small" to={"/users/" + user.id}>Edit</Button>
                     </Stack>
 
                 </TableCell>

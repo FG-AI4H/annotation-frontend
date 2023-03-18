@@ -27,8 +27,8 @@ import OCISpinner from "./OCISpinner";
 class CampaignUsers extends Component {
 
     annotatorFilter = {
-        yearsInPractice: null,
-        selfAssessment: null,
+        years_in_practice: null,
+        self_assessment: null,
     };
 
     constructor(props) {
@@ -45,7 +45,9 @@ class CampaignUsers extends Component {
     }
 
     async componentDidMount() {
-        this.setState({ isLoading: true, campaign: this.props.campaign, tabValue: 0 });
+
+
+        this.setState({ isLoading: true, tabValue: 0 });
 
         Auth.currentAuthenticatedUser({
             bypassCache: false
@@ -54,14 +56,17 @@ class CampaignUsers extends Component {
             const userClient = new UserClient(response.signInUserSession.accessToken.jwtToken);
             userClient.fetchUserList()
                 .then(
-                    response =>
-                        this.setState(
-                            {availableUsers: response?.data._embedded.user
-                                    .filter(i => !this.props.campaign.annotators?.some(a => a.idpID === i.idpID))
-                                    .filter(i => !this.props.campaign.reviewers?.some(a => a.idpID === i.idpID))
-                                    .filter(i => !this.props.campaign.supervisors?.some(a => a.idpID === i.idpID)),
-                                isLoading: false}
-                        ));
+                    response => {
+                        if (response?.data) {
+                            this.props.campaign.annotators = this.props.campaign.annotators.map(id => response.data.filter( u => u.id === id)[0])
+                            this.setState({ campaign: this.props.campaign});
+                            this.setState(
+                                {availableUsers: response.data
+                                        .filter(i => !this.props.campaign.annotators?.some(a => a.id === i.id))
+                                        .filter(i => !this.props.campaign.reviewers?.some(a => a.id === i.id))
+                                        .filter(i => !this.props.campaign.supervisors?.some(a => a.id=== i.id)),
+                                    isLoading: false}
+                            )}});
 
         }).catch(err => console.log(err));
     }
@@ -69,9 +74,9 @@ class CampaignUsers extends Component {
     componentDidUpdate(prevProps) {
         if (prevProps.campaign !== this.props.campaign) {
             let updatedUsers = [...this.state.availableUsers]
-                .filter(i => !this.props.campaign.annotators?.some(a => a.idpID === i.idpID))
-                .filter(i => !this.props.campaign.reviewers?.some(a => a.idpID === i.idpID))
-                .filter(i => !this.props.campaign.supervisors?.some(a => a.idpID === i.idpID));
+                .filter(i => !this.props.campaign.annotators?.some(a => a.id === i.id))
+                .filter(i => !this.props.campaign.reviewers?.some(a => a.id === i.id))
+                .filter(i => !this.props.campaign.supervisors?.some(a => a.id === i.id));
 
             this.setState({campaign: this.props.campaign, availableUsers: updatedUsers});
         }
@@ -98,54 +103,54 @@ class CampaignUsers extends Component {
     }
 
     handleFindAnnotators(event) {
-        let updatedUsers = [...this.state.availableUsers].filter(i => i.annotatorRole?.yearsInPractice >= this.state.annotatorFilter['yearsInPractice']);
+        let updatedUsers = [...this.state.availableUsers].filter(i => i.annotator_role?.years_in_practice >= this.state.annotatorFilter['years_in_practice']);
         this.setState({availableUsers: updatedUsers})
     }
 
     handleResetAnnotators(event) {
         this.componentDidMount();
         this.setState({annotatorFilter: {
-                yearsInPractice: null,
-                selfAssessment: null,
+                years_in_practice: null,
+                self_assessment: null,
             }});
     }
 
     removeSelectUser(user) {
         this.state.availableUsers.push(user);
-        let updatedUsers = [...this.state.campaign.annotators].filter(i => i.idpID !== user.idpID);
+        let updatedUsers = [...this.state.campaign.annotators].filter(i => i.id !== user.id);
         this.state.campaign.annotators = updatedUsers;
         this.setState({item: this.state.campaign,availableUsers: this.state.availableUsers})
     }
 
     selectUser(user) {
         this.state.campaign.annotators.push(user);
-        let availableUsers = [...this.state.availableUsers].filter(i => i.idpID !== user.idpID);
+        let availableUsers = [...this.state.availableUsers].filter(i => i.id !== user.id);
         this.setState({availableUsers: availableUsers});
     }
 
     removeSelectReviewer(user) {
         this.state.availableUsers.push(user);
-        let updatedUsers = [...this.state.campaign.reviewers].filter(i => i.idpID !== user.idpID);
+        let updatedUsers = [...this.state.campaign.reviewers].filter(i => i.id !== user.id);
         this.state.campaign.reviewers = updatedUsers;
         this.setState({item: this.state.campaign,availableUsers: this.state.availableUsers})
     }
 
     selectReviewer(user) {
         this.state.campaign.reviewers.push(user);
-        let availableUsers = [...this.state.availableUsers].filter(i => i.idpID !== user.idpID);
+        let availableUsers = [...this.state.availableUsers].filter(i => i.id !== user.id);
         this.setState({availableUsers: availableUsers});
     }
 
     removeSelectSupervisor(user) {
         this.state.availableUsers.push(user);
-        let updatedUsers = [...this.state.campaign.supervisors].filter(i => i.idpID !== user.idpID);
+        let updatedUsers = [...this.state.campaign.supervisors].filter(i => i.id !== user.id);
         this.state.campaign.supervisors = updatedUsers;
         this.setState({item: this.state.campaign,availableUsers: this.state.availableUsers})
     }
 
     selectSupervisor(user) {
         this.state.campaign.supervisors.push(user);
-        let availableUsers = [...this.state.availableUsers].filter(i => i.idpID !== user.idpID);
+        let availableUsers = [...this.state.availableUsers].filter(i => i.id !== user.id);
         this.setState({availableUsers: availableUsers});
     }
 
@@ -157,11 +162,11 @@ class CampaignUsers extends Component {
             return (<OCISpinner/>);
         }
 
-        const availableAnnotatorList = availableUsers.filter(user => user.annotatorRole !== undefined).map(user => {
-            return <TableRow key={user.idpID} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell style={{whiteSpace: 'nowrap'}}><Link component={RouterLink} to={"/users/" + user.userUUID}>{user.username}</Link></TableCell>
-                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotatorRole.yearsInPractice}</TableCell>
-                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotatorRole.selfAssessment}</TableCell>
+        const availableAnnotatorList = availableUsers.filter(user => user.annotator_role?.id !== undefined).map(user => {
+            return <TableRow key={user.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell style={{whiteSpace: 'nowrap'}}><Link component={RouterLink} to={"/users/" + user.id}>{user.username}</Link></TableCell>
+                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotator_role.years_in_practice}</TableCell>
+                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotator_role.self_assessment}</TableCell>
                 <TableCell>
                     <Stack direction="row" spacing={2}>
                         <Button size="small" color="success" onClick={() => this.selectUser(user)}>Select</Button>
@@ -171,10 +176,10 @@ class CampaignUsers extends Component {
         });
 
         const annotatorList = campaign.annotators?.map(user => {
-            return <TableRow key={user.idpID} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell style={{whiteSpace: 'nowrap'}}><Link component={RouterLink} to={"/users/" + user.userUUID}>{user.username}</Link></TableCell>
-                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotatorRole.yearsInPractice}</TableCell>
-                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotatorRole.selfAssessment}</TableCell>
+            return <TableRow key={user.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell style={{whiteSpace: 'nowrap'}}><Link component={RouterLink} to={"/users/" + user.id}>{user.username}</Link></TableCell>
+                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotator_role.years_in_practice}</TableCell>
+                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotator_role.self_assessment}</TableCell>
 
                 <TableCell>
                     <Stack direction="row" spacing={2}>
@@ -184,11 +189,11 @@ class CampaignUsers extends Component {
             </TableRow>
         });
 
-        const availableReviewerList = availableUsers.filter(user => user.reviewerRole !== undefined).map(user => {
-            return <TableRow key={user.idpID} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell style={{whiteSpace: 'nowrap'}}><Link component={RouterLink} to={"/users/" + user.userUUID}>{user.username}</Link></TableCell>
-                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotatorRole.yearsInPractice}</TableCell>
-                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotatorRole.selfAssessment}</TableCell>
+        const availableReviewerList = availableUsers.filter(user => user.reviewer_role?.id !== undefined).map(user => {
+            return <TableRow key={user.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell style={{whiteSpace: 'nowrap'}}><Link component={RouterLink} to={"/users/" + user.id}>{user.username}</Link></TableCell>
+                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotator_role.years_in_practice}</TableCell>
+                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotator_role.self_assessment}</TableCell>
                 <TableCell>
                     <Stack direction="row" spacing={2}>
                         <Button size="small" color="success" onClick={() => this.selectReviewer(user)}>Select</Button>
@@ -198,10 +203,10 @@ class CampaignUsers extends Component {
         });
 
         const reviewerList = campaign.reviewers?.map(user => {
-            return <TableRow key={user.idpID} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell style={{whiteSpace: 'nowrap'}}><Link component={RouterLink} to={"/users/" + user.userUUID}>{user.username}</Link></TableCell>
-                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotatorRole.yearsInPractice}</TableCell>
-                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotatorRole.selfAssessment}</TableCell>
+            return <TableRow key={user.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell style={{whiteSpace: 'nowrap'}}><Link component={RouterLink} to={"/users/" + user.id}>{user.username}</Link></TableCell>
+                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotator_role.years_in_practice}</TableCell>
+                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotator_role.self_assessment}</TableCell>
 
                 <TableCell>
                     <Stack direction="row" spacing={2}>
@@ -211,11 +216,11 @@ class CampaignUsers extends Component {
             </TableRow>
         });
 
-        const availableSupervisorList = availableUsers.filter(user => user.supervisorRole !== undefined).map(user => {
-            return <TableRow key={user.idpID} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell style={{whiteSpace: 'nowrap'}}><Link component={RouterLink} to={"/users/" + user.userUUID}>{user.username}</Link></TableCell>
-                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotatorRole.yearsInPractice}</TableCell>
-                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotatorRole.selfAssessment}</TableCell>
+        const availableSupervisorList = availableUsers.filter(user => user.supervisor_role?.id !== undefined).map(user => {
+            return <TableRow key={user.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell style={{whiteSpace: 'nowrap'}}><Link component={RouterLink} to={"/users/" + user.id}>{user.username}</Link></TableCell>
+                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotator_role.years_in_practice}</TableCell>
+                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotator_role.self_assessment}</TableCell>
                 <TableCell>
                     <Stack direction="row" spacing={2}>
                         <Button size="small" color="success" onClick={() => this.selectSupervisor(user)}>Select</Button>
@@ -225,10 +230,10 @@ class CampaignUsers extends Component {
         });
 
         const supervisorList = campaign.supervisors?.map(user => {
-            return <TableRow key={user.idpID} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell style={{whiteSpace: 'nowrap'}}><Link component={RouterLink} to={"/users/" + user.userUUID}>{user.username}</Link></TableCell>
-                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotatorRole.yearsInPractice}</TableCell>
-                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotatorRole.selfAssessment}</TableCell>
+            return <TableRow key={user.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell style={{whiteSpace: 'nowrap'}}><Link component={RouterLink} to={"/users/" + user.id}>{user.username}</Link></TableCell>
+                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotator_role.years_in_practice}</TableCell>
+                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotator_role.self_assessment}</TableCell>
 
                 <TableCell>
                     <Stack direction="row" spacing={2}>
@@ -265,9 +270,9 @@ class CampaignUsers extends Component {
                                         <FormControl fullWidth margin={"normal"}>
                                             <TextField
                                                 type="number"
-                                                id="yearsInPractice"
-                                                name="yearsInPractice"
-                                                value={annotatorFilter.yearsInPractice || ''}
+                                                id="years_in_practice"
+                                                name="years_in_practice"
+                                                value={annotatorFilter.years_in_practice || ''}
                                                 label="Minimum years in practice"
                                                 onChange={this.handleAnnotatorFilterChange}
                                             />
@@ -278,9 +283,9 @@ class CampaignUsers extends Component {
                                         <FormControl fullWidth margin={"normal"}>
                                             <TextField
                                                 type="number"
-                                                id="selfAssessment"
-                                                name="selfAssessment"
-                                                value={annotatorFilter.selfAssessment || ''}
+                                                id="self_assessment"
+                                                name="self_assessment"
+                                                value={annotatorFilter.self_assessment || ''}
                                                 label="Minimum self-assessment grade"
                                                 onChange={this.handleAnnotatorFilterChange}
                                             />
@@ -347,9 +352,9 @@ class CampaignUsers extends Component {
                                     <FormControl fullWidth margin={"normal"}>
                                         <TextField
                                             type="number"
-                                            id="yearsInPractice"
-                                            name="yearsInPractice"
-                                            value={annotatorFilter.yearsInPractice || ''}
+                                            id="years_in_practice"
+                                            name="years_in_practice"
+                                            value={annotatorFilter.years_in_practice || ''}
                                             label="Minimum years in practice"
                                             onChange={this.handleAnnotatorFilterChange}
                                         />
@@ -360,9 +365,9 @@ class CampaignUsers extends Component {
                                     <FormControl fullWidth margin={"normal"}>
                                         <TextField
                                             type="number"
-                                            id="selfAssessment"
-                                            name="selfAssessment"
-                                            value={annotatorFilter.selfAssessment || ''}
+                                            id="self_assessment"
+                                            name="self_assessment"
+                                            value={annotatorFilter.self_assessment || ''}
                                             label="Minimum self-assessment grade"
                                             onChange={this.handleAnnotatorFilterChange}
                                         />
@@ -429,9 +434,9 @@ class CampaignUsers extends Component {
                                         <FormControl fullWidth margin={"normal"}>
                                             <TextField
                                                 type="number"
-                                                id="yearsInPractice"
-                                                name="yearsInPractice"
-                                                value={annotatorFilter.yearsInPractice || ''}
+                                                id="years_in_practice"
+                                                name="years_in_practice"
+                                                value={annotatorFilter.years_in_practice || ''}
                                                 label="Minimum years in practice"
                                                 onChange={this.handleAnnotatorFilterChange}
                                             />
@@ -442,9 +447,9 @@ class CampaignUsers extends Component {
                                         <FormControl fullWidth margin={"normal"}>
                                             <TextField
                                                 type="number"
-                                                id="selfAssessment"
-                                                name="selfAssessment"
-                                                value={annotatorFilter.selfAssessment || ''}
+                                                id="self_assessment"
+                                                name="self_assessment"
+                                                value={annotatorFilter.self_assessment || ''}
                                                 label="Minimum self-assessment grade"
                                                 onChange={this.handleAnnotatorFilterChange}
                                             />

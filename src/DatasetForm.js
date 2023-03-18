@@ -9,6 +9,7 @@ import Auth from "@aws-amplify/auth";
 import axios from "axios";
 import {Link as RouterLink, useParams} from "react-router-dom";
 import DatasetClient from "./api/DatasetClient";
+import withNavigateHook from "./helpers/withNavigateHook";
 
 const DatasetForm = (props) =>{
 
@@ -105,33 +106,33 @@ const DatasetForm = (props) =>{
                     const datasetUpload = {
                         name: dataset.name,
                         description: dataset.description,
-                        storageLocation: filepath,
+                        storage_location: filepath,
                         metadata: {
                             version: '1.0',
-                            dataOwner: dataset.metadata?.dataOwner,
-                            dataSource: dataset.metadata?.dataSource,
-                            dataSampleSize: dataset.metadata?.dataSampleSize,
-                            dataType: dataset.metadata?.dataType,
-                            dataUpdateVersion: dataset.metadata?.dataUpdateVersion,
-                            dataAcquisitionSensingModality: dataset.metadata?.dataAcquisitionSensingModality,
-                            dataAcquisitionSensingDeviceType: dataset.metadata?.dataAcquisitionSensingDeviceType,
-                            dataCollectionPlace: dataset.metadata?.dataCollectionPlace,
-                            dataCollectionPeriod: dataset.metadata?.dataCollectionPeriod,
-                            datCollectionAuthorsAgency: dataset.metadata?.datCollectionAuthorsAgency,
-                            dataCollectionFundingAgency: dataset.metadata?.dataCollectionFundingAgency,
-                            dataSamplingRate: dataset.metadata?.dataSamplingRate,
-                            dataDimension: dataset.metadata?.dataDimension,
-                            dataResolutionPrecision: dataset.metadata?.dataResolutionPrecision,
-                            dataPrivacyDeIdentificationProtocol: dataset.metadata?.dataPrivacyDeIdentificationProtocol,
-                            dataSafetySecurityProtocol: dataset.metadata?.dataSafetySecurityProtocol,
-                            dataAssumptionsConstraintsDependencies: dataset.metadata?.dataAssumptionsConstraintsDependencies,
-                            dataExclusionCriteria: dataset.metadata?.dataExclusionCriteria,
-                            dataAcceptanceStandardsCompliance: dataset.metadata?.dataAcceptanceStandardsCompliance,
-                            dataPreprocessingTechniques: dataset.metadata?.dataPreprocessingTechniques,
-                            dataAnnotationProcessTool: dataset.metadata?.dataAnnotationProcessTool,
-                            dataBiasAndVarianceMinimization: dataset.metadata?.dataBiasAndVarianceMinimization,
-                            trainTuningEvalDatasetPartitioningRatio: dataset.metadata?.trainTuningEvalDatasetPartitioningRatio,
-                            dataRegistryURL: dataset.metadata?.dataRegistryURL
+                            data_owner: dataset.metadata?.data_owner,
+                            data_source: dataset.metadata?.data_owner,
+                            data_sample_size: dataset.metadata?.data_sample_size,
+                            data_type: dataset.metadata?.data_type,
+                            data_update_version: dataset.metadata?.data_update_version,
+                            data_acquisition_sensing_modality: dataset.metadata?.data_acquisition_sensing_modality,
+                            data_acquisition_sensing_device_type: dataset.metadata?.data_acquisition_sensing_device_type,
+                            data_collection_place: dataset.metadata?.data_collection_place,
+                            data_collection_period: dataset.metadata?.data_collection_period,
+                            data_collection_authors_agency: dataset.metadata?.data_collection_authors_agency,
+                            data_collection_funding_agency: dataset.metadata?.data_collection_funding_agency,
+                            data_sampling_rate: dataset.metadata?.data_sampling_rate,
+                            data_dimension: dataset.metadata?.data_dimension,
+                            data_resolution_precision: dataset.metadata?.data_resolution_precision,
+                            data_privacy_de_identification_protocol: dataset.metadata?.data_privacy_de_identification_protocol,
+                            data_safety_security_protocol: dataset.metadata?.data_safety_security_protocol,
+                            data_assumptions_constraints_dependencies: dataset.metadata?.data_assumptions_constraints_dependencies,
+                            data_exclusion_criteria: dataset.metadata?.data_exclusion_criteria,
+                            data_acceptance_standards_compliance: dataset.metadata?.data_acceptance_standards_compliance,
+                            data_preprocessing_techniques: dataset.metadata?.data_preprocessing_techniques,
+                            data_annotation_process_tool: dataset.metadata?.data_annotation_process_tool,
+                            data_bias_and_variance_minimization: dataset.metadata?.data_bias_and_variance_minimization,
+                            train_tuning_eval_dataset_partitioning_ratio: dataset.metadata?.train_tuning_eval_dataset_partitioning_ratio,
+                            data_registry_url: dataset.metadata?.data_registry_url
                         }
                     }
 
@@ -141,8 +142,7 @@ const DatasetForm = (props) =>{
 
                 }).then(res => {
                 setIsLoading(false);
-                alert('Dataset uploaded to S3 and data is saved')
-                setFormState(initialDataset)
+                this.props.navigation('/dataset/'+response.data.headers.get('location'));
             }, err => {
                 setIsLoading(false);
                 console.log(err)
@@ -157,37 +157,36 @@ const DatasetForm = (props) =>{
             const client = new DatasetClient(response.signInUserSession.accessToken.jwtToken);
 
             const datasetUpload = {
-                datasetUUID: dataset.datasetUUID,
+                id: dataset.id,
                 name: dataset.name,
                 description: dataset.description,
-                storageLocation: dataset.storageLocation,
+                storage_location: dataset.storage_location,
                 metadata: {
-                    metadataUUID: dataset.metadata?.metadataUUID,
+                    id: dataset.metadata?.id,
                     version: '1.0',
-                    dataOwner: dataset.metadata?.dataOwner,
-                    dataSource: dataset.metadata?.dataSource,
-                    dataSampleSize: dataset.metadata?.dataSampleSize,
-                    dataType: dataset.metadata?.dataType,
-                    dataUpdateVersion: dataset.metadata?.dataUpdateVersion,
-                    dataAcquisitionSensingModality: dataset.metadata?.dataAcquisitionSensingModality,
-                    dataAcquisitionSensingDeviceType: dataset.metadata?.dataAcquisitionSensingDeviceType,
-                    dataCollectionPlace: dataset.metadata?.dataCollectionPlace,
-                    dataCollectionPeriod: dataset.metadata?.dataCollectionPeriod,
-                    datCollectionAuthorsAgency: dataset.metadata?.datCollectionAuthorsAgency,
-                    dataCollectionFundingAgency: dataset.metadata?.dataCollectionFundingAgency,
-                    dataSamplingRate: dataset.metadata?.dataSamplingRate,
-                    dataDimension: dataset.metadata?.dataDimension,
-                    dataResolutionPrecision: dataset.metadata?.dataResolutionPrecision,
-                    dataPrivacyDeIdentificationProtocol: dataset.metadata?.dataPrivacyDeIdentificationProtocol,
-                    dataSafetySecurityProtocol: dataset.metadata?.dataSafetySecurityProtocol,
-                    dataAssumptionsConstraintsDependencies: dataset.metadata?.dataAssumptionsConstraintsDependencies,
-                    dataExclusionCriteria: dataset.metadata?.dataExclusionCriteria,
-                    dataAcceptanceStandardsCompliance: dataset.metadata?.dataAcceptanceStandardsCompliance,
-                    dataPreprocessingTechniques: dataset.metadata?.dataPreprocessingTechniques,
+                    data_owner: dataset.metadata?.data_owner,
+                    data_sample_size: dataset.metadata?.data_sample_size,
+                    data_type: dataset.metadata?.data_type,
+                    data_update_version: dataset.metadata?.data_update_version,
+                    data_acquisition_sensing_modality: dataset.metadata?.data_acquisition_sensing_modality,
+                    data_acquisition_sensing_device_type: dataset.metadata?.data_acquisition_sensing_device_type,
+                    data_collection_place: dataset.metadata?.data_collection_place,
+                    data_collection_period: dataset.metadata?.data_collection_period,
+                    data_collection_authors_agency: dataset.metadata?.data_collection_authors_agency,
+                    data_collection_funding_agency: dataset.metadata?.data_collection_funding_agency,
+                    data_sampling_rate: dataset.metadata?.data_sampling_rate,
+                    data_dimension: dataset.metadata?.data_dimension,
+                    data_resolution_precision: dataset.metadata?.data_resolution_precision,
+                    data_privacy_de_identification_protocol: dataset.metadata?.data_privacy_de_identification_protocol,
+                    data_safety_security_protocol: dataset.metadata?.data_safety_security_protocol,
+                    data_assumptions_constraints_dependencies: dataset.metadata?.data_assumptions_constraints_dependencies,
+                    data_exclusion_criteria: dataset.metadata?.data_exclusion_criteria,
+                    data_acceptance_standards_compliance: dataset.metadata?.data_acceptance_standards_compliance,
+                    data_preprocessing_techniques: dataset.metadata?.data_preprocessing_techniques,
                     dataAnnotationProcessTool: dataset.metadata?.dataAnnotationProcessTool,
-                    dataBiasAndVarianceMinimization: dataset.metadata?.dataBiasAndVarianceMinimization,
-                    trainTuningEvalDatasetPartitioningRatio: dataset.metadata?.trainTuningEvalDatasetPartitioningRatio,
-                    dataRegistryURL: dataset.metadata?.dataRegistryURL
+                    data_bias_and_variance_minimization: dataset.metadata?.data_bias_and_variance_minimization,
+                    train_tuning_eval_dataset_partitioning_ratio: dataset.metadata?.train_tuning_eval_dataset_partitioning_ratio,
+                    data_registry_url: dataset.metadata?.data_registry_url
                 }
             }
 
@@ -216,7 +215,7 @@ const DatasetForm = (props) =>{
                            required
                            value={formState.name}
                            onChange={event => setInput('name', event.target.value)}
-
+                           InputLabelProps={{ shrink: true }}
                            disabled={readOnlyMode}
                 />
 
@@ -227,7 +226,7 @@ const DatasetForm = (props) =>{
                            rows={4}
                            value={formState.description}
                            onChange={event => setInput('description', event.target.value)}
-
+                           InputLabelProps={{ shrink: true }}
                            disabled={readOnlyMode}
                 />
 
@@ -243,22 +242,22 @@ const DatasetForm = (props) =>{
                         <div style={{ width: '100%' }}>
                             <Grid container spacing={1}>
                                 <Grid item xs={12}>
-                                    <TextField fullWidth label={"Data Owner"} required id="component-filled2" value={formState.metadata?.dataOwner} onChange={event => setInputMetadata('dataOwner', event.target.value)} disabled={readOnlyMode} />
+                                    <TextField fullWidth label={"Data Owner"} required id="component-filled2" value={formState.metadata?.data_owner} onChange={event => setInputMetadata('data_owner', event.target.value)} disabled={readOnlyMode} InputLabelProps={{ shrink: true }}/>
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <TextField fullWidth label={"Data Source"} required id="component-filled4" value={formState.metadata?.dataSource} onChange={event => setInputMetadata('dataSource', event.target.value)} disabled={readOnlyMode} />
+                                    <TextField fullWidth label={"Data Source"} required id="component-filled4" value={formState.metadata?.data_owner} onChange={event => setInputMetadata('data_owner', event.target.value)} disabled={readOnlyMode} InputLabelProps={{ shrink: true }}/>
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <TextField fullWidth label={"Data Registry URL"} id="component-filled27" value={formState.metadata?.dataRegistryURL} onChange={event => setInputMetadata('dataRegistryURL', event.target.value)} disabled={readOnlyMode} />
+                                    <TextField fullWidth label={"Data Registry URL"} id="component-filled27" value={formState.metadata?.data_registry_url} onChange={event => setInputMetadata('data_registry_url', event.target.value)} disabled={readOnlyMode} InputLabelProps={{ shrink: true }}/>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <TextField fullWidth label={"Data Sample Size"} required id="component-filled5" value={formState.metadata?.dataSampleSize} onChange={event => setInputMetadata('dataSampleSize', event.target.value)} disabled={readOnlyMode} />
+                                    <TextField fullWidth label={"Data Sample Size"} required id="component-filled5" value={formState.metadata?.data_sample_size} onChange={event => setInputMetadata('data_sample_size', event.target.value)} disabled={readOnlyMode} InputLabelProps={{ shrink: true }}/>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <TextField fullWidth label={"Data Type"} required id="component-filled6" value={formState.metadata?.dataType} onChange={event => setInputMetadata('dataType', event.target.value)} disabled={readOnlyMode} />
+                                    <TextField fullWidth label={"Data Type"} required id="component-filled6" value={formState.metadata?.data_type} onChange={event => setInputMetadata('data_type', event.target.value)} disabled={readOnlyMode} InputLabelProps={{ shrink: true }}/>
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <TextField fullWidth label={"Data Update Version"} id="component-filled7" value={formState.metadata?.dataUpdateVersion} onChange={event => setInputMetadata('dataUpdateVersion', event.target.value)} disabled={readOnlyMode} />
+                                    <TextField fullWidth label={"Data Update Version"} id="component-filled7" value={formState.metadata?.data_update_version} onChange={event => setInputMetadata('data_update_version', event.target.value)} disabled={readOnlyMode} InputLabelProps={{ shrink: true }}/>
                                 </Grid>
 
                                 <Grid item xs={12}>
@@ -267,9 +266,10 @@ const DatasetForm = (props) =>{
                                                label="Data Assumptions/ Constraints/Dependencies"
                                                multiline
                                                rows={4}
-                                               value={formState.metadata?.dataAssumptionsConstraintsDependencies}
-                                               onChange={event => setInputMetadata('dataAssumptionsConstraintsDependencies', event.target.value)}
+                                               value={formState.metadata?.data_assumptions_constraints_dependencies}
+                                               onChange={event => setInputMetadata('data_assumptions_constraints_dependencies', event.target.value)}
                                                disabled={readOnlyMode}
+                                               InputLabelProps={{ shrink: true }}
                                     /><br />
                                 </Grid>
                             </Grid>
@@ -290,22 +290,22 @@ const DatasetForm = (props) =>{
                         <div style={{ width: '100%' }}>
                             <Grid container spacing={1}>
                                 <Grid item xs={6}>
-                                    <TextField fullWidth label={"Data Acquisition / Sensing Modality"} id="component-filled8" value={formState.metadata?.dataAcquisitionSensingModality} onChange={event => setInputMetadata('dataAcquisitionSensingModality', event.target.value)} disabled={readOnlyMode} />
+                                    <TextField fullWidth label={"Data Acquisition / Sensing Modality"} id="component-filled8" value={formState.metadata?.data_acquisition_sensing_modality} onChange={event => setInputMetadata('data_acquisition_sensing_modality', event.target.value)} disabled={readOnlyMode} InputLabelProps={{ shrink: true }}/>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <TextField fullWidth label={"Data Acquisition / Sensing Device Type"} id="component-filled9" value={formState.metadata?.dataAcquisitionSensingDeviceType} onChange={event => setInputMetadata('dataAcquisitionSensingDeviceType', event.target.value)} disabled={readOnlyMode} />
+                                    <TextField fullWidth label={"Data Acquisition / Sensing Device Type"} id="component-filled9" value={formState.metadata?.data_acquisition_sensing_device_type} onChange={event => setInputMetadata('data_acquisition_sensing_device_type', event.target.value)} disabled={readOnlyMode} InputLabelProps={{ shrink: true }}/>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <TextField fullWidth label={"Data Collection Place"} id="component-filled10" value={formState.metadata?.dataCollectionPlace} onChange={event => setInputMetadata('dataCollectionPlace', event.target.value)} disabled={readOnlyMode} />
+                                    <TextField fullWidth label={"Data Collection Place"} id="component-filled10" value={formState.metadata?.data_collection_place} onChange={event => setInputMetadata('data_collection_place', event.target.value)} disabled={readOnlyMode} InputLabelProps={{ shrink: true }}/>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <TextField fullWidth label={"Data Collection Period"} id="component-filled11" value={formState.metadata?.dataCollectionPeriod} onChange={event => setInputMetadata('dataCollectionPeriod', event.target.value)} disabled={readOnlyMode} />
+                                    <TextField fullWidth label={"Data Collection Period"} id="component-filled11" value={formState.metadata?.data_collection_period} onChange={event => setInputMetadata('data_collection_period', event.target.value)} disabled={readOnlyMode} InputLabelProps={{ shrink: true }}/>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <TextField fullWidth label={"Data Collection Author"} id="component-filled12" value={formState.metadata?.datCollectionAuthorsAgency} onChange={event => setInputMetadata('datCollectionAuthorsAgency', event.target.value)} disabled={readOnlyMode} />
+                                    <TextField fullWidth label={"Data Collection Author"} id="component-filled12" value={formState.metadata?.data_collection_authors_agency} onChange={event => setInputMetadata('data_collection_authors_agency', event.target.value)} disabled={readOnlyMode} InputLabelProps={{ shrink: true }}/>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <TextField fullWidth label={"Data Collection Funding Agency"} id="component-filled13" value={formState.metadata?.dataCollectionFundingAgency} onChange={event => setInputMetadata('dataCollectionFundingAgency', event.target.value)} disabled={readOnlyMode} />
+                                    <TextField fullWidth label={"Data Collection Funding Agency"} id="component-filled13" value={formState.metadata?.data_collection_funding_agency} onChange={event => setInputMetadata('data_collection_funding_agency', event.target.value)} disabled={readOnlyMode} InputLabelProps={{ shrink: true }}/>
                                 </Grid>
                             </Grid>
                         </div>
@@ -325,7 +325,7 @@ const DatasetForm = (props) =>{
                             <Grid container spacing={1}>
                                 <Grid item xs={12}>
 
-                                    <TextField fullWidth label={"Data Resolution / Precision"} id="component-filled16" value={formState.metadata?.dataResolutionPrecision} onChange={event => setInputMetadata('dataResolutionPrecision', event.target.value)} disabled={readOnlyMode} />
+                                    <TextField fullWidth label={"Data Resolution / Precision"} id="component-filled16" value={formState.metadata?.data_resolution_precision} onChange={event => setInputMetadata('data_resolution_precision', event.target.value)} disabled={readOnlyMode} InputLabelProps={{ shrink: true }}/>
                                 </Grid>
                                 <Grid item xs={12}>
                                     <TextField fullWidth
@@ -333,9 +333,9 @@ const DatasetForm = (props) =>{
                                                label="Data Privacy or De-identification Protocol"
                                                multiline
                                                rows={4}
-                                               value={formState.metadata?.dataPrivacyDeIdentificationProtocol}
-                                               onChange={event => setInputMetadata('dataPrivacyDeIdentificationProtocol', event.target.value)}
-
+                                               value={formState.metadata?.data_privacy_de_identification_protocol}
+                                               onChange={event => setInputMetadata('data_privacy_de_identification_protocol', event.target.value)}
+                                               InputLabelProps={{ shrink: true }}
                                                disabled={readOnlyMode}
                                     />
                                 </Grid>
@@ -345,9 +345,9 @@ const DatasetForm = (props) =>{
                                                label="Data Safety & Security Protocol"
                                                multiline
                                                rows={4}
-                                               value={formState.metadata?.dataSafetySecurityProtocol}
-                                               onChange={event => setInputMetadata('dataSafetySecurityProtocol', event.target.value)}
-
+                                               value={formState.metadata?.data_safety_security_protocol}
+                                               onChange={event => setInputMetadata('data_safety_security_protocol', event.target.value)}
+                                               InputLabelProps={{ shrink: true }}
                                                disabled={readOnlyMode}
                                     />
                                 </Grid>
@@ -357,9 +357,9 @@ const DatasetForm = (props) =>{
                                                label="Data Exclusion Criteria"
                                                multiline
                                                rows={4}
-                                               value={formState.metadata?.dataExclusionCriteria}
-                                               onChange={event => setInputMetadata('dataExclusionCriteria', event.target.value)}
-
+                                               value={formState.metadata?.data_exclusion_criteria}
+                                               onChange={event => setInputMetadata('data_exclusion_criteria', event.target.value)}
+                                               InputLabelProps={{ shrink: true }}
                                                disabled={readOnlyMode}
                                     />
                                 </Grid>
@@ -369,9 +369,9 @@ const DatasetForm = (props) =>{
                                                label="Data Acceptance-Standards Compliance"
                                                multiline
                                                rows={4}
-                                               value={formState.metadata?.dataAcceptanceStandardsCompliance}
-                                               onChange={event => setInputMetadata('dataAcceptanceStandardsCompliance', event.target.value)}
-
+                                               value={formState.metadata?.data_acceptance_standards_compliance}
+                                               onChange={event => setInputMetadata('data_acceptance_standards_compliance', event.target.value)}
+                                               InputLabelProps={{ shrink: true }}
                                                disabled={readOnlyMode}
                                     />
                                 </Grid>
@@ -392,11 +392,11 @@ const DatasetForm = (props) =>{
                         <div style={{ width: '100%' }}>
                             <Grid container spacing={1}>
                                 <Grid item xs={6}>
-                                    <TextField fullWidth label={"Data Sampling Rate"} id="component-filled14" value={formState.metadata?.dataSamplingRate} onChange={event => setInputMetadata('dataSamplingRate', event.target.value)} disabled={readOnlyMode} />
+                                    <TextField fullWidth label={"Data Sampling Rate"} id="component-filled14" value={formState.metadata?.data_sampling_rate} onChange={event => setInputMetadata('data_sampling_rate', event.target.value)} disabled={readOnlyMode} InputLabelProps={{ shrink: true }}/>
                                 </Grid>
                                 <Grid item xs={6}>
 
-                                    <TextField fullWidth label={"Data Dimension"} id="component-filled15" value={formState.metadata?.dataDimension} onChange={event => setInputMetadata('dataDimension', event.target.value)} disabled={readOnlyMode} />
+                                    <TextField fullWidth label={"Data Dimension"} id="component-filled15" value={formState.metadata?.data_dimension} onChange={event => setInputMetadata('data_dimension', event.target.value)} disabled={readOnlyMode} InputLabelProps={{ shrink: true }}/>
                                 </Grid>
                                 <Grid item xs={12}>
                                     <TextField fullWidth
@@ -406,7 +406,7 @@ const DatasetForm = (props) =>{
                                                rows={4}
                                                value={formState.metadata?.dataPreprocessingTechnique}
                                                onChange={event => setInputMetadata('dataPreprocessingTechnique', event.target.value)}
-
+                                               InputLabelProps={{ shrink: true }}
                                                disabled={readOnlyMode}
                                     />
                                 </Grid>
@@ -418,7 +418,7 @@ const DatasetForm = (props) =>{
                                                rows={4}
                                                value={formState.metadata?.dataAnnotationProcessTool}
                                                onChange={event => setInputMetadata('dataAnnotationProcessTool', event.target.value)}
-
+                                               InputLabelProps={{ shrink: true }}
                                                disabled={readOnlyMode}
                                     />
                                 </Grid>
@@ -428,9 +428,9 @@ const DatasetForm = (props) =>{
                                                label="Data Bias & Variance Minimization"
                                                multiline
                                                rows={4}
-                                               value={formState.metadata?.dataBiasAndVarianceMinimization}
-                                               onChange={event => setInputMetadata('dataBiasAndVarianceMinimization', event.target.value)}
-
+                                               value={formState.metadata?.data_bias_and_variance_minimization}
+                                               onChange={event => setInputMetadata('data_bias_and_variance_minimization', event.target.value)}
+                                               InputLabelProps={{ shrink: true }}
                                                disabled={readOnlyMode}
                                     />
                                 </Grid>
@@ -440,9 +440,9 @@ const DatasetForm = (props) =>{
                                                label="Train: Tuning(validation) : Test (evaluation) Dataset Partitioning Ratio"
                                                multiline
                                                rows={4}
-                                               value={formState.metadata?.trainTuningEvalDatasetPartitioningRatio}
-                                               onChange={event => setInputMetadata('trainTuningEvalDatasetPartitioningRatio', event.target.value)}
-
+                                               value={formState.metadata?.train_tuning_eval_dataset_partitioning_ratio}
+                                               onChange={event => setInputMetadata('train_tuning_eval_dataset_partitioning_ratio', event.target.value)}
+                                               InputLabelProps={{ shrink: true }}
                                                disabled={readOnlyMode}
                                     />
                                 </Grid>
@@ -460,8 +460,9 @@ const DatasetForm = (props) =>{
                                    required
                                    label="Storage Location"
                                    id="component-filled2"
-                                   value={formState.storageLocation}
+                                   value={formState.storage_location}
                                    disabled={readOnlyMode}
+                                   InputLabelProps={{ shrink: true }}
                         />
 
                     </div>
@@ -471,8 +472,9 @@ const DatasetForm = (props) =>{
                                    required
                                    label="Storage Location"
                                    id="component-filled2"
-                                   value={formState.storageLocation}
+                                   value={formState.storage_location}
                                    disabled={readOnlyMode}
+                                   InputLabelProps={{ shrink: true }}
                         />
                         <input
                             id="btn-upload"
@@ -512,4 +514,4 @@ const DatasetForm = (props) =>{
     );
 
 }
-export default DatasetForm
+export default withNavigateHook(DatasetForm)

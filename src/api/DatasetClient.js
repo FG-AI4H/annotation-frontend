@@ -40,9 +40,9 @@ class DatasetClient {
     }
 
     async updateDataset(dataset) {
-        console.log("Updating Dataset for Id: " + dataset.datasetUUID);
+        console.log("Updating Dataset for Id: " + dataset.id);
 
-        return postApiWithToken(this.accessToken, `${this.config.DATASET_URL}/${dataset.datasetUUID}`,dataset,"PUT")
+        return postApiWithToken(this.accessToken, `${this.config.DATASET_URL}/${dataset.id}`,dataset,"PUT")
             .then(([response, json]) => {
                 if (!response.ok) {
                     return { success: false, error: json };
@@ -69,10 +69,10 @@ class DatasetClient {
             });
     }
 
-    async removeDataset(datasetUUID) {
-        console.log("Deleting Dataset for Id: " + datasetUUID);
+    async removeDataset(id) {
+        console.log("Deleting Dataset for Id: " + id);
 
-        return callApiWithToken(this.accessToken, `${this.config.DATASET_URL}/${datasetUUID}`,"DELETE")
+        return callApiWithToken(this.accessToken, `${this.config.DATASET_URL}/${id}`,"DELETE")
             .then(([response, json]) => {
                 if (!response.ok) {
                     return { success: false, error: json };

@@ -1,5 +1,11 @@
-import React from "react";
+import React, {useState} from "react";
 import {Bar, BarChart, Label, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
+import {Button, Snackbar, Stack, Typography} from "@mui/material";
+import CampaignEdit from "./CampaignEdit";
+import {Link as RouterLink} from "react-router-dom";
+import {Auth} from "aws-amplify";
+import CampaignClient from "./api/CampaignClient";
+import Alert from "@mui/material/Alert";
 
 const renderCustomizedLabel = (props) => {
     const { content, ...rest } = props;
@@ -7,30 +13,37 @@ const renderCustomizedLabel = (props) => {
     return <Label {...rest} fontSize="12" fill="#FFFFFF" fontWeight="Bold" />;
 };
 
-export default class CampaignProgress extends React.Component {
-    render() {
-        const data = [
-            { name: "Annotation", completed: 19550, failed: 335, inprogress: 453, remaining: 6000 },
+const CampaignProgress = (props) => {
+    const [campaign, setCampaign] = useState(props.campaign);
 
-        ];
+    const data = [
+        { name: "Annotation", completed: 19550, failed: 335, inprogress: 453, remaining: 6000 },
 
-        return (
+    ];
+
+
+
+    return (
+            <>
+
+                <Typography gutterBottom variant="h5" component="div">Campaign Progression</Typography>
+
             <div className=" c-white">
                 <ResponsiveContainer height={100} width={"100%"}>
                     <BarChart
                         layout="vertical"
                         data={data}
-                        margin={{ left: 0, right: 0 }}
+                        margin={{left: 0, right: 0}}
                         stackOffset="expand"
                     >
-                        <XAxis hide type="number" />
+                        <XAxis hide type="number"/>
                         <YAxis
                             type="category"
                             dataKey="name"
                             stroke="#FFFFFF"
                             fontSize="12"
                         />
-                        <Tooltip />
+                        <Tooltip/>
                         <Bar dataKey="completed" fill="#82ba7f" stackId="a">
                             <LabelList
                                 dataKey="completed"
@@ -63,6 +76,9 @@ export default class CampaignProgress extends React.Component {
                     </BarChart>
                 </ResponsiveContainer>
             </div>
-        );
-    }
+
+                </>
+        )
+
 }
+export default CampaignProgress;

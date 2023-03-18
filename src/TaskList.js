@@ -41,7 +41,7 @@ class TaskList extends Component {
                     .then(
                         response =>
                             this.setState(
-                                {tasks:  response?.data?._embedded?.task, isLoading: false}
+                                {tasks:  response?.data, isLoading: false}
                             ));
             }
             else {
@@ -49,8 +49,9 @@ class TaskList extends Component {
                     .then(
                         response =>
                             this.setState(
-                                {tasks:  response?.data?._embedded?.task, isLoading: false}
+                                {tasks:  response?.data, isLoading: false}
                             ));
+
             }
         }).catch(err => console.log(err));
     }
@@ -63,7 +64,7 @@ class TaskList extends Component {
             client.removeTask(id)
                 .then(
                     _response => {
-                        let updatedTasks = [...this.state.tasks].filter(i => i.taskUUID !== id);
+                        let updatedTasks = [...this.state.tasks].filter(i => i.id !== id);
                         this.setState({tasks: updatedTasks});
                     });
         }).catch(err => console.log(err));
@@ -74,18 +75,20 @@ class TaskList extends Component {
         const {me} = this.props;
 
 
-        const taskList = tasks.map(task => {
+        const taskList = tasks?.map(task => {
 
-            return <TableRow key={task.taskUUID} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+            return <TableRow key={task.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell style={{whiteSpace: 'nowrap'}}>{task.kind}</TableCell>
-                <TableCell>{task.annotationTasks[0].kind}</TableCell>
-                <TableCell>{task.annotationTasks[0].title}</TableCell>
-                <TableCell>{task.annotationTasks[0].description}</TableCell>
+                <TableCell>{task.campaign_task_kind}</TableCell>
+                <TableCell>{task.assignee_username}</TableCell>
                 <TableCell align={"right"}>
                     <Stack direction={"row"} spacing={2} justifyContent="flex-end">
-                        <Button component={RouterLink} size="small" color="primary" to={"/tasks/" + task.taskUUID}>Edit</Button>
-                        <Button size="small" color="error" onClick={() => this.remove(task.taskUUID)}>Delete</Button>
-                        <Button size="small" color="success" onClick={()=> window.open("https://dev.visian.org/?origin=who&taskId=" + task.taskUUID, "_blank")}>Annotate</Button>
+                        <Button component={RouterLink} size="small" color="primary" to={"/tasks/" + task.id}>Edit</Button>
+                        <Button size="small" color="error" onClick={() => this.remove(task.id)}>Delete</Button>
+                        {task.campaign_status === 'RUNNING' &&
+                        <Button size="small" color="success"
+                                onClick={() => window.open("https://dev.visian.org/?origin=who&taskId=" + task.id, "_blank")}>Annotate</Button>
+                        }
                     </Stack>
                 </TableCell>
             </TableRow>
@@ -101,7 +104,7 @@ class TaskList extends Component {
                     <Box sx={{ display: 'flex',justifyContent: 'flex-end' }}>
                         <IconButton onClick={() => this.componentDidMount()} size={"medium"}><Replay fontSize="inherit"/></IconButton>{' '}
                         {!me &&
-                        <Button component={RouterLink} color="success" to={"/tasks/me"}>Add Task</Button>
+                        <Button component={RouterLink} color="success" to={"/tasks/new"}>Add Task</Button>
                         }
                     </Box>
 
@@ -111,10 +114,9 @@ class TaskList extends Component {
                         <Table sx={{ minWidth: 650 }} aria-label="simple table">
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>Kind</TableCell>
+                                    <TableCell>Task</TableCell>
                                     <TableCell>Annotation type</TableCell>
-                                    <TableCell>Title</TableCell>
-                                    <TableCell>Description</TableCell>
+                                    <TableCell>Annotator</TableCell>
                                     <TableCell align={"right"}>Actions</TableCell>
                                 </TableRow>
                             </TableHead>

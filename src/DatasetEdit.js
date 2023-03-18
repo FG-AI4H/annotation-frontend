@@ -99,7 +99,7 @@ const DatasetEdit = () => {
                 const client = new DatasetClient(response.signInUserSession.accessToken.jwtToken);
                 client.fetchDatasetById(params.id).then(datasetData => {
                     setDatatset(datasetData.data);
-                    const prefix = datasetData.data.storageLocation.replace('fhir-service-dev-fhirbinarybucket-yjeth32swz5m.s3.eu-central-1.amazonaws.com/','');
+                    const prefix = datasetData.data.storage_location.replace('fhir-service-dev-fhirbinarybucket-yjeth32swz5m.s3.eu-central-1.amazonaws.com/','');
 
                     fetchData(prefix)
                         // make sure to catch any error
@@ -260,7 +260,7 @@ const DatasetEdit = () => {
         </ImageList>
 
 
-    const title = <h2>{dataset.datasetUUID ? 'Edit Dataset' : 'Add Dataset'}</h2>;
+    const title = <h2>{dataset.id ? 'Edit Dataset' : 'Add Dataset'}</h2>;
 
     const handleToggleChange = (event) => {
         setIsItemsAsList(event.target.checked);
@@ -313,7 +313,7 @@ const DatasetEdit = () => {
                                 />
                             </FormControl>
                             <Button
-                                onClick={() => fetchBinary(dataset?.storageLocation?.replace('fhir-service-dev-fhirbinarybucket-yjeth32swz5m.s3.eu-central-1.amazonaws.com/', ''))}>Next</Button>
+                                onClick={() => fetchBinary(dataset?.storage_location?.replace('fhir-service-dev-fhirbinarybucket-yjeth32swz5m.s3.eu-central-1.amazonaws.com/', ''))}>Next</Button>
                         </>
 
                         }

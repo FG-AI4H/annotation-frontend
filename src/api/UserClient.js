@@ -8,10 +8,25 @@ class UserClient {
         this.config = new Config();
     }
 
+    async fetchAdminUserList() {
+        console.log("Fetching users from admin endpoint");
+
+        return callApiWithToken(this.accessToken, `${this.config.ADMIN_URL}/users`)
+            .then(([response, json]) => {
+                if (!response.ok) {
+                    return { success: false, error: json };
+                }
+                return { success: true, data: json };
+            })
+            .catch((e) => {
+                this.handleError(e);
+            });
+    }
+
     async fetchUserList() {
         console.log("Fetching users");
 
-        return callApiWithToken(this.accessToken, `${this.config.ADMIN_URL}/users`)
+        return callApiWithToken(this.accessToken, `${this.config.USER_URL}`)
             .then(([response, json]) => {
                 if (!response.ok) {
                     return { success: false, error: json };
@@ -40,9 +55,9 @@ class UserClient {
     }
 
     async updateUser(user) {
-        console.log("Updating user for Id: " + user.userUUID);
+        console.log("Updating user for Id: " + user.id);
 
-        return postApiWithToken(this.accessToken, `${this.config.USER_URL}/${user.userUUID}`,user,"PUT")
+        return postApiWithToken(this.accessToken, `${this.config.USER_URL}/${user.id}`,user,"PUT")
             .then(([response, json]) => {
                 if (!response.ok) {
                     return { success: false, error: json };

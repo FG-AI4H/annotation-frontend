@@ -4,6 +4,7 @@ import CampaignClient from "../api/CampaignClient";
 import Alert from '@mui/material/Alert';
 import {Button, FormControl, Snackbar, Stack, TextField} from "@mui/material";
 import {Link as RouterLink} from "react-router-dom";
+import withNavigateHook from '../helpers/withNavigateHook';
 
 class CampaignForm extends Component {
 
@@ -55,11 +56,12 @@ class CampaignForm extends Component {
         event.preventDefault();
         const {campaign} = this.state;
 
+        campaign.annotators = campaign.annotators.map(a => a.id);
         Auth.currentAuthenticatedUser({
             bypassCache: false
         }).then(response => {
             const client = new CampaignClient(response.signInUserSession.accessToken.jwtToken);
-            if(campaign.campaignUUID) {
+            if(campaign.id) {
                 client.updateCampaign(campaign)
                     .then(
                         response => this.setState(
@@ -73,7 +75,7 @@ class CampaignForm extends Component {
                             this.setState(
                                 {campaign: response?.data, isLoading: false}
                             );
-
+                            this.props.navigation('/campaigns/'+response.data.headers.get('location'));
                         });
             }
         }).catch(err => console.log(err));
@@ -125,4 +127,4 @@ class CampaignForm extends Component {
         );
     }
 }
-export default CampaignForm;
+export default withNavigateHook(CampaignForm);
