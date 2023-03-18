@@ -56,7 +56,6 @@ class CampaignForm extends Component {
         event.preventDefault();
         const {campaign} = this.state;
 
-        campaign.annotators = campaign.annotators.map(a => a.id);
         Auth.currentAuthenticatedUser({
             bypassCache: false
         }).then(response => {

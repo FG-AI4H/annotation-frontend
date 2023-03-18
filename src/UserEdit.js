@@ -59,16 +59,17 @@ const UserEdit = (props) => {
 
                             let user = response?.data;
                             user.annotation_annotator_role = user.annotator_role?.id !== undefined
-                            user.years_in_practice = user.annotator_role?.years_in_practice
-                            user.degree = user.annotator_role?.degree
-                            user.work_country = user.annotator_role?.work_country
-                            user.study_country = user.annotator_role?.study_country
-                            user.self_assessment = user.annotator_role?.self_assessment
-                            user.expected_salary = user.annotator_role?.expected_salary
-
-
+                            if(!user.annotation_annotator_role){
+                                user.annotator_role = {}
+                            }
                             user.annotation_reviewer_role = user.reviewer_role?.id !== undefined
+                            if(!user.annotation_reviewer_role){
+                                user.reviewer_role = {}
+                            }
                             user.annotation_supervisor_role = user.supervisor_role?.id !== undefined
+                            if(!user.annotation_supervisor_role){
+                                user.supervisor_role = {}
+                            }
 
                             setItem(user);
                             setIsLoading(false);
@@ -103,22 +104,26 @@ const UserEdit = (props) => {
         if(item.annotation_annotator_role){
             item.annotator_role = {
                 id: item.annotator_role?.id,
-                years_in_practice: item.years_in_practice,
-                work_country: item.work_country,
-                study_country: item.study_country,
-                self_assessment: item.self_assessment,
-                expected_salary: item.expected_salary,
-                degree: item.degree
+                years_in_practice: item.annotator_role.years_in_practice,
+                work_country: item.annotator_role.work_country,
+                study_country: item.annotator_role.study_country,
+                self_assessment: item.annotator_role.self_assessment,
+                expected_salary: item.annotator_role.expected_salary,
+                degree: item.annotator_role.degree
             }
         }
         if(item.annotation_reviewer_role){
             item.reviewer_role = {
                 id: item.reviewer_role?.id,
+                years_in_practice: item.reviewer_role.years_in_practice,
+                self_assessment: item.reviewer_role.self_assessment,
             }
         }
         if(item.annotation_supervisor_role){
             item.supervisor_role = {
                 id: item.supervisor_role?.id,
+                years_in_practice: item.supervisor_role.years_in_practice,
+                self_assessment: item.supervisor_role.self_assessment,
             }
         }
 
@@ -239,7 +244,7 @@ const UserEdit = (props) => {
                                 <Select
                                     id="degree"
                                     name="degree"
-                                    value={item.degree}
+                                    value={item.annotator_role.degree}
                                     label="Kind"
                                     onChange={handleChange}
                                 >
@@ -257,7 +262,7 @@ const UserEdit = (props) => {
                             <TextField fullWidth margin={"normal"}
                                        id="study_country"
                                        name="study_country"
-                                       value={item.study_country}
+                                       value={item.annotator_role.study_country}
                                        label="Study Country"
                                        onChange={handleChange}
                             />
@@ -266,7 +271,7 @@ const UserEdit = (props) => {
                                 <TextField fullWidth margin={"normal"}
                                            id="work_country"
                                            name="work_country"
-                                           value={item.study_country}
+                                           value={item.annotator_role.study_country}
                                            label="Working Country"
                                            onChange={handleChange}
                                 />
@@ -276,7 +281,7 @@ const UserEdit = (props) => {
                                            type={"number"}
                                            id="years_in_practice"
                                            name="years_in_practice"
-                                           value={item.years_in_practice}
+                                           value={item.annotator_role.years_in_practice}
                                            label="Years in practice"
                                            onChange={handleChange}
                                 />
@@ -295,7 +300,7 @@ const UserEdit = (props) => {
                             <TextField fullWidth margin={"normal"}
                                        id="timezone"
                                        name="timezone"
-                                       value={item.timezone}
+                                       value={item.annotator_role.timezone}
                                        label="Timezone"
                                        onChange={handleChange}
                             />
@@ -305,7 +310,7 @@ const UserEdit = (props) => {
                                        type={"number"}
                                        id="availabilityPerWeek"
                                        name="availabilityPerWeek"
-                                       value={item.availabilityPerWeek}
+                                       value={item.annotator_role.availability_per_week}
                                        label="Availability per week (hours)"
                                        onChange={handleChange}
                             />
@@ -315,7 +320,7 @@ const UserEdit = (props) => {
                                        type={"number"}
                                        id="self_assessment"
                                        name="self_assessment"
-                                       value={item.self_assessment}
+                                       value={item.annotator_role.self_assessment}
                                        label="Self Assessment"
                                        onChange={handleChange}
                             />
@@ -325,7 +330,7 @@ const UserEdit = (props) => {
                                        type={"number"}
                                        id="expected_salary"
                                        name="expected_salary"
-                                       value={item.expected_salary}
+                                       value={item.annotator_role.expected_salary}
                                        label="Expected compensation ($ per hour)"
                                        onChange={handleChange}
                             />

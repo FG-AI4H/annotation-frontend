@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, {Component, useState} from "react";
 import {Auth} from "aws-amplify";
 import UserClient from "../api/UserClient";
 import {
@@ -26,6 +26,7 @@ import OCISpinner from "./OCISpinner";
 
 class CampaignUsers extends Component {
 
+
     annotatorFilter = {
         years_in_practice: null,
         self_assessment: null,
@@ -46,8 +47,7 @@ class CampaignUsers extends Component {
 
     async componentDidMount() {
 
-
-        this.setState({ isLoading: true, tabValue: 0 });
+        this.setState({ isLoading: true, tabValue: 0, campaign:  this.props.campaign});
 
         Auth.currentAuthenticatedUser({
             bypassCache: false
@@ -58,13 +58,15 @@ class CampaignUsers extends Component {
                 .then(
                     response => {
                         if (response?.data) {
-                            this.props.campaign.annotators = this.props.campaign.annotators.map(id => response.data.filter( u => u.id === id)[0])
-                            this.setState({ campaign: this.props.campaign});
+                            this.state.annotatorDtos = this.state.campaign.annotators.map(id => response.data.filter( u => u.id === id)[0])
+                            this.state.reviewerDtos = this.state.campaign.reviewers.map(id => response.data.filter( u => u.id === id)[0])
+                            this.state.supervisorDtos = this.state.campaign.supervisors.map(id => response.data.filter( u => u.id === id)[0])
+
                             this.setState(
                                 {availableUsers: response.data
-                                        .filter(i => !this.props.campaign.annotators?.some(a => a.id === i.id))
-                                        .filter(i => !this.props.campaign.reviewers?.some(a => a.id === i.id))
-                                        .filter(i => !this.props.campaign.supervisors?.some(a => a.id=== i.id)),
+                                        .filter(i => !this.state.annotatorDtos?.some(a => a.id === i.id))
+                                        .filter(i => !this.state.reviewerDtos?.some(a => a.id === i.id))
+                                        .filter(i => !this.state.supervisorDtos?.some(a => a.id=== i.id)),
                                     isLoading: false}
                             )}});
 
@@ -74,9 +76,9 @@ class CampaignUsers extends Component {
     componentDidUpdate(prevProps) {
         if (prevProps.campaign !== this.props.campaign) {
             let updatedUsers = [...this.state.availableUsers]
-                .filter(i => !this.props.campaign.annotators?.some(a => a.id === i.id))
-                .filter(i => !this.props.campaign.reviewers?.some(a => a.id === i.id))
-                .filter(i => !this.props.campaign.supervisors?.some(a => a.id === i.id));
+                .filter(i => !this.state.annotatorDtos?.some(a => a.id === i.id))
+                .filter(i => !this.state.reviewerDtos?.some(a => a.id === i.id))
+                .filter(i => !this.state.supervisorDtos?.some(a => a.id === i.id));
 
             this.setState({campaign: this.props.campaign, availableUsers: updatedUsers});
         }
@@ -117,26 +119,30 @@ class CampaignUsers extends Component {
 
     removeSelectUser(user) {
         this.state.availableUsers.push(user);
-        let updatedUsers = [...this.state.campaign.annotators].filter(i => i.id !== user.id);
+        let updatedUsers = [...this.state.campaign.annotators].filter(i => i !== user.id);
         this.state.campaign.annotators = updatedUsers;
+        this.state.annotatorDtos = [...this.state.annotatorDtos].filter(i => i.id !== user.id);
         this.setState({item: this.state.campaign,availableUsers: this.state.availableUsers})
     }
 
     selectUser(user) {
-        this.state.campaign.annotators.push(user);
+        this.state.campaign.annotators.push(user.id);
+        this.state.annotatorDtos.push(user);
         let availableUsers = [...this.state.availableUsers].filter(i => i.id !== user.id);
         this.setState({availableUsers: availableUsers});
     }
 
     removeSelectReviewer(user) {
         this.state.availableUsers.push(user);
-        let updatedUsers = [...this.state.campaign.reviewers].filter(i => i.id !== user.id);
+        let updatedUsers = [...this.state.campaign.reviewers].filter(i => i !== user.id);
         this.state.campaign.reviewers = updatedUsers;
+        this.state.reviewerDtos = [...this.state.reviewerDtos].filter(i => i.id !== user.id);
         this.setState({item: this.state.campaign,availableUsers: this.state.availableUsers})
     }
 
     selectReviewer(user) {
-        this.state.campaign.reviewers.push(user);
+        this.state.campaign.reviewers.push(user.id);
+        this.state.reviewerDtos.push(user);
         let availableUsers = [...this.state.availableUsers].filter(i => i.id !== user.id);
         this.setState({availableUsers: availableUsers});
     }
@@ -145,18 +151,20 @@ class CampaignUsers extends Component {
         this.state.availableUsers.push(user);
         let updatedUsers = [...this.state.campaign.supervisors].filter(i => i.id !== user.id);
         this.state.campaign.supervisors = updatedUsers;
+        this.state.supervisorDtos = [...this.state.supervisorDtos].filter(i => i.id !== user.id);
         this.setState({item: this.state.campaign,availableUsers: this.state.availableUsers})
     }
 
     selectSupervisor(user) {
-        this.state.campaign.supervisors.push(user);
+        this.state.campaign.supervisors.push(user.id);
+        this.state.supervisorDtos.push(user);
         let availableUsers = [...this.state.availableUsers].filter(i => i.id !== user.id);
         this.setState({availableUsers: availableUsers});
     }
 
     render() {
 
-        const {campaign, isLoading, availableUsers, annotatorFilter, tabValue} = this.state;
+        const {campaign, isLoading, availableUsers, annotatorFilter, tabValue, annotatorDtos, reviewerDtos, supervisorDtos} = this.state;
 
         if (isLoading) {
             return (<OCISpinner/>);
@@ -175,7 +183,7 @@ class CampaignUsers extends Component {
             </TableRow>
         });
 
-        const annotatorList = campaign.annotators?.map(user => {
+        const annotatorList = annotatorDtos?.map(user => {
             return <TableRow key={user.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell style={{whiteSpace: 'nowrap'}}><Link component={RouterLink} to={"/users/" + user.id}>{user.username}</Link></TableCell>
                 <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotator_role.years_in_practice}</TableCell>
@@ -192,8 +200,8 @@ class CampaignUsers extends Component {
         const availableReviewerList = availableUsers.filter(user => user.reviewer_role?.id !== undefined).map(user => {
             return <TableRow key={user.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell style={{whiteSpace: 'nowrap'}}><Link component={RouterLink} to={"/users/" + user.id}>{user.username}</Link></TableCell>
-                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotator_role.years_in_practice}</TableCell>
-                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotator_role.self_assessment}</TableCell>
+                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.reviewer_role.years_in_practice}</TableCell>
+                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.reviewer_role.self_assessment}</TableCell>
                 <TableCell>
                     <Stack direction="row" spacing={2}>
                         <Button size="small" color="success" onClick={() => this.selectReviewer(user)}>Select</Button>
@@ -202,11 +210,11 @@ class CampaignUsers extends Component {
             </TableRow>
         });
 
-        const reviewerList = campaign.reviewers?.map(user => {
+        const reviewerList = reviewerDtos?.map(user => {
             return <TableRow key={user.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell style={{whiteSpace: 'nowrap'}}><Link component={RouterLink} to={"/users/" + user.id}>{user.username}</Link></TableCell>
-                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotator_role.years_in_practice}</TableCell>
-                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotator_role.self_assessment}</TableCell>
+                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.reviewer_role.years_in_practice}</TableCell>
+                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.reviewer_role.self_assessment}</TableCell>
 
                 <TableCell>
                     <Stack direction="row" spacing={2}>
@@ -219,8 +227,8 @@ class CampaignUsers extends Component {
         const availableSupervisorList = availableUsers.filter(user => user.supervisor_role?.id !== undefined).map(user => {
             return <TableRow key={user.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell style={{whiteSpace: 'nowrap'}}><Link component={RouterLink} to={"/users/" + user.id}>{user.username}</Link></TableCell>
-                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotator_role.years_in_practice}</TableCell>
-                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotator_role.self_assessment}</TableCell>
+                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.supervisor_role.years_in_practice}</TableCell>
+                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.supervisor_role.self_assessment}</TableCell>
                 <TableCell>
                     <Stack direction="row" spacing={2}>
                         <Button size="small" color="success" onClick={() => this.selectSupervisor(user)}>Select</Button>
@@ -229,11 +237,11 @@ class CampaignUsers extends Component {
             </TableRow>
         });
 
-        const supervisorList = campaign.supervisors?.map(user => {
+        const supervisorList = supervisorDtos?.map(user => {
             return <TableRow key={user.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell style={{whiteSpace: 'nowrap'}}><Link component={RouterLink} to={"/users/" + user.id}>{user.username}</Link></TableCell>
-                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotator_role.years_in_practice}</TableCell>
-                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotator_role.self_assessment}</TableCell>
+                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.supervisor_role.years_in_practice}</TableCell>
+                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.supervisor_role.self_assessment}</TableCell>
 
                 <TableCell>
                     <Stack direction="row" spacing={2}>
