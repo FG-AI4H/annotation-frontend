@@ -89,6 +89,7 @@ const CampaignTask = (props) => {
                             <MenuItem value={"image_classification"}>[Image] - Image Classification</MenuItem>
                             <MenuItem value={"object_detection"}>[Image] - Object Detection</MenuItem>
                             <MenuItem value={"pose_estimation"}>[Image] - Pose Estimation</MenuItem>
+                            <MenuItem value={"synthetic_case"}>[Symptom] - Synthetic Case</MenuItem>
                         </Select>
                     </FormControl>
 
@@ -110,6 +111,7 @@ const CampaignTask = (props) => {
                             <MenuItem value={"cuboid"}>[Image] - Cuboid</MenuItem>
                             <MenuItem value={"straight_lines"}>[Image] - Straight lines</MenuItem>
                             <MenuItem value={"quadratic_curves"}>[Image] - Quadratic curves</MenuItem>
+                            <MenuItem value={"synthetic_case"}>[Symptom] - Synthetic Case</MenuItem>
                         </Select>
                     </FormControl>
 

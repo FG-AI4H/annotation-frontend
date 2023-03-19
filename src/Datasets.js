@@ -9,13 +9,13 @@ import {
     Link,
     Modal,
     Paper,
-    Stack,
+    Stack, Tab,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
-    TableRow,
+    TableRow, Tabs,
     Typography
 } from "@mui/material";
 
@@ -24,6 +24,8 @@ import {Link as RouterLink} from "react-router-dom";
 import DatasetForm from "./DatasetForm";
 import DatasetClient from "./api/DatasetClient";
 import TaskClient from "./api/TaskClient";
+import {a11yProps} from "./components/allyProps";
+import {TabPanel} from "./components/TabPanel";
 
 const modalMode = Object.freeze({ _EDIT: 'edit', _READ: 'read' })
 
@@ -49,10 +51,11 @@ export default function Datasets(props) {
     const [formState, setFormState] = useState(initialDataset)
     const [open, setOpen] = useState(false);
 
+
     const [backdropOpen] = useState(false);
 
     useEffect(() => {
-
+        setDatasets(props.datasets);
     }, [props.datasets])
 
     async function fetchDataset(uuid) {
@@ -98,33 +101,35 @@ export default function Datasets(props) {
     return (
         <React.Fragment>
 
-            <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell width="30%">Name</TableCell>
-                            <TableCell width="30%">Description</TableCell>
-                            <TableCell width="30%">Last Updated</TableCell>
-                            <TableCell width="10%" align={"right"}>Actions</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {datasets?.map((dataset) => (
-                            <TableRow key={dataset.id}>
-                                <TableCell><Link href="#" onClick={() => viewDataset(dataset.id)}>{dataset.name}</Link></TableCell>
-                                <TableCell>{dataset.description}</TableCell>
-                                <TableCell>{(new Date(Date.parse(dataset.updatedAt))).toLocaleString(navigator.language)}</TableCell>
-                                <TableCell>
-                                    <Stack direction={"row"} spacing={2} justifyContent="flex-end">
-                                        <Button component={RouterLink} size="small" color="primary" to={"/datasets/" + dataset.id}>Edit</Button>
-                                        <Button size="small" color="error" onClick={() => remove(dataset.id)}>Delete</Button>
-                                    </Stack>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+
+
+                    <TableContainer component={Paper}>
+                        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell width="30%">Name</TableCell>
+                                    <TableCell width="30%">Description</TableCell>
+                                    <TableCell width="30%">Last Updated</TableCell>
+                                    <TableCell width="10%" align={"right"}>Actions</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {datasets?.map((dataset) => (
+                                    <TableRow key={dataset.id}>
+                                        <TableCell><Link href="#" onClick={() => viewDataset(dataset.id)}>{dataset.name}</Link></TableCell>
+                                        <TableCell>{dataset.description}</TableCell>
+                                        <TableCell>{(new Date(Date.parse(dataset.updatedAt))).toLocaleString(navigator.language)}</TableCell>
+                                        <TableCell>
+                                            <Stack direction={"row"} spacing={2} justifyContent="flex-end">
+                                                <Button component={RouterLink} size="small" color="primary" to={"/datasets/" + dataset.id}>Edit</Button>
+                                                <Button size="small" color="error" onClick={() => remove(dataset.id)}>Delete</Button>
+                                            </Stack>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
 
 
             <Modal

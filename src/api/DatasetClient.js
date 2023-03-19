@@ -39,6 +39,21 @@ class DatasetClient {
             });
     }
 
+    async fetchDatasetPermissionsById(DatasetId) {
+        console.log("Fetching Dataset persmissions for Id: " + DatasetId);
+
+        return callApiWithToken(this.accessToken, `${this.config.DATASET_URL}/${DatasetId}/permissions`)
+            .then(([response, json]) => {
+                if (!response.ok) {
+                    return { success: false, error: json };
+                }
+                return { success: true, data: json };
+            })
+            .catch((e) => {
+                this.handleError(e);
+            });
+    }
+
     async updateDataset(dataset) {
         console.log("Updating Dataset for Id: " + dataset.id);
 

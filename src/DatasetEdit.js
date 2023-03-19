@@ -5,7 +5,7 @@ import AWS from "aws-sdk";
 import DatasetItemModal from "./DatasetItemModal.js"
 import 'react-medium-image-zoom/dist/styles.css'
 import {
-    Backdrop,
+    Backdrop, Box,
     Button,
     CircularProgress,
     Container,
@@ -18,19 +18,23 @@ import {
     OutlinedInput,
     Paper,
     Stack,
-    Switch,
+    Switch, Tab,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
-    TableRow
+    TableRow, Tabs, TextField
 } from "@mui/material";
 import AppNavbar from "./AppNavbar";
 import DatasetForm from "./DatasetForm";
 import {initialItem} from "./DatasetItemModal";
 import axios from "axios";
 import DatasetClient from "./api/DatasetClient";
+import {a11yProps} from "./components/allyProps";
+import {TabPanel} from "./components/TabPanel";
+import Datasets from "./Datasets";
+import DatasetPermission from "./DatasetPermission";
 
 export const initialDataset = {
     name: '',
@@ -81,6 +85,7 @@ const DatasetEdit = () => {
     const [nextContinuationToken, setNextContinuationToken] = useState(null);
     const [itemSize, setItemSize] = useState(489);
     const [fetchSize, setFetchSize] = useState(21);
+    const [tabValue, setTabValue] = useState(0);
 
 
     useEffect( () =>{
@@ -174,6 +179,10 @@ const DatasetEdit = () => {
 
         }
     }
+
+    const handleChange = (event, newValue) => {
+        setTabValue(newValue);
+    };
 
     async function handleModalOpen(state){
 
@@ -284,6 +293,20 @@ const DatasetEdit = () => {
             </Backdrop>
             <Container maxWidth="xl" sx={{ mt: 5 }}>
                 {title}
+                <Box sx={{ width: '100%' }}>
+                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                        <Tabs
+                            value={tabValue}
+                            onChange={handleChange}
+                            aria-label="wrapped label tabs example"
+                        >
+                            <Tab label="Dataset" {...a11yProps(0)}/>
+                            <Tab label="Permissions" {...a11yProps(1)}/>
+
+                        </Tabs>
+                    </Box>
+                    <TabPanel value={tabValue} index={0}>
+
                 <DatasetForm readOnlyMode={false} formState={dataset}/>
                 {params.id !== 'new' &&
                     <>
@@ -355,7 +378,11 @@ const DatasetEdit = () => {
                     </>
 
                 }
-
+                    </TabPanel>
+                    <TabPanel value={tabValue} index={1}>
+                        <DatasetPermission dataset={dataset}/>
+                    </TabPanel>
+                </Box>
 
 
             </Container>
