@@ -162,11 +162,11 @@ const CampaignTask = (props) => {
                 <FormControl fullWidth margin={"normal"}>
                     <InputLabel >Quality control</InputLabel>
                     <Select
-                        id="quality_control"
-                        name="quality_control"
-                        value={campaign.quality_control}
+                        id="quality_assurance"
+                        name="quality_assurance"
+                        value={campaign.quality_assurance}
                         label="Quality control"
-                        onChange={event => setInput('quality_control', event.target.value)}
+                        onChange={event => setInput('quality_assurance', event.target.value)}
                     >
                         <MenuItem value="">
                             <em>None</em>

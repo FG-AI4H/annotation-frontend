@@ -137,16 +137,15 @@ const DatasetForm = (props) =>{
                     }
 
                     client.addDataset(datasetUpload).then(
-                        response => {return response}
+                        response => {
+                            setIsLoading(false);
+                            props.navigation('/datasets/'+response.data.headers.get('location'));
+                        }, err => {
+                            setIsLoading(false);
+                            console.log(err)
+                        }
                     )
-
-                }).then(res => {
-                setIsLoading(false);
-                this.props.navigation('/dataset/'+response.data.headers.get('location'));
-            }, err => {
-                setIsLoading(false);
-                console.log(err)
-            })
+                })
         })
     }
 

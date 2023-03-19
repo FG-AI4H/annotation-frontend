@@ -105,7 +105,7 @@ class CampaignUsers extends Component {
     }
 
     handleFindAnnotators(event) {
-        let updatedUsers = [...this.state.availableUsers].filter(i => i.annotator_role?.years_in_practice >= this.state.annotatorFilter['years_in_practice']);
+        let updatedUsers = [...this.state.availableUsers].filter(i => i.years_in_practice >= this.state.annotatorFilter['years_in_practice']);
         this.setState({availableUsers: updatedUsers})
     }
 
@@ -173,7 +173,7 @@ class CampaignUsers extends Component {
         const availableAnnotatorList = availableUsers.filter(user => user.annotator_role?.id !== undefined).map(user => {
             return <TableRow key={user.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell style={{whiteSpace: 'nowrap'}}><Link component={RouterLink} to={"/users/" + user.id}>{user.username}</Link></TableCell>
-                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotator_role.years_in_practice}</TableCell>
+                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.years_in_practice}</TableCell>
                 <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotator_role.self_assessment}</TableCell>
                 <TableCell>
                     <Stack direction="row" spacing={2}>
@@ -186,7 +186,7 @@ class CampaignUsers extends Component {
         const annotatorList = annotatorDtos?.map(user => {
             return <TableRow key={user.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell style={{whiteSpace: 'nowrap'}}><Link component={RouterLink} to={"/users/" + user.id}>{user.username}</Link></TableCell>
-                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotator_role.years_in_practice}</TableCell>
+                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.years_in_practice}</TableCell>
                 <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.annotator_role.self_assessment}</TableCell>
 
                 <TableCell>
@@ -200,7 +200,7 @@ class CampaignUsers extends Component {
         const availableReviewerList = availableUsers.filter(user => user.reviewer_role?.id !== undefined).map(user => {
             return <TableRow key={user.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell style={{whiteSpace: 'nowrap'}}><Link component={RouterLink} to={"/users/" + user.id}>{user.username}</Link></TableCell>
-                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.reviewer_role.years_in_practice}</TableCell>
+                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.years_in_practice}</TableCell>
                 <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.reviewer_role.self_assessment}</TableCell>
                 <TableCell>
                     <Stack direction="row" spacing={2}>
@@ -213,7 +213,7 @@ class CampaignUsers extends Component {
         const reviewerList = reviewerDtos?.map(user => {
             return <TableRow key={user.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell style={{whiteSpace: 'nowrap'}}><Link component={RouterLink} to={"/users/" + user.id}>{user.username}</Link></TableCell>
-                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.reviewer_role.years_in_practice}</TableCell>
+                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.years_in_practice}</TableCell>
                 <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.reviewer_role.self_assessment}</TableCell>
 
                 <TableCell>
@@ -227,7 +227,7 @@ class CampaignUsers extends Component {
         const availableSupervisorList = availableUsers.filter(user => user.supervisor_role?.id !== undefined).map(user => {
             return <TableRow key={user.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell style={{whiteSpace: 'nowrap'}}><Link component={RouterLink} to={"/users/" + user.id}>{user.username}</Link></TableCell>
-                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.supervisor_role.years_in_practice}</TableCell>
+                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.years_in_practice}</TableCell>
                 <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.supervisor_role.self_assessment}</TableCell>
                 <TableCell>
                     <Stack direction="row" spacing={2}>
@@ -240,7 +240,7 @@ class CampaignUsers extends Component {
         const supervisorList = supervisorDtos?.map(user => {
             return <TableRow key={user.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell style={{whiteSpace: 'nowrap'}}><Link component={RouterLink} to={"/users/" + user.id}>{user.username}</Link></TableCell>
-                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.supervisor_role.years_in_practice}</TableCell>
+                <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.years_in_practice}</TableCell>
                 <TableCell style={{whiteSpace: 'nowrap'}} align={"right"}>{user.supervisor_role.self_assessment}</TableCell>
 
                 <TableCell>

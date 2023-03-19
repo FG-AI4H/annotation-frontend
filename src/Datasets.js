@@ -23,6 +23,7 @@ import {initialDataset} from "./DatasetEdit";
 import {Link as RouterLink} from "react-router-dom";
 import DatasetForm from "./DatasetForm";
 import DatasetClient from "./api/DatasetClient";
+import TaskClient from "./api/TaskClient";
 
 const modalMode = Object.freeze({ _EDIT: 'edit', _READ: 'read' })
 
@@ -42,30 +43,17 @@ export const style = {
 // p.19: https://extranet.itu.int/sites/itu-t/focusgroups/ai4h/docs/FGAI4H-J-049.pdf
 // and p. 4: https://extranet.itu.int/sites/itu-t/focusgroups/ai4h/_layouts/15/WopiFrame.aspx?sourcedoc=%7B3DAE32A1-24FF-4F4D-A735-F378056BA6CF%7D&file=FGAI4H-J-048.docx&action=default&CT=1610025396926&OR=DocLibClassicUI
 
-export default function Datasets(_props) {
+export default function Datasets(props) {
 
-    const [datasets, setDatasets] = useState([])
+    const [datasets, setDatasets] = useState(props.datasets)
     const [formState, setFormState] = useState(initialDataset)
     const [open, setOpen] = useState(false);
 
     const [backdropOpen] = useState(false);
 
-
-    //Load at page load
     useEffect(() => {
-        Auth.currentAuthenticatedUser({
-            bypassCache: false
-        }).then(currentUser => {
-            const client = new DatasetClient(currentUser.signInUserSession.accessToken.jwtToken);
-            client.fetchDatasetList()
-                .then(
-                    response => {
-                        setDatasets(response?.data)
-                    })
 
-        }).catch(err => console.log(err));
-    }, [])
-
+    }, [props.datasets])
 
     async function fetchDataset(uuid) {
         const token = await Auth.currentAuthenticatedUser({bypassCache: false})
@@ -79,6 +67,20 @@ export default function Datasets(_props) {
     async function viewDataset(datasetID) {
         const datasetState = await fetchDataset(datasetID);
         handleModalOpen(modalMode._READ, datasetState);
+    }
+
+    async function remove(id) {
+        Auth.currentAuthenticatedUser({
+            bypassCache: false
+        }).then(currentUser => {
+            const client = new DatasetClient(currentUser.signInUserSession.accessToken.jwtToken);
+            client.removeDataset(id)
+                .then(
+                    _response => {
+                        let updatedDatasets = [...datasets].filter(i => i.id !== id);
+                        setDatasets(updatedDatasets);
+                    });
+        }).catch(err => console.log(err));
     }
 
     //Open "Add / Edit Dataset" modal
@@ -115,7 +117,7 @@ export default function Datasets(_props) {
                                 <TableCell>
                                     <Stack direction={"row"} spacing={2} justifyContent="flex-end">
                                         <Button component={RouterLink} size="small" color="primary" to={"/datasets/" + dataset.id}>Edit</Button>
-                                        <Button size="small" color="error" onClick={() => this.remove(dataset.id)}>Delete</Button>
+                                        <Button size="small" color="error" onClick={() => remove(dataset.id)}>Delete</Button>
                                     </Stack>
                                 </TableCell>
                             </TableRow>

@@ -80,7 +80,12 @@ class TaskList extends Component {
             return <TableRow key={task.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell style={{whiteSpace: 'nowrap'}}>{task.kind}</TableCell>
                 <TableCell>{task.campaign_task_kind}</TableCell>
-                <TableCell>{task.assignee_username}</TableCell>
+                {!me &&
+                    <TableCell>{task.assignee_username}</TableCell>
+                }
+                {me &&
+                    <TableCell>{task.samples.map(s => s.title)}</TableCell>
+                }
                 <TableCell align={"right"}>
                     <Stack direction={"row"} spacing={2} justifyContent="flex-end">
                         <Button component={RouterLink} size="small" color="primary" to={"/tasks/" + task.id}>Edit</Button>
@@ -116,7 +121,12 @@ class TaskList extends Component {
                                 <TableRow>
                                     <TableCell>Task</TableCell>
                                     <TableCell>Annotation type</TableCell>
-                                    <TableCell>Annotator</TableCell>
+                                    {!me &&
+                                        <TableCell>Annotator</TableCell>
+                                    }
+                                    {me &&
+                                        <TableCell>Samples</TableCell>
+                                    }
                                     <TableCell align={"right"}>Actions</TableCell>
                                 </TableRow>
                             </TableHead>
