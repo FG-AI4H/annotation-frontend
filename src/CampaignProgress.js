@@ -1,11 +1,6 @@
 import React, {useState} from "react";
 import {Bar, BarChart, Label, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
-import {Button, Snackbar, Stack, Typography} from "@mui/material";
-import CampaignEdit from "./CampaignEdit";
-import {Link as RouterLink} from "react-router-dom";
-import {Auth} from "aws-amplify";
-import CampaignClient from "./api/CampaignClient";
-import Alert from "@mui/material/Alert";
+import {Typography} from "@mui/material";
 
 const renderCustomizedLabel = (props) => {
     const { content, ...rest } = props;

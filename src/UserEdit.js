@@ -28,7 +28,7 @@ import {Add} from "@mui/icons-material";
 import {a11yProps} from "./components/allyProps";
 import {TabPanel} from "./components/TabPanel";
 
-const UserEdit = (props) => {
+const UserEdit = (_props) => {
 
     let params = useParams();
     const navigate = useNavigate();
@@ -55,9 +55,9 @@ const UserEdit = (props) => {
                 const client = new UserClient(response.signInUserSession.accessToken.jwtToken);
                 client.fetchUserById(params.id)
                     .then(
-                        response => {
+                        res => {
 
-                            let user = response?.data;
+                            let user = res?.data;
                             user.annotation_annotator_role = user.annotator_role?.id !== undefined
                             if(!user.annotation_annotator_role){
                                 user.annotator_role = {}
@@ -80,7 +80,7 @@ const UserEdit = (props) => {
 
     }, [params.id])
 
-    const handleTabChange = (event, newValue) => {
+    const handleTabChange = (_event, newValue) => {
         setTabValue(newValue);
     };
 
@@ -124,13 +124,13 @@ const UserEdit = (props) => {
             if(item.id) {
                 client.updateUser(item)
                     .then(
-                        response => setItem(response?.data)
+                        res => setItem(res?.data)
                         );
             }
             else{
                 client.addUser(item)
                     .then(
-                            response => setItem(response?.data));
+                            res => setItem(res?.data));
             }
         }).catch(err => console.log(err));
 

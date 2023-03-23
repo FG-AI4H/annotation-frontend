@@ -11,10 +11,8 @@ import {
     TextField,
     Typography
 } from "@mui/material";
-import {Link as RouterLink} from "react-router-dom";
 import {Table, TableBody} from "@aws-amplify/ui-react";
 import {Auth} from "aws-amplify";
-import CampaignClient from "./api/CampaignClient";
 import DatasetClient from "./api/DatasetClient";
 
 const DatasetPermission = (props) =>{

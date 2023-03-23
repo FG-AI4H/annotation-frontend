@@ -1,4 +1,6 @@
 import React, {useEffect, useState} from 'react'
+import LinkIcon from '@mui/icons-material/Link';
+import StorageIcon from '@mui/icons-material/Storage';
 import {Auth} from 'aws-amplify'
 
 import {
@@ -9,13 +11,13 @@ import {
     Link,
     Modal,
     Paper,
-    Stack, Tab,
+    Stack,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
-    TableRow, Tabs,
+    TableRow,
     Typography
 } from "@mui/material";
 
@@ -23,9 +25,6 @@ import {initialDataset} from "./DatasetEdit";
 import {Link as RouterLink} from "react-router-dom";
 import DatasetForm from "./DatasetForm";
 import DatasetClient from "./api/DatasetClient";
-import TaskClient from "./api/TaskClient";
-import {a11yProps} from "./components/allyProps";
-import {TabPanel} from "./components/TabPanel";
 
 const modalMode = Object.freeze({ _EDIT: 'edit', _READ: 'read' })
 
@@ -107,6 +106,7 @@ export default function Datasets(props) {
                         <Table sx={{ minWidth: 650 }} aria-label="simple table">
                             <TableHead>
                                 <TableRow>
+                                    <TableCell width="10"></TableCell>
                                     <TableCell width="30%">Name</TableCell>
                                     <TableCell width="30%">Description</TableCell>
                                     <TableCell width="30%">Last Updated</TableCell>
@@ -116,6 +116,7 @@ export default function Datasets(props) {
                             <TableBody>
                                 {datasets?.map((dataset) => (
                                     <TableRow key={dataset.id}>
+                                        <TableCell>{dataset.linked ? <LinkIcon/> : <StorageIcon/>}</TableCell>
                                         <TableCell><Link href="#" onClick={() => viewDataset(dataset.id)}>{dataset.name}</Link></TableCell>
                                         <TableCell>{dataset.description}</TableCell>
                                         <TableCell>{(new Date(Date.parse(dataset.updatedAt))).toLocaleString(navigator.language)}</TableCell>

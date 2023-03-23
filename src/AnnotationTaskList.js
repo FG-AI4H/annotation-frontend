@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
     Backdrop,
     Button,
@@ -13,9 +13,6 @@ import {
     TableHead,
     TableRow
 } from "@mui/material";
-import {Link as RouterLink} from "react-router-dom";
-import {Auth} from "aws-amplify";
-import TaskClient from "./api/TaskClient";
 
 const AnnotationTaskList = (props) => {
 

@@ -1,24 +1,38 @@
 import React, {useEffect, useState} from "react";
 import Alert from "@mui/material/Alert";
 import {
-    Avatar, Box, Button,
-    FormControl, FormControlLabel,
-    Grid, IconButton,
+    Avatar,
+    Box,
+    Button,
+    FormControl,
+    FormControlLabel,
+    Grid,
+    IconButton,
     InputLabel,
-    List, ListItem, ListItemAvatar, ListItemText,
-    MenuItem, Paper,
+    List,
+    ListItem,
+    ListItemAvatar,
+    ListItemText,
+    MenuItem,
+    Paper,
     Select,
-    Snackbar, Stack, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+    Snackbar,
+    Stack,
+    Switch,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
     TextField,
     Typography
 } from "@mui/material";
 import {Auth} from "aws-amplify";
 import CampaignClient from "../api/CampaignClient";
-import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DescriptionIcon from '@mui/icons-material/Description';
 import {Link as RouterLink} from "react-router-dom";
-import {Replay} from "@mui/icons-material";
 
 
 const CampaignTask = (props) => {

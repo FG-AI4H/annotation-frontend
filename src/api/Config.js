@@ -9,6 +9,7 @@ class Config {
     TASK_URL = `${this.SCHEME}://${this.HOST}${this.PORT}/api/v1/tasks`;
     ANNOATATION_TASK_URL = `${this.SCHEME}://${this.HOST}${this.PORT}/api/v1/annotation_tasks`;
     ANNOTATION_URL = `${this.SCHEME}://${this.HOST}${this.PORT}/api/v1/annotations`;
+    ANNOTATION_TOOL_URL = `${this.SCHEME}://${this.HOST}${this.PORT}/api/v1/annotation_tools`;
     DATASET_URL = `${this.SCHEME}://${this.HOST}${this.PORT}/api/v1/datasets`;
     ACCESS_TOKEN = "accessToken";
     EXPIRATION = "expiration";

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import AppNavbar from './AppNavbar';
-import {Link as RouterLink, useParams} from 'react-router-dom';
+import {useParams} from 'react-router-dom';
 import CampaignChart from "./CampaignChart";
 import CampaignProgress from "./CampaignProgress";
 import {Auth} from "aws-amplify";
@@ -25,6 +25,7 @@ import {TabPanel} from "./components/TabPanel";
 import {a11yProps} from "./components/allyProps";
 import CampaignDataset from "./components/CampaignDataset";
 import Alert from "@mui/material/Alert";
+import {Link as RouterLink} from "react-router-dom";
 
 const CampaignEdit = () => {
     let params = useParams();

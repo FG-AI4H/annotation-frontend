@@ -5,7 +5,8 @@ import AWS from "aws-sdk";
 import DatasetItemModal from "./DatasetItemModal.js"
 import 'react-medium-image-zoom/dist/styles.css'
 import {
-    Backdrop, Box,
+    Backdrop,
+    Box,
     Button,
     CircularProgress,
     Container,
@@ -18,13 +19,15 @@ import {
     OutlinedInput,
     Paper,
     Stack,
-    Switch, Tab,
+    Switch,
+    Tab,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
-    TableRow, Tabs, TextField
+    TableRow,
+    Tabs
 } from "@mui/material";
 import AppNavbar from "./AppNavbar";
 import DatasetForm from "./DatasetForm";
@@ -33,13 +36,15 @@ import axios from "axios";
 import DatasetClient from "./api/DatasetClient";
 import {a11yProps} from "./components/allyProps";
 import {TabPanel} from "./components/TabPanel";
-import Datasets from "./Datasets";
 import DatasetPermission from "./DatasetPermission";
 
 export const initialDataset = {
     name: '',
     description: '',
     selectedFile: undefined,
+    catalog_auth_type: '',
+    catalog_location: '',
+    linked: false,
     metadata: {
         //General Metadata
         dataOwner: '',
@@ -89,33 +94,40 @@ const DatasetEdit = () => {
 
 
     useEffect( () =>{
+
         setIsLoading(true);
+        dataset.linked = params.id === 'link';
 
-        Auth.currentAuthenticatedUser({
-            bypassCache: false
-        }).then(response => {
-            if (params.id !== 'new') {
+            Auth.currentAuthenticatedUser({
+                bypassCache: false
+            }).then(response => {
+                if (params.id !== 'new' && params.id !== 'link') {
 
-                const fetchData = async (prefix) => {
-                    await fetchBinary(prefix);
+                    const fetchData = async (prefix) => {
+                        await fetchBinary(prefix);
+                        setIsLoading(false);
+                    }
+
+                    const client = new DatasetClient(response.signInUserSession.accessToken.jwtToken);
+                    client.fetchDatasetById(params.id).then(datasetData => {
+                        setDatatset(datasetData.data);
+                        if(!datasetData.data.linked) {
+                            const prefix = datasetData.data.storage_location.replace('fhir-service-dev-fhirbinarybucket-yjeth32swz5m.s3.eu-central-1.amazonaws.com/', '');
+
+                            fetchData(prefix)
+                                // make sure to catch any error
+                                .catch(console.error);
+                        }
+                        else{
+                            setIsLoading(false);
+                        }
+                    })
+                } else {
                     setIsLoading(false);
                 }
 
-                const client = new DatasetClient(response.signInUserSession.accessToken.jwtToken);
-                client.fetchDatasetById(params.id).then(datasetData => {
-                    setDatatset(datasetData.data);
-                    const prefix = datasetData.data.storage_location.replace('fhir-service-dev-fhirbinarybucket-yjeth32swz5m.s3.eu-central-1.amazonaws.com/','');
+            }).catch(err => console.log(err));
 
-                    fetchData(prefix)
-                        // make sure to catch any error
-                        .catch(console.error);
-                })
-            }
-            else {
-                setIsLoading(false);
-            }
-
-        }).catch(err => console.log(err));
 
     }, [itemSize])
 
@@ -269,7 +281,7 @@ const DatasetEdit = () => {
         </ImageList>
 
 
-    const title = <h2>{dataset.id ? 'Edit Dataset' : 'Add Dataset'}</h2>;
+    const title = <h2>{dataset.id ? 'Edit Dataset' : params.id === 'new' ? 'Add Dataset' : 'Add Linked Dataset'}</h2>;
 
     const handleToggleChange = (event) => {
         setIsItemsAsList(event.target.checked);
@@ -308,7 +320,7 @@ const DatasetEdit = () => {
                     <TabPanel value={tabValue} index={0}>
 
                 <DatasetForm readOnlyMode={false} formState={dataset}/>
-                {params.id !== 'new' &&
+                {params.id !== 'new' && params.id !== 'link' &&
                     <>
                     <Stack direction="row" spacing={2}>
 

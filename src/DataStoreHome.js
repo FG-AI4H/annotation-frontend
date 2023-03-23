@@ -1,15 +1,13 @@
 import * as React from 'react';
+import {useEffect, useState} from 'react';
 
 import AppNavbar from "./AppNavbar";
-import {Box, Button, Container, Grid, IconButton, Paper, Tab, Tabs} from "@mui/material";
+import {Box, Button, Container, Grid, IconButton, Paper} from "@mui/material";
 import {Link as RouterLink} from "react-router-dom";
 import Datasets from "./Datasets";
 import {Replay} from "@mui/icons-material";
-import {useEffect, useState} from "react";
 import {Auth} from "aws-amplify";
 import DatasetClient from "./api/DatasetClient";
-import {a11yProps} from "./components/allyProps";
-import {TabPanel} from "./components/TabPanel";
 
 
 export default function DataStoreHome(_props) {
@@ -44,6 +42,7 @@ export default function DataStoreHome(_props) {
             <Container maxWidth="xl" sx={{ mt: 5 }}>
                 <Box sx={{ display: 'flex',justifyContent: 'flex-end' }}>
                     <IconButton onClick={() => loadDataset()}><Replay /></IconButton>{' '}
+                    <Button component={RouterLink} color="info" to={"/datasets/link"}>Link Dataset</Button>
                     <Button component={RouterLink} color="success" to={"/datasets/new"}>Add Dataset</Button>
                 </Box>
                 <h3>Datasets</h3>
