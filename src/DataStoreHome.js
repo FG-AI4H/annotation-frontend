@@ -2,17 +2,22 @@ import * as React from 'react';
 import {useEffect, useState} from 'react';
 
 import AppNavbar from "./AppNavbar";
-import {Box, Button, Container, Grid, IconButton, Paper} from "@mui/material";
+import {Box, Button, Container, Grid, IconButton, Paper, Tab, Tabs} from "@mui/material";
 import {Link as RouterLink} from "react-router-dom";
 import Datasets from "./Datasets";
 import {Replay} from "@mui/icons-material";
 import {Auth} from "aws-amplify";
 import DatasetClient from "./api/DatasetClient";
+import {a11yProps} from "./components/allyProps";
+import {TabPanel} from "./components/TabPanel";
+import CatalogDatasets from "./CatalogDatasets";
 
 
 export default function DataStoreHome(_props) {
 
-    const [datasets, setDatasets] = useState([])
+    const [datasets, setDatasets] = useState([]);
+    const [remoteDatasets, setRemoteDatasets] = useState([]);
+    const [tabValue, setTabValue] = useState(0);
 
 
     function loadDataset() {
@@ -29,10 +34,43 @@ export default function DataStoreHome(_props) {
         }).catch(err => console.log(err));
     }
 
+    function loadRemoteDataset() {
+        Auth.currentAuthenticatedUser({
+            bypassCache: false
+        }).then(currentUser => {
+            const client = new DatasetClient(currentUser.signInUserSession.accessToken.jwtToken);
+            client.fetchCatalogDatasetList()
+                .then(
+                    response => {
+                        setRemoteDatasets(response?.data)
+                    })
+
+        }).catch(err => console.log(err));
+    }
+
     //Load at page load
     useEffect(() => {
         loadDataset();
+        loadRemoteDataset();
     }, [])
+
+    const handleChange = (event, newValue) => {
+        setTabValue(newValue);
+    };
+
+    function Item(props: BoxProps) {
+        const { sx, ...other } = props;
+        return (
+            <Box
+                sx={{
+                    p: 1,
+                    m: 1,
+                    ...sx,
+                }}
+                {...other}
+            />
+        );
+    }
 
 
     return (
@@ -40,21 +78,55 @@ export default function DataStoreHome(_props) {
         <div>
             <AppNavbar/>
             <Container maxWidth="xl" sx={{ mt: 5 }}>
-                <Box sx={{ display: 'flex',justifyContent: 'flex-end' }}>
-                    <IconButton onClick={() => loadDataset()}><Replay /></IconButton>{' '}
-                    <Button component={RouterLink} color="info" to={"/datasets/link"}>Link Dataset</Button>
-                    <Button component={RouterLink} color="success" to={"/datasets/new"}>Add Dataset</Button>
+                <Box sx={{ display: 'flex' }}>
+                    <Item sx={{ flexGrow: 1 }}><h2>Datasets</h2></Item>
+                    <Item >
+                        <IconButton onClick={() => loadDataset()}><Replay /></IconButton>{' '}
+                        <Button component={RouterLink} color="info" to={"/datasets/link"}>Link Dataset</Button>
+                        <Button component={RouterLink} color="success" to={"/datasets/new"}>Add Dataset</Button>
+                    </Item>
                 </Box>
-                <h3>Datasets</h3>
 
-                <Grid container spacing={3}>
-                    {/* Datasets */}
-                    <Grid item xs={12}>
-                        <Paper >
-                            <Datasets datasets = {datasets}/>
-                        </Paper>
+
+
+                <Box sx={{ width: '100%' }}>
+                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                    <Tabs
+                        value={tabValue}
+                        onChange={handleChange}
+                        aria-label="wrapped label tabs example"
+                    >
+                        <Tab label="Registered Datasets" {...a11yProps(0)}/>
+                        <Tab label="Available Datasets" {...a11yProps(1)}/>
+
+                    </Tabs>
+                </Box>
+                <TabPanel value={tabValue} index={0}>
+
+                    <Grid container spacing={3}>
+                        {/* Datasets */}
+                        <Grid item xs={12}>
+                            <Paper >
+                                <Datasets datasets = {datasets}/>
+                            </Paper>
+                        </Grid>
                     </Grid>
-                </Grid>
+
+                </TabPanel>
+
+                <TabPanel value={tabValue} index={1}>
+
+                    <Grid container spacing={3}>
+                        {/* Datasets */}
+                        <Grid item xs={12}>
+                            <Paper >
+                                <CatalogDatasets datasets = {remoteDatasets}/>
+                            </Paper>
+                        </Grid>
+                    </Grid>
+
+                </TabPanel>
+            </Box>
                 <div className="container">
                     <Button component={RouterLink} color="secondary" to={"/"}>Back</Button>
                 </div>

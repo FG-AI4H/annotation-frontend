@@ -23,6 +23,21 @@ class DatasetClient {
             });
     }
 
+    async fetchCatalogDatasetList() {
+        console.log("Fetching Datasets from catalogs");
+
+        return callApiWithToken(this.accessToken, this.config.DATASET_CATALOG_URL)
+            .then(([response, json]) => {
+                if (!response.ok) {
+                    return { success: false, error: json };
+                }
+                return { success: true, data: json };
+            })
+            .catch((e) => {
+                this.handleError(e);
+            });
+    }
+
 
     async fetchDatasetById(DatasetId) {
         console.log("Fetching Dataset for Id: " + DatasetId);
@@ -88,6 +103,21 @@ class DatasetClient {
         console.log("Deleting Dataset for Id: " + id);
 
         return callApiWithToken(this.accessToken, `${this.config.DATASET_URL}/${id}`,"DELETE")
+            .then(([response, json]) => {
+                if (!response.ok) {
+                    return { success: false, error: json };
+                }
+                return { success: true, data: json };
+            })
+            .catch((e) => {
+                this.handleError(e);
+            });
+    }
+
+    async linkDataset(dataset) {
+        console.log("Linking Dataset for Id: " + dataset.name);
+
+        return postApiWithToken(this.accessToken, `${this.config.DATASET_CATALOG_URL}`,dataset,"PUT")
             .then(([response, json]) => {
                 if (!response.ok) {
                     return { success: false, error: json };
