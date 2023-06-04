@@ -20,6 +20,8 @@ import {grey} from "@mui/material/colors";
 import DatasetEdit from "./DatasetEdit";
 import AnnotationToolEdit from "./AnnotationToolEdit";
 import ToolManagement from "./ToolManagement";
+import CatalogManagement from "./CatalogManagement";
+import CatalogEdit from "./CatalogEdit";
 
 const theme = createTheme({
   palette: {
@@ -56,6 +58,8 @@ function App({ signOut, user }) {
               <Route path='/campaigns/:id' element={<CampaignEdit/>}/>
               <Route path='/annotationTools' exact={true} element={<ToolManagement/>}/>
               <Route path='/annotationTools/:id' element={<AnnotationToolEdit/>}/>
+              <Route path='/dataCatalogs' exact={true} element={<CatalogManagement/>}/>
+              <Route path='/dataCatalogs/:id' exact={true} element={<CatalogEdit/>}/>
               <Route path='/benchmark' element={() => {
                 window.location.href = 'https://health.aiaudit.org/';
                 return null;

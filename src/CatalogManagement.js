@@ -4,8 +4,9 @@ import {Replay} from "@mui/icons-material";
 import {Link as RouterLink} from "react-router-dom";
 import React from "react";
 import AnnotationToolListComponent from "./components/AnnotationToolListComponent";
+import DataCatalogListComponent from "./components/DataCatalogListComponent";
 
-const ToolManagement = (_props) => {
+const CatalogManagement = (_props) => {
 
     function refresh() {
         return undefined;
@@ -17,15 +18,15 @@ const ToolManagement = (_props) => {
             <Container maxWidth="xl" sx={{ mt: 5 }}>
                 <Box sx={{ display: 'flex',justifyContent: 'flex-end' }}>
                     <IconButton onClick={() => refresh()}><Replay /></IconButton>{' '}
-                    <Button component={RouterLink} color="success" to={"/annotationTools/new"}>Add Tool</Button>
+                    <Button component={RouterLink} color="success" to={"/dataCatalogs/new"}>Add Catalog</Button>
                 </Box>
-                <h3>Annotation Tools</h3>
+                <h3>Data Catalogs</h3>
 
                 <Grid container spacing={3}>
                     {/* Datasets */}
                     <Grid item xs={12}>
                         <Paper >
-                            <AnnotationToolListComponent/>
+                            <DataCatalogListComponent/>
                         </Paper>
                     </Grid>
                 </Grid>
@@ -36,4 +37,4 @@ const ToolManagement = (_props) => {
         </div>
     )
 }
-export default ToolManagement;
+export default CatalogManagement;

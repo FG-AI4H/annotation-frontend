@@ -75,6 +75,27 @@ const AdminHome = (props) => {
                     </Card>
 
                 </Grid>
+
+
+                <Grid item xs={12} md={4}>
+                    <Card>
+                        <CardContent>
+                            <Typography gutterBottom variant="h5" component="div">
+                                Data Catalogs
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                Manage connection to data catalogs.
+                            </Typography>
+
+                        </CardContent>
+                        <CardActions>
+
+                            <Button component={RouterLink} color="primary" to="/dataCatalogs">Catalog management</Button>
+                        </CardActions>
+                    </Card>
+
+                </Grid>
+
             </Grid>
             </Container>
         </>

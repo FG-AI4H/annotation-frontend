@@ -12,6 +12,7 @@ class Config {
     ANNOTATION_TOOL_URL = `${this.SCHEME}://${this.HOST}${this.PORT}/api/v1/annotation_tools`;
     DATASET_URL = `${this.SCHEME}://${this.HOST}${this.PORT}/api/v1/datasets`;
     DATASET_CATALOG_URL = `${this.SCHEME}://${this.HOST}${this.PORT}/api/v1/datasets/catalog`;
+    DATA_CATALOG_URL = `${this.SCHEME}://${this.HOST}${this.PORT}/api/v1/data_catalogs`;
     ACCESS_TOKEN = "accessToken";
     EXPIRATION = "expiration";
 

@@ -75,7 +75,7 @@ const UserEdit = (_props) => {
                             setIsLoading(false);
                         });
             }
-
+            setIsLoading(false);
         }).catch(err => console.log(err));
 
     }, [params.id])

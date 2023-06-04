@@ -68,5 +68,67 @@ class AdminClient {
                 this.handleError(e);
             });
     }
+
+    async fetchDataCatalogList() {
+        console.log("Fetching data catalogs");
+
+        return callApiWithToken(this.accessToken, this.config.DATA_CATALOG_URL)
+            .then(([response, json]) => {
+                if (!response.ok) {
+                    return {success: false, error: json};
+                }
+                return {success: true, data: json};
+            })
+            .catch((e) => {
+                this.handleError(e);
+            });
+    }
+
+    async fetchDataCatalogById(catalogId) {
+        console.log("Fetching catalog for Id: " + catalogId);
+
+        return callApiWithToken(this.accessToken, `${this.config.DATA_CATALOG_URL}/${catalogId}`)
+            .then(([response, json]) => {
+                if (!response.ok) {
+                    return { success: false, error: json };
+                }
+                return { success: true, data: json };
+            })
+            .catch((e) => {
+                this.handleError(e);
+            });
+    }
+
+    async addDataCatalog(catalog) {
+        console.log("Creating catalog");
+
+        return postApiWithToken(this.accessToken, this.config.DATA_CATALOG_URL,catalog,"POST")
+            .then(([response]) => {
+                if (!response.ok) {
+                    return { success: false, error: response };
+                }
+                return { success: true, data: response };
+            })
+            .catch((e) => {
+                this.handleError(e);
+            });
+    }
+
+    async updateDataCatalog(catalog) {
+        console.log("Updating catalog");
+
+        return postApiWithToken(this.accessToken, `${this.config.ANNOTATION_TOOL_URL}/${catalog.id}`,catalog,"PUT")
+            .then(([response]) => {
+                if (!response.ok) {
+                    return { success: false, error: response };
+                }
+                return { success: true, data: response };
+            })
+            .catch((e) => {
+                this.handleError(e);
+            });
+    }
+
+
 }
 export default AdminClient;

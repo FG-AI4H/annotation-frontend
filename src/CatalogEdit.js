@@ -10,17 +10,18 @@ import AdminClient from "./api/AdminClient";
 const emptyItem = {
     name: '',
     description: '',
-    editor: '',
+    provider: '',
+    provider_catalog_id: '',
     id: undefined,
-    annotationTasks: []
 };
 
-const AnnotationToolEdit = (_props) => {
+const CatalogEdit = (_props) => {
 
     let params = useParams();
     const [isLoading, setIsLoading] = useState(false);
     const [item, setItem] = useState(emptyItem);
     const [updated, setUpdated] = useState(false);
+    const [updateType, setUpdateType] = useState("success");
 
     const navigate = useNavigate();
 
@@ -33,7 +34,7 @@ const AnnotationToolEdit = (_props) => {
             if (params.id !== 'new') {
                 const client = new AdminClient(response.signInUserSession.accessToken.jwtToken);
 
-                client.fetchAnnotationToolById(params.id)
+                client.fetchDataCatalogById(params.id)
                     .then(
                         res => {
                             setItem(res.data);
@@ -61,37 +62,61 @@ const AnnotationToolEdit = (_props) => {
             value = target.checked;
         }
 
-        let tool = {...item};
-        tool[name] = value;
-        setItem(tool);
+        item[name] = value;
+        setItem(item);
+    }
+
+    function handleChange(event) {
+        const target = event.target;
+        let value = target.value;
+        const name = target.name;
+
+        if(target.type === 'checkbox'){
+            value = target.checked;
+        }
+
+        let catalog = {...item};
+        catalog[name] = value;
+        setItem(catalog);
     }
 
     async function handleSubmit(event) {
         event.preventDefault();
-
+        setIsLoading(true);
         Auth.currentAuthenticatedUser({
             bypassCache: false
         }).then(response => {
             const client = new AdminClient(response.signInUserSession.accessToken.jwtToken);
             if(item.id) {
-                client.updateAnnotationTool(item)
+                client.updateDataCatalog(item)
                     .then(
-                        _response => setUpdated(true))
+                        _response => {
+                            setUpdated(true);
+                            setUpdateType("success");
+                        });
             }
             else{
-                client.addAnnotationTool(item)
+                client.addDataCatalog(item)
                     .then(
                         res => {
-                            setIsLoading(false)
-                            setItem(res?.data)
-                            navigate('/annotationTools/'+res.data.headers.get('location'))
+                            setIsLoading(false);
+                            if(res?.success){
+                                setItem(res?.data)
+                                navigate('/dataCatalogs/'+res.data.headers.get('location'));
+
+                            }
+                            else{
+                                setUpdated(true);
+                                setUpdateType("error");
+                            }
+
                         });
             }
         }).catch(err => console.log(err));
 
     }
 
-    const title = <h2>{item.id ? 'Edit Annotation Tool' : 'Add Annotation Tool'}</h2>;
+    const title = <h2>{item.id ? 'Edit Catalog' : 'Add Catalog'}</h2>;
 
     return (
         <div>
@@ -102,8 +127,8 @@ const AnnotationToolEdit = (_props) => {
                 vertical: 'top',
                 horizontal: 'right'
             }}>
-                <Alert severity="success" sx={{ width: '100%' }} onClose={handleClose}>
-                    Annotation tool updated successfully!
+                <Alert severity={updateType} sx={{ width: '100%' }} onClose={handleClose}>
+                    Catalog updated successfully!
                 </Alert>
             </Snackbar>
             <AppNavbar/>
@@ -132,21 +157,28 @@ const AnnotationToolEdit = (_props) => {
                 />
 
                 <TextField fullWidth margin={"normal"}
-                           label="Editor"
-                           name="editor"
+                           label="Provider"
+                           name="provider"
                            required
-                           value={item.editor}
+                           value={item.provider}
                            onChange={event => handleChange(event)}
                            InputLabelProps={{ shrink: true }}
                 />
 
-                <AnnotationTaskList tasks={item.annotation_tasks}/>
+                <TextField fullWidth margin={"normal"}
+                           label="Provider Catalog ID"
+                           name="provider_catalog_id"
+                           required
+                           value={item.provider_catalog_id}
+                           onChange={event => handleChange(event)}
+                           InputLabelProps={{ shrink: true }}
+                />
 
                 <FormGroup sx={{ mt: 5 }}>
 
                     <Stack direction="row" spacing={2}>
                         <Button color="primary" onClick={e => handleSubmit(e)}>Save</Button>
-                        <Button component={RouterLink} color="secondary" to={"/annotationTools"}>Cancel</Button>
+                        <Button component={RouterLink} color="secondary" to={"/dataCatalogs"}>Cancel</Button>
                     </Stack>
 
                 </FormGroup>
@@ -154,4 +186,4 @@ const AnnotationToolEdit = (_props) => {
         </div>
     )
 }
-export default AnnotationToolEdit;
+export default CatalogEdit;
