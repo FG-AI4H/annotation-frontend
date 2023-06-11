@@ -110,6 +110,7 @@ export default function CatalogDatasets(props) {
                             <TableCell width="10"></TableCell>
                             <TableCell width="30%">Name</TableCell>
                             <TableCell width="30%">Description</TableCell>
+                            <TableCell width="30%">Location</TableCell>
                             <TableCell width="30%">Last Updated</TableCell>
                             <TableCell width="10%" align={"right"}>Actions</TableCell>
                         </TableRow>
@@ -120,6 +121,7 @@ export default function CatalogDatasets(props) {
                                 <TableCell><LinkIcon/></TableCell>
                                 <TableCell><Link href="#" onClick={() => viewDataset(dataset.id)}>{dataset.name}</Link></TableCell>
                                 <TableCell>{dataset.description}</TableCell>
+                                <TableCell>{dataset.catalog_location}</TableCell>
                                 <TableCell>{(new Date(Date.parse(dataset.updatedAt))).toLocaleString(navigator.language)}</TableCell>
                                 <TableCell>
                                     <Stack direction={"row"} spacing={2} justifyContent="flex-end">

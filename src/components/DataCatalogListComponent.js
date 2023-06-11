@@ -43,14 +43,33 @@ const DataCatalogListComponent = (props) => {
 
     }, []);
 
+    function remove(id) {
+        Auth.currentAuthenticatedUser({
+            bypassCache: false
+        }).then(response => {
+
+            const adminCLient = new AdminClient(response.signInUserSession.accessToken.jwtToken);
+            adminCLient.removeDataCatalog(id)
+                .then( result => {
+                        let updatedCatalogs = [...dataCatalogList].filter(i => i.id !== id);
+                        setDataCatalogList(updatedCatalogs);
+                    }
+                    );
+
+
+        }).catch(err => console.log(err));
+    }
+
     const catalogList = dataCatalogList?.map(catalog => {
+
         return <TableRow key={catalog.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
             <TableCell style={{whiteSpace: 'nowrap'}}>{catalog.name}</TableCell>
             <TableCell style={{whiteSpace: 'nowrap'}}>{catalog.provider}</TableCell>
-            <TableCell style={{whiteSpace: 'nowrap'}}>{catalog.provider_catalog_id}</TableCell>
+            <TableCell style={{whiteSpace: 'nowrap'}}>{catalog.aws_region}</TableCell>
             <TableCell>
                 <Stack direction={"row"} spacing={2} justifyContent="flex-end">
                     <Button component={RouterLink} size="small" to={"/dataCatalogs/" + catalog.id}>Edit</Button>
+                    <Button size="small" color={"error"} onClick={() => remove(catalog.id)}>Delete</Button>
                 </Stack>
 
             </TableCell>
@@ -69,7 +88,7 @@ const DataCatalogListComponent = (props) => {
                         <TableRow>
                             <TableCell width={"45%"}>Name</TableCell>
                             <TableCell width={"45%"}>Provider</TableCell>
-                            <TableCell width={"45%"}>ID</TableCell>
+                            <TableCell width={"45%"}>Location</TableCell>
                             <TableCell width={"10%"} align={"right"}>Actions</TableCell>
                         </TableRow>
                     </TableHead>

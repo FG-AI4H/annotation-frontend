@@ -3,7 +3,17 @@ import AppNavbar from './AppNavbar';
 import {Link as RouterLink, useNavigate, useParams} from 'react-router-dom';
 import AnnotationTaskList from "./AnnotationTaskList";
 import {Auth} from "aws-amplify";
-import {Backdrop, Button, CircularProgress, Container, FormGroup, Snackbar, Stack, TextField} from "@mui/material";
+import {
+    Backdrop,
+    Button,
+    CircularProgress,
+    Container, FormControl,
+    FormGroup, InputLabel,
+    MenuItem, Select,
+    Snackbar,
+    Stack,
+    TextField
+} from "@mui/material";
 import Alert from "@mui/material/Alert";
 import AdminClient from "./api/AdminClient";
 
@@ -13,6 +23,8 @@ const emptyItem = {
     provider: '',
     provider_catalog_id: '',
     id: undefined,
+    aws_region: '',
+    database_name: ''
 };
 
 const CatalogEdit = (_props) => {
@@ -80,6 +92,11 @@ const CatalogEdit = (_props) => {
         setItem(catalog);
     }
 
+    //Update input field in "Add Dataset" Modal
+    function setInput(key, value) {
+        setItem({ ...item, [key]: value })
+    }
+
     async function handleSubmit(event) {
         event.preventDefault();
         setIsLoading(true);
@@ -93,6 +110,7 @@ const CatalogEdit = (_props) => {
                         _response => {
                             setUpdated(true);
                             setUpdateType("success");
+                            setIsLoading(false);
                         });
             }
             else{
@@ -156,14 +174,33 @@ const CatalogEdit = (_props) => {
                            InputLabelProps={{ shrink: true }}
                 />
 
-                <TextField fullWidth margin={"normal"}
-                           label="Provider"
-                           name="provider"
-                           required
-                           value={item.provider}
-                           onChange={event => handleChange(event)}
-                           InputLabelProps={{ shrink: true }}
-                />
+
+                <FormControl fullWidth margin={"normal"}>
+                    <InputLabel >Provider</InputLabel>
+                    <Select
+                        id="provider"
+                        name="provider"
+                        value={item.provider}
+                        label="Provider"
+                        onChange={event => setInput('provider', event.target.value)}
+                    >
+                        <MenuItem value={"AWS"}>AWS</MenuItem>
+                    </Select>
+                </FormControl>
+
+                <FormControl fullWidth margin={"normal"}>
+                    <InputLabel >AWS region</InputLabel>
+                    <Select
+                        id="aws_region"
+                        name="aws_region"
+                        value={item.aws_region}
+                        label="AWS region"
+                        onChange={event => setInput('aws_region', event.target.value)}
+                    >
+                        <MenuItem value={"eu-central-1"}>Europe (Frankfurt)</MenuItem>
+                        <MenuItem value={"sa-east-1"}>South America (São Paulo)</MenuItem>
+                    </Select>
+                </FormControl>
 
                 <TextField fullWidth margin={"normal"}
                            label="Provider Catalog ID"
@@ -173,6 +210,26 @@ const CatalogEdit = (_props) => {
                            onChange={event => handleChange(event)}
                            InputLabelProps={{ shrink: true }}
                 />
+
+                <TextField fullWidth margin={"normal"}
+                           label="Location"
+                           name="location"
+                           required
+                           value={item.location}
+                           onChange={event => handleChange(event)}
+                           InputLabelProps={{ shrink: true }}
+                />
+
+                <TextField fullWidth margin={"normal"}
+                           label="Database name"
+                           name="database_name"
+                           required
+                           value={item.database_name}
+                           onChange={event => handleChange(event)}
+                           InputLabelProps={{ shrink: true }}
+                />
+
+
 
                 <FormGroup sx={{ mt: 5 }}>
 
