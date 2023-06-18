@@ -108,10 +108,9 @@ export default function Datasets(props) {
                         <Table sx={{ minWidth: 650 }} aria-label="simple table">
                             <TableHead>
                                 <TableRow>
-                                    <TableCell width="10"></TableCell>
-                                    <TableCell width="30%">Name</TableCell>
-                                    <TableCell width="30%">Description</TableCell>
-                                    <TableCell width="30%">Last Updated</TableCell>
+                                    <TableCell width="5%"></TableCell>
+                                    <TableCell width="40%">Name</TableCell>
+                                    <TableCell width="30%">Last Updated (UTC)</TableCell>
                                     <TableCell width="10%" align={"right"}>Actions</TableCell>
                                 </TableRow>
                             </TableHead>
@@ -120,8 +119,7 @@ export default function Datasets(props) {
                                     <TableRow key={dataset.id}>
                                         <TableCell>{dataset.linked ? <LinkIcon/> : <StorageIcon/>}</TableCell>
                                         <TableCell><Link href="#" onClick={() => viewDataset(dataset.id)}>{dataset.name}</Link></TableCell>
-                                        <TableCell>{dataset.description}</TableCell>
-                                        <TableCell>{(new Date(Date.parse(dataset.updatedAt))).toLocaleString(navigator.language)}</TableCell>
+                                        <TableCell>{(new Date(Date.parse(dataset.created_at))).toLocaleString(navigator.language)}</TableCell>
                                         <TableCell>
                                             <Stack direction={"row"} spacing={2} justifyContent="flex-end">
                                                 <Button component={RouterLink} size="small" color="primary" to={"/datasets/" + dataset.id}>Edit</Button>

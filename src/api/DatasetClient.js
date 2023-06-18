@@ -129,6 +129,21 @@ class DatasetClient {
             });
     }
 
+    async fetchTableFromCatalog(catalog_uuid, table_name) {
+        console.log("Fetching Table "+table_name+" for Id: " + catalog_uuid);
+
+        return callApiWithToken(this.accessToken, `${this.config.DATA_CATALOG_URL}/${catalog_uuid}/${table_name}`)
+            .then(([response, json]) => {
+                if (!response.ok) {
+                    return { success: false, error: json };
+                }
+                return { success: true, data: json };
+            })
+            .catch((e) => {
+                this.handleError(e);
+            });
+    }
+
     handleError(error) {
         const err = new Map([
             [TypeError, "There was a problem fetching the response."],

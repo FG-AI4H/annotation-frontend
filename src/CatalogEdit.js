@@ -167,7 +167,6 @@ const CatalogEdit = (_props) => {
                            label="Description"
                            name="description"
                            multiline
-                           required
                            rows={4}
                            value={item.description}
                            onChange={event => handleChange(event)}
@@ -180,6 +179,7 @@ const CatalogEdit = (_props) => {
                     <Select
                         id="provider"
                         name="provider"
+                        required
                         value={item.provider}
                         label="Provider"
                         onChange={event => setInput('provider', event.target.value)}
@@ -193,6 +193,7 @@ const CatalogEdit = (_props) => {
                     <Select
                         id="aws_region"
                         name="aws_region"
+                        required
                         value={item.aws_region}
                         label="AWS region"
                         onChange={event => setInput('aws_region', event.target.value)}
@@ -205,25 +206,15 @@ const CatalogEdit = (_props) => {
                 <TextField fullWidth margin={"normal"}
                            label="Provider Catalog ID"
                            name="provider_catalog_id"
-                           required
                            value={item.provider_catalog_id}
                            onChange={event => handleChange(event)}
                            InputLabelProps={{ shrink: true }}
                 />
 
-                <TextField fullWidth margin={"normal"}
-                           label="Location"
-                           name="location"
-                           required
-                           value={item.location}
-                           onChange={event => handleChange(event)}
-                           InputLabelProps={{ shrink: true }}
-                />
 
                 <TextField fullWidth margin={"normal"}
                            label="Database name"
                            name="database_name"
-                           required
                            value={item.database_name}
                            onChange={event => handleChange(event)}
                            InputLabelProps={{ shrink: true }}

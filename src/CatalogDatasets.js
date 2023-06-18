@@ -58,18 +58,18 @@ export default function CatalogDatasets(props) {
         setDatasets(props.datasets);
     }, [props.datasets])
 
-    async function fetchDataset(uuid) {
+    async function fetchTable(catalog_uuid, table_name) {
         const token = await Auth.currentAuthenticatedUser({bypassCache: false})
 
         const client = new DatasetClient(token.signInUserSession.accessToken.jwtToken);
-        const result = await client.fetchDatasetById(uuid);
+        const result = await client.fetchTableFromCatalog(catalog_uuid, table_name);
         return result.data
 
     }
 
-    async function viewDataset(datasetID) {
-        const datasetState = await fetchDataset(datasetID);
-        handleModalOpen(modalMode._READ, datasetState);
+    async function viewDataset(catalog_uuid, table_name) {
+        const tableState = await fetchTable(catalog_uuid, table_name);
+        handleModalOpen(modalMode._READ, tableState);
     }
 
     async function link(dataset) {
@@ -107,11 +107,10 @@ export default function CatalogDatasets(props) {
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
                         <TableRow>
-                            <TableCell width="10"></TableCell>
+                            <TableCell width="5%"></TableCell>
                             <TableCell width="30%">Name</TableCell>
-                            <TableCell width="30%">Description</TableCell>
-                            <TableCell width="30%">Location</TableCell>
-                            <TableCell width="30%">Last Updated</TableCell>
+                            <TableCell width="20%">Location</TableCell>
+                            <TableCell width="20%">Created on (UTC)</TableCell>
                             <TableCell width="10%" align={"right"}>Actions</TableCell>
                         </TableRow>
                     </TableHead>
@@ -119,10 +118,9 @@ export default function CatalogDatasets(props) {
                         {datasets?.map((dataset) => (
                             <TableRow key={dataset.id}>
                                 <TableCell><LinkIcon/></TableCell>
-                                <TableCell><Link href="#" onClick={() => viewDataset(dataset.id)}>{dataset.name}</Link></TableCell>
-                                <TableCell>{dataset.description}</TableCell>
+                                <TableCell><Link href="#" onClick={() => viewDataset(dataset.data_catalog_id, dataset.name)}>{dataset.name}</Link></TableCell>
                                 <TableCell>{dataset.catalog_location}</TableCell>
-                                <TableCell>{(new Date(Date.parse(dataset.updatedAt))).toLocaleString(navigator.language)}</TableCell>
+                                <TableCell>{(new Date(Date.parse(dataset.created_at))).toLocaleString(navigator.language)}</TableCell>
                                 <TableCell>
                                     <Stack direction={"row"} spacing={2} justifyContent="flex-end">
                                         <Button size="small" color="info" onClick={() => link(dataset)}>Link</Button>
