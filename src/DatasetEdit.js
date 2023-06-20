@@ -45,6 +45,7 @@ export const initialDataset = {
     catalog_auth_type: '',
     catalog_location: '',
     linked: false,
+    data_catalog_id: '',
     metadata: {
         //General Metadata
         dataOwner: '',

@@ -24,7 +24,8 @@ const emptyItem = {
     provider_catalog_id: '',
     id: undefined,
     aws_region: '',
-    database_name: ''
+    database_name: '',
+    bucket_name: '',
 };
 
 const CatalogEdit = (_props) => {
@@ -216,6 +217,14 @@ const CatalogEdit = (_props) => {
                            label="Database name"
                            name="database_name"
                            value={item.database_name}
+                           onChange={event => handleChange(event)}
+                           InputLabelProps={{ shrink: true }}
+                />
+
+                <TextField fullWidth margin={"normal"}
+                           label="Bucket name"
+                           name="bucket_name"
+                           value={item.bucket_name}
                            onChange={event => handleChange(event)}
                            InputLabelProps={{ shrink: true }}
                 />

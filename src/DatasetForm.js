@@ -21,6 +21,7 @@ import axios from "axios";
 import {Link as RouterLink, useParams} from "react-router-dom";
 import DatasetClient from "./api/DatasetClient";
 import withNavigateHook from "./helpers/withNavigateHook";
+import AdminClient from "./api/AdminClient";
 
 const DatasetForm = (props) =>{
 
@@ -28,9 +29,26 @@ const DatasetForm = (props) =>{
     const [isLoading, setIsLoading] = useState(false);
     const [readOnlyMode, setReadOnlyMode] = useState(props.readOnlyMode);
     const [formState, setFormState] = useState(props.formState);
+    const [catalogs, setCatalogs] = useState([]);
 
     useEffect(() => {
-        setFormState(props.formState);
+        Auth.currentAuthenticatedUser({
+            bypassCache: false
+        }).then(response => {
+
+            const adminCLient = new AdminClient(response.signInUserSession.accessToken.jwtToken);
+            adminCLient.fetchDataCatalogList()
+                .then(
+                    response => {
+                        if (response?.data) {
+                            setCatalogs(response?.data);
+
+                        }
+                        setFormState(props.formState);
+                    });
+
+
+        }).catch(err => console.log(err));
     }, [props.formState]);
 
     //Update input field in "Add Dataset" Modal
@@ -119,6 +137,7 @@ const DatasetForm = (props) =>{
                             name: dataset.name,
                             description: dataset.description,
                             storage_location: filepath,
+                            data_catalog_id: dataset.data_catalog_id,
                             metadata: {
                                 version: '1.0',
                                 data_owner: dataset.metadata?.data_owner,
@@ -189,6 +208,7 @@ const DatasetForm = (props) =>{
                 name: dataset.name,
                 description: dataset.description,
                 storage_location: dataset.storage_location,
+                data_catalog_id: dataset.data_catalog_id,
                 metadata: {
                     id: dataset.metadata?.id,
                     version: '1.0',
@@ -501,6 +521,27 @@ const DatasetForm = (props) =>{
 
                 <br/>
 
+                        <FormControl fullWidth margin={"normal"}>
+                            <InputLabel >Published in catalog</InputLabel>
+                            <Select
+                                id="data_catalog_id"
+                                name="data_catalog_id"
+                                value={formState.data_catalog_id}
+                                onChange={event => setInput('data_catalog_id', event.target.value)}
+                                label="Published in catalog"
+                            >
+                                <MenuItem value="">
+                                    <em>Choose a Catalog</em>
+                                </MenuItem>
+                                {catalogs
+                                    ? catalogs.map((cat, index) => (
+                                        <MenuItem key={index} value={cat.id}>{cat.name}</MenuItem>
+                                    ))
+                                    : null
+                                }
+                            </Select>
+                        </FormControl>
+
                 {readOnlyMode ?
                     <div>
 
@@ -510,7 +551,6 @@ const DatasetForm = (props) =>{
                                    id="component-filled2"
                                    value={formState.storage_location}
                                    disabled={readOnlyMode}
-                                   InputLabelProps={{ shrink: true }}
                                    InputLabelProps={{ shrink: true }}
                         />
 
@@ -523,7 +563,6 @@ const DatasetForm = (props) =>{
                                    id="component-filled2"
                                    value={formState.storage_location}
                                    disabled={readOnlyMode}
-                                   InputLabelProps={{ shrink: true }}
                                    InputLabelProps={{ shrink: true }}
                         />
                         <input
@@ -548,6 +587,7 @@ const DatasetForm = (props) =>{
                         </div>
                     </div>
                 }
+
                 </>
                 }
                 {formState.linked &&
