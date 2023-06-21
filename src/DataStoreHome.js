@@ -2,7 +2,7 @@ import * as React from 'react';
 import {useEffect, useState} from 'react';
 
 import AppNavbar from "./AppNavbar";
-import {Box, Button, Container, Grid, IconButton, Paper, Tab, Tabs} from "@mui/material";
+import {Backdrop, Box, Button, CircularProgress, Container, Grid, IconButton, Paper, Tab, Tabs} from "@mui/material";
 import {Link as RouterLink} from "react-router-dom";
 import Datasets from "./Datasets";
 import {Replay} from "@mui/icons-material";
@@ -18,7 +18,7 @@ export default function DataStoreHome(_props) {
     const [datasets, setDatasets] = useState([]);
     const [remoteDatasets, setRemoteDatasets] = useState([]);
     const [tabValue, setTabValue] = useState(0);
-
+    const [isLoading, setIsLoading] = useState(false);
 
     function loadDataset() {
         Auth.currentAuthenticatedUser({
@@ -35,6 +35,7 @@ export default function DataStoreHome(_props) {
     }
 
     function loadRemoteDataset() {
+        setIsLoading(true);
         Auth.currentAuthenticatedUser({
             bypassCache: false
         }).then(currentUser => {
@@ -43,9 +44,13 @@ export default function DataStoreHome(_props) {
                 .then(
                     response => {
                         setRemoteDatasets(response?.data)
+                        setIsLoading(false)
                     })
 
-        }).catch(err => console.log(err));
+        }).catch(err => {
+            console.log(err)
+            setIsLoading(false)
+        });
     }
 
     //Load at page load
@@ -77,6 +82,9 @@ export default function DataStoreHome(_props) {
 
         <div>
             <AppNavbar/>
+            <Backdrop open={isLoading} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+                <CircularProgress color="inherit" />
+            </Backdrop>
             <Container maxWidth="xl" sx={{ mt: 5 }}>
                 <Box sx={{ display: 'flex' }}>
                     <Item sx={{ flexGrow: 1 }}><h2>Datasets</h2></Item>

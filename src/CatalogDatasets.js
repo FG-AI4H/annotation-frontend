@@ -50,8 +50,6 @@ export default function CatalogDatasets(props) {
     const [formState, setFormState] = useState(initialDataset)
     const [open, setOpen] = useState(false);
 
-
-
     const [backdropOpen] = useState(false);
 
     useEffect(() => {
@@ -67,9 +65,8 @@ export default function CatalogDatasets(props) {
 
     }
 
-    async function viewDataset(catalog_uuid, table_name) {
-        const tableState = await fetchTable(catalog_uuid, table_name);
-        handleModalOpen(modalMode._READ, tableState);
+    async function viewDataset(index) {
+        handleModalOpen(modalMode._READ, datasets[index]);
     }
 
     async function link(dataset) {
@@ -108,19 +105,19 @@ export default function CatalogDatasets(props) {
                     <TableHead>
                         <TableRow>
                             <TableCell width="5%"></TableCell>
-                            <TableCell width="30%">Name</TableCell>
+                            <TableCell width="30%">Data Source</TableCell>
+                            <TableCell width="20%">Owner</TableCell>
                             <TableCell width="20%">Location</TableCell>
-                            <TableCell width="20%">Created on (UTC)</TableCell>
                             <TableCell width="10%" align={"right"}>Actions</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {datasets?.map((dataset) => (
+                        {datasets?.map((dataset, index) => (
                             <TableRow key={dataset.id}>
                                 <TableCell><LinkIcon/></TableCell>
-                                <TableCell><Link href="#" onClick={() => viewDataset(dataset.data_catalog_id, dataset.name)}>{dataset.name}</Link></TableCell>
+                                <TableCell><Link href="#" onClick={() => viewDataset(index)}>{dataset.name}</Link></TableCell>
+                                <TableCell>{dataset.metadata.data_owner}</TableCell>
                                 <TableCell>{dataset.catalog_location}</TableCell>
-                                <TableCell>{(new Date(Date.parse(dataset.created_at))).toLocaleString(navigator.language)}</TableCell>
                                 <TableCell>
                                     <Stack direction={"row"} spacing={2} justifyContent="flex-end">
                                         <Button size="small" color="info" onClick={() => link(dataset)}>Link</Button>

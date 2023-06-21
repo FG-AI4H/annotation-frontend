@@ -141,7 +141,7 @@ const DatasetForm = (props) =>{
                             metadata: {
                                 version: '1.0',
                                 data_owner: dataset.metadata?.data_owner,
-                                data_source: dataset.metadata?.data_owner,
+                                data_source: dataset.metadata?.data_source,
                                 data_sample_size: dataset.metadata?.data_sample_size,
                                 data_type: dataset.metadata?.data_type,
                                 data_update_version: dataset.metadata?.data_update_version,
@@ -213,6 +213,7 @@ const DatasetForm = (props) =>{
                     id: dataset.metadata?.id,
                     version: '1.0',
                     data_owner: dataset.metadata?.data_owner,
+                    data_source: dataset.metadata?.data_source,
                     data_sample_size: dataset.metadata?.data_sample_size,
                     data_type: dataset.metadata?.data_type,
                     data_update_version: dataset.metadata?.data_update_version,
@@ -298,8 +299,8 @@ const DatasetForm = (props) =>{
                                 </Grid>
                                 <Grid item xs={12}>
                                     <TextField fullWidth label={"Data Source"} required id="component-filled4"
-                                               value={formState.metadata?.data_owner}
-                                               onChange={event => setInputMetadata('data_owner', event.target.value)}
+                                               value={formState.metadata?.data_source}
+                                               onChange={event => setInputMetadata('data_source', event.target.value)}
                                                disabled={readOnlyMode} InputLabelProps={{shrink: true}}/>
                                 </Grid>
                                 <Grid item xs={12}>
@@ -535,7 +536,7 @@ const DatasetForm = (props) =>{
                                 </MenuItem>
                                 {catalogs
                                     ? catalogs.map((cat, index) => (
-                                        <MenuItem key={index} value={cat.id}>{cat.name}</MenuItem>
+                                        <MenuItem value={cat.id}>{cat.name}</MenuItem>
                                     ))
                                     : null
                                 }
