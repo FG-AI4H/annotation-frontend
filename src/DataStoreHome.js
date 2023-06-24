@@ -82,9 +82,7 @@ export default function DataStoreHome(_props) {
 
         <div>
             <AppNavbar/>
-            <Backdrop open={isLoading} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-                <CircularProgress color="inherit" />
-            </Backdrop>
+
             <Container maxWidth="xl" sx={{ mt: 5 }}>
                 <Box sx={{ display: 'flex' }}>
                     <Item sx={{ flexGrow: 1 }}><h2>Datasets</h2></Item>
@@ -128,7 +126,7 @@ export default function DataStoreHome(_props) {
                         {/* Datasets */}
                         <Grid item xs={12}>
                             <Paper >
-                                <CatalogDatasets datasets = {remoteDatasets}/>
+                                <CatalogDatasets datasets = {remoteDatasets} isLoading = {isLoading}/>
                             </Paper>
                         </Grid>
                     </Grid>

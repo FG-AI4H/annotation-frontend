@@ -48,33 +48,33 @@ export const initialDataset = {
     data_catalog_id: '',
     metadata: {
         //General Metadata
-        dataOwner: '',
-        dataSource: '',
-        dataSampleSize: '',
-        dataType: '',
-        dataRegistryURL: '',
-        dataUpdateVersion: '',
-        dataAssumptionsConstraintsDependencies: '',
+        data_owner_id: 'undefined',
+        data_source: '',
+        data_sample_size: '',
+        data_type: '',
+        data_registry_url: '',
+        data_update_version: '',
+        data_assumptions_constraints_dependencies: '',
         //Data Collection
-        dataAcquisitionSensingModality: '',
-        dataAcquisitionSensingDeviceType: '',
-        dataCollectionPlace: '',
-        dataCollectionPeriod: '',
-        datCollectionAuthorsAgency: '',
-        dataCollectionFundingAgency: '',
+        data_acquisition_sensing_modality: '',
+        data_acquisition_sensing_device_type: '',
+        data_collection_place: '',
+        data_collection_period: '',
+        data_collection_authors_agency: '',
+        data_collection_funding_agency: '',
         //Data Privacy
-        dataResolutionPrecision: '',
-        dataPrivacyDeIdentificationProtocol: '',
-        dataSafetySecurityProtocol: '',
-        dataExclusionCriteria: '',
-        dataAcceptanceStandardsCompliance: '',
+        data_resolution_precision: '',
+        data_privacy_de_identification_protocol: '',
+        data_safety_security_protocol: '',
+        data_exclusion_criteria: '',
+        data_acceptance_standards_compliance: '',
         //Data Preparation
-        dataSamplingRate: '',
-        dataDimension: '',
-        dataPreprocessingTechniques: '',
-        dataAnnotationProcessTool: '',
-        dataBiasAndVarianceMinimization: '',
-        trainTuningEvalDatasetPartitioningRatio: ''
+        data_sampling_rate: '',
+        data_dimension: '',
+        data_preprocessing_techniques: '',
+        data_annotation_process_tool: '',
+        data_bias_and_variance_minimization: '',
+        train_tuning_eval_dataset_partitioning_ratio: ''
     }
 }
 

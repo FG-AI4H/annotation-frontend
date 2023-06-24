@@ -114,21 +114,6 @@ class DatasetClient {
             });
     }
 
-    async linkDataset(dataset) {
-        console.log("Linking Dataset for Id: " + dataset.name);
-
-        return postApiWithToken(this.accessToken, `${this.config.DATASET_CATALOG_URL}`,dataset,"PUT")
-            .then(([response, json]) => {
-                if (!response.ok) {
-                    return { success: false, error: json };
-                }
-                return { success: true, data: json };
-            })
-            .catch((e) => {
-                this.handleError(e);
-            });
-    }
-
     async fetchTableFromCatalog(catalog_uuid, table_name) {
         console.log("Fetching Table "+table_name+" for Id: " + catalog_uuid);
 
@@ -152,6 +137,21 @@ class DatasetClient {
         ]).get(error.constructor);
         console.log(err);
         return err;
+    }
+
+    requestAccessToCatalogDataset(dataset) {
+        console.log("Linking Dataset for Id: " + dataset.name);
+
+        return postApiWithToken(this.accessToken, `${this.config.DATASET_CATALOG_URL}/request`,dataset,"POST")
+            .then(([response, json]) => {
+                if (!response.ok) {
+                    return { success: false, error: json };
+                }
+                return { success: true, data: json };
+            })
+            .catch((e) => {
+                this.handleError(e);
+            });
     }
 }
 

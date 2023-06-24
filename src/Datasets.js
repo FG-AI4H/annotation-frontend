@@ -7,7 +7,7 @@ import {
     Backdrop,
     Box,
     Button,
-    CircularProgress,
+    CircularProgress, colors,
     Link,
     Modal,
     Paper,
@@ -21,10 +21,12 @@ import {
     Typography
 } from "@mui/material";
 
+
 import {initialDataset} from "./DatasetEdit";
 import {Link as RouterLink} from "react-router-dom";
 import DatasetForm from "./DatasetForm";
 import DatasetClient from "./api/DatasetClient";
+import {green} from "@mui/material/colors";
 
 const modalMode = Object.freeze({ _EDIT: 'edit', _READ: 'read' })
 
@@ -39,6 +41,7 @@ export const style = {
     boxShadow: 24,
     p: 4,
 };
+
 
 //dataset metadata specification as per
 // p.19: https://extranet.itu.int/sites/itu-t/focusgroups/ai4h/docs/FGAI4H-J-049.pdf
@@ -101,6 +104,7 @@ export default function Datasets(props) {
 
 
     return (
+
         <React.Fragment>
 
 
@@ -117,11 +121,11 @@ export default function Datasets(props) {
                             <TableBody>
                                 {datasets?.map((dataset) => (
                                     <TableRow key={dataset.id}>
-                                        <TableCell>{dataset.linked ? <LinkIcon/> : <StorageIcon/>}</TableCell>
+                                        <TableCell>{dataset.linked ? <LinkIcon style={{color: 'green'}}/> : <StorageIcon/>}</TableCell>
                                         <TableCell><Link href="#" onClick={() => viewDataset(dataset.id)}>{dataset.name}</Link></TableCell>
                                         <TableCell>{(new Date(Date.parse(dataset.created_at))).toLocaleString(navigator.language)}</TableCell>
                                         <TableCell>
-                                            <Stack direction={"row"} spacing={2} justifyContent="flex-end">
+                                            <Stack direction={"row"} spacing={2} justifyContent="flexend">
                                                 <Button component={RouterLink} size="small" color="primary" to={"/datasets/" + dataset.id}>Edit</Button>
                                                 <Button size="small" color="error" onClick={() => remove(dataset.id)}>Delete</Button>
                                             </Stack>

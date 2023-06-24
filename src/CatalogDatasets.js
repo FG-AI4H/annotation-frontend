@@ -10,7 +10,7 @@ import {
     CircularProgress,
     Link,
     Modal,
-    Paper,
+    Paper, Snackbar,
     Stack, Tab,
     Table,
     TableBody,
@@ -25,6 +25,7 @@ import {initialDataset} from "./DatasetEdit";
 import {Link as RouterLink} from "react-router-dom";
 import DatasetForm from "./DatasetForm";
 import DatasetClient from "./api/DatasetClient";
+import Alert from "@mui/material/Alert";
 
 const modalMode = Object.freeze({ _EDIT: 'edit', _READ: 'read' })
 
@@ -49,12 +50,16 @@ export default function CatalogDatasets(props) {
     const [datasets, setDatasets] = useState(props.datasets)
     const [formState, setFormState] = useState(initialDataset)
     const [open, setOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(props.isLoading);
+    const [updated, setUpdated] = useState(false);
+    const [updateType, setUpdateType] = useState("success");
 
     const [backdropOpen] = useState(false);
 
     useEffect(() => {
         setDatasets(props.datasets);
-    }, [props.datasets])
+        setIsLoading(props.isLoading)
+    }, [props.isLoading])
 
     async function fetchTable(catalog_uuid, table_name) {
         const token = await Auth.currentAuthenticatedUser({bypassCache: false})
@@ -69,15 +74,15 @@ export default function CatalogDatasets(props) {
         handleModalOpen(modalMode._READ, datasets[index]);
     }
 
-    async function link(dataset) {
+    async function requestAccess(dataset) {
         Auth.currentAuthenticatedUser({
             bypassCache: false
         }).then(currentUser => {
             const client = new DatasetClient(currentUser.signInUserSession.accessToken.jwtToken);
-            client.linkDataset(dataset)
+            client.requestAccessToCatalogDataset(dataset)
                 .then(
                     _response => {
-
+                        setUpdated(true)
                     });
         }).catch(err => console.log(err));
     }
@@ -95,10 +100,27 @@ export default function CatalogDatasets(props) {
         setOpen(false);
     };
 
+    function handleClose(_event, reason){
+        if (reason === 'clickaway') {
+            return;
+        }
+        setUpdated(false)
+    }
+
 
     return (
         <React.Fragment>
-
+            <Backdrop open={isLoading} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+                <CircularProgress color="inherit" />
+            </Backdrop>
+            <Snackbar open={updated} autoHideDuration={6000} onClose={handleClose} anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right'
+            }}>
+                <Alert severity={updateType} sx={{ width: '100%' }} onClose={handleClose}>
+                    Request successfully sent to owner!
+                </Alert>
+            </Snackbar>
 
             <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -116,11 +138,11 @@ export default function CatalogDatasets(props) {
                             <TableRow key={dataset.id}>
                                 <TableCell><LinkIcon/></TableCell>
                                 <TableCell><Link href="#" onClick={() => viewDataset(index)}>{dataset.name}</Link></TableCell>
-                                <TableCell>{dataset.metadata.data_owner}</TableCell>
+                                <TableCell>{dataset.metadata.data_owner_name}</TableCell>
                                 <TableCell>{dataset.catalog_location}</TableCell>
                                 <TableCell>
                                     <Stack direction={"row"} spacing={2} justifyContent="flex-end">
-                                        <Button size="small" color="info" onClick={() => link(dataset)}>Link</Button>
+                                        <Button size="small" color="info" onClick={() => requestAccess(dataset)}>Request Access</Button>
                                     </Stack>
                                 </TableCell>
                             </TableRow>

@@ -22,6 +22,7 @@ import {Link as RouterLink, useParams} from "react-router-dom";
 import DatasetClient from "./api/DatasetClient";
 import withNavigateHook from "./helpers/withNavigateHook";
 import AdminClient from "./api/AdminClient";
+import UserClient from "./api/UserClient";
 
 const DatasetForm = (props) =>{
 
@@ -30,6 +31,7 @@ const DatasetForm = (props) =>{
     const [readOnlyMode, setReadOnlyMode] = useState(props.readOnlyMode);
     const [formState, setFormState] = useState(props.formState);
     const [catalogs, setCatalogs] = useState([]);
+    const [users, setUsers] = useState([]);
 
     useEffect(() => {
         Auth.currentAuthenticatedUser({
@@ -47,6 +49,14 @@ const DatasetForm = (props) =>{
                         setFormState(props.formState);
                     });
 
+            const userClient = new UserClient(response.signInUserSession.accessToken.jwtToken);
+            userClient.fetchUserList()
+                .then(
+                    response => {
+                        if (response?.data) {
+                            setUsers(response.data);
+
+                            }});
 
         }).catch(err => console.log(err));
     }, [props.formState]);
@@ -140,7 +150,7 @@ const DatasetForm = (props) =>{
                             data_catalog_id: dataset.data_catalog_id,
                             metadata: {
                                 version: '1.0',
-                                data_owner: dataset.metadata?.data_owner,
+                                data_owner_id: dataset.metadata?.data_owner_id,
                                 data_source: dataset.metadata?.data_source,
                                 data_sample_size: dataset.metadata?.data_sample_size,
                                 data_type: dataset.metadata?.data_type,
@@ -212,7 +222,7 @@ const DatasetForm = (props) =>{
                 metadata: {
                     id: dataset.metadata?.id,
                     version: '1.0',
-                    data_owner: dataset.metadata?.data_owner,
+                    data_owner_id: dataset.metadata?.data_owner_id,
                     data_source: dataset.metadata?.data_source,
                     data_sample_size: dataset.metadata?.data_sample_size,
                     data_type: dataset.metadata?.data_type,
@@ -292,10 +302,28 @@ const DatasetForm = (props) =>{
                         <div style={{width: '100%'}}>
                             <Grid container spacing={1}>
                                 <Grid item xs={12}>
-                                    <TextField fullWidth label={"Data Owner"} required id="component-filled2"
-                                               value={formState.metadata?.data_owner}
-                                               onChange={event => setInputMetadata('data_owner', event.target.value)}
-                                               disabled={readOnlyMode} InputLabelProps={{shrink: true}}/>
+                                    <FormControl fullWidth margin={"normal"}>
+                                        <InputLabel >Data Owner</InputLabel>
+                                    <Select fullWidth required
+                                        id="data_catalog_id"
+                                            value={formState.metadata?.data_owner_id}
+                                        name="data_catalog_id" onChange={event => setInputMetadata('data_owner_id', event.target.value)}
+                                        label="Data Owner"
+                                            disabled={readOnlyMode}
+                                            InputLabelProps={{shrink: true}}
+                                    >
+                                        <MenuItem value="undefined">
+                                            <em>Choose a user</em>
+                                        </MenuItem>
+                                        {users
+                                            ? users.map((user, index) => (
+                                                <MenuItem key={index} value={user.id}>{user.username}</MenuItem>
+                                            ))
+                                            : null
+                                        }
+                                    </Select>
+                                    </FormControl>
+
                                 </Grid>
                                 <Grid item xs={12}>
                                     <TextField fullWidth label={"Data Source"} required id="component-filled4"
@@ -536,7 +564,7 @@ const DatasetForm = (props) =>{
                                 </MenuItem>
                                 {catalogs
                                     ? catalogs.map((cat, index) => (
-                                        <MenuItem value={cat.id}>{cat.name}</MenuItem>
+                                        <MenuItem key={index} value={cat.id}>{cat.name}</MenuItem>
                                     ))
                                     : null
                                 }
