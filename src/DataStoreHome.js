@@ -11,12 +11,15 @@ import DatasetClient from "./api/DatasetClient";
 import {a11yProps} from "./components/allyProps";
 import {TabPanel} from "./components/TabPanel";
 import CatalogDatasets from "./CatalogDatasets";
+import DataAccessRequests from "./DataAccessRequests";
 
 
 export default function DataStoreHome(_props) {
 
     const [datasets, setDatasets] = useState([]);
     const [remoteDatasets, setRemoteDatasets] = useState([]);
+    const [ownerDataAccessRequests, setOwnerDataAccessRequests] = useState([]);
+    const [requesterDataAccessRequests, setRequesterDataAccessRequests] = useState([]);
     const [tabValue, setTabValue] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -53,10 +56,43 @@ export default function DataStoreHome(_props) {
         });
     }
 
+    function loadOwnerDataAccessRequests() {
+        Auth.currentAuthenticatedUser({
+            bypassCache: false
+        }).then(currentUser => {
+            const client = new DatasetClient(currentUser.signInUserSession.accessToken.jwtToken);
+            client.fetchOwnerDataAccessRequestList()
+                .then(
+                    response => {
+                        setOwnerDataAccessRequests(response?.data)
+                    })
+
+        }).catch(err => {
+            console.log(err)
+            setIsLoading(false)
+        });
+    }
+
+    function loadRequesterDataAccessRequests() {
+        Auth.currentAuthenticatedUser({
+            bypassCache: false
+        }).then(currentUser => {
+            const client = new DatasetClient(currentUser.signInUserSession.accessToken.jwtToken);
+            client.fetchRequesterDataAccessRequestList()
+                .then(
+                    response => {
+                        setRequesterDataAccessRequests(response?.data)
+                    })
+
+        }).catch(err => {
+            console.log(err)
+            setIsLoading(false)
+        });
+    }
+
     //Load at page load
     useEffect(() => {
-        loadDataset();
-        loadRemoteDataset();
+        loadAll()
     }, [])
 
     const handleChange = (event, newValue) => {
@@ -78,6 +114,13 @@ export default function DataStoreHome(_props) {
     }
 
 
+    function loadAll() {
+        loadDataset();
+        loadOwnerDataAccessRequests();
+        loadRequesterDataAccessRequests();
+        loadRemoteDataset();
+    }
+
     return (
 
         <div>
@@ -87,7 +130,7 @@ export default function DataStoreHome(_props) {
                 <Box sx={{ display: 'flex' }}>
                     <Item sx={{ flexGrow: 1 }}><h2>Datasets</h2></Item>
                     <Item >
-                        <IconButton onClick={() => loadDataset()}><Replay /></IconButton>{' '}
+                        <IconButton onClick={() => loadAll()}><Replay /></IconButton>{' '}
                         <Button component={RouterLink} color="info" to={"/datasets/link"}>Link Dataset</Button>
                         <Button component={RouterLink} color="success" to={"/datasets/new"}>Add Dataset</Button>
                     </Item>
@@ -104,6 +147,7 @@ export default function DataStoreHome(_props) {
                     >
                         <Tab label="Registered Datasets" {...a11yProps(0)}/>
                         <Tab label="Available Datasets" {...a11yProps(1)}/>
+                        <Tab label="Data Access Requests" {...a11yProps(2)}/>
 
                     </Tabs>
                 </Box>
@@ -123,10 +167,34 @@ export default function DataStoreHome(_props) {
                 <TabPanel value={tabValue} index={1}>
 
                     <Grid container spacing={3}>
-                        {/* Datasets */}
+                        {/* RemoteDatasets */}
                         <Grid item xs={12}>
                             <Paper >
                                 <CatalogDatasets datasets = {remoteDatasets} isLoading = {isLoading}/>
+                            </Paper>
+                        </Grid>
+                    </Grid>
+
+                </TabPanel>
+
+                <TabPanel value={tabValue} index={2}>
+
+                    <Grid container spacing={3}>
+
+                        <Grid item xs={12}>
+                            <Item sx={{ flexGrow: 1 }}><h2>Received Requests</h2></Item>
+                            <Paper >
+                                <DataAccessRequests owner={true} dataAccessRequests = {ownerDataAccessRequests}/>
+                            </Paper>
+                        </Grid>
+                    </Grid>
+
+                    <Grid container spacing={3}>
+
+                        <Grid item xs={12}>
+                            <Item sx={{ flexGrow: 1 }}><h2>My Requests</h2></Item>
+                            <Paper >
+                                <DataAccessRequests owner={false} dataAccessRequests = {requesterDataAccessRequests}/>
                             </Paper>
                         </Grid>
                     </Grid>

@@ -38,6 +38,35 @@ class DatasetClient {
             });
     }
 
+    async fetchOwnerDataAccessRequestList() {
+        console.log("Fetching data access requests");
+
+        return callApiWithToken(this.accessToken, `${this.config.DATA_ACCESS_REQUEST_URL}/owner`)
+            .then(([response, json]) => {
+                if (!response.ok) {
+                    return { success: false, error: json };
+                }
+                return { success: true, data: json };
+            })
+            .catch((e) => {
+                this.handleError(e);
+            });
+    }
+
+    async fetchRequesterDataAccessRequestList() {
+        console.log("Fetching data access requests");
+
+        return callApiWithToken(this.accessToken, `${this.config.DATA_ACCESS_REQUEST_URL}/requester`)
+            .then(([response, json]) => {
+                if (!response.ok) {
+                    return { success: false, error: json };
+                }
+                return { success: true, data: json };
+            })
+            .catch((e) => {
+                this.handleError(e);
+            });
+    }
 
     async fetchDatasetById(DatasetId) {
         console.log("Fetching Dataset for Id: " + DatasetId);
@@ -143,6 +172,52 @@ class DatasetClient {
         console.log("Linking Dataset for Id: " + dataset.name);
 
         return postApiWithToken(this.accessToken, `${this.config.DATASET_CATALOG_URL}/request`,dataset,"POST")
+            .then(([response, json]) => {
+                if (!response.ok) {
+                    return { success: false, error: json };
+                }
+                return { success: true, data: json };
+            })
+            .catch((e) => {
+                this.handleError(e);
+            });
+    }
+
+    async removeDataAccessRequest(id) {
+        console.log("Deleting Data Access Request for Id: " + id);
+
+        return callApiWithToken(this.accessToken, `${this.config.DATA_ACCESS_REQUEST_URL}/${id}`,"DELETE")
+            .then(([response, json]) => {
+                if (!response.ok) {
+                    return { success: false, error: json };
+                }
+                return { success: true, data: json };
+            })
+            .catch((e) => {
+                this.handleError(e);
+            });
+    }
+
+
+    updateDataAccessRequest(request) {
+        console.log("Updating Data Access Request for Id: " + request.id);
+
+        return postApiWithToken(this.accessToken, `${this.config.DATA_ACCESS_REQUEST_URL}/${request.id}`,request,"PUT")
+            .then(([response, json]) => {
+                if (!response.ok) {
+                    return { success: false, error: json };
+                }
+                return { success: true, data: json };
+            })
+            .catch((e) => {
+                this.handleError(e);
+            });
+    }
+
+    updateDataAccessRequestStatus(id, newStatus) {
+        console.log("Updating Data Access Request for Id: " + id);
+
+        return callApiWithToken(this.accessToken, `${this.config.DATA_ACCESS_REQUEST_URL}/${id}/update_status/${newStatus}`)
             .then(([response, json]) => {
                 if (!response.ok) {
                     return { success: false, error: json };
