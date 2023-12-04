@@ -115,7 +115,7 @@ export default function Datasets(_props) {
                                 <TableCell>
                                     <Stack direction={"row"} spacing={2} justifyContent="flex-end">
                                         <Button component={RouterLink} size="small" color="primary" to={"/datasets/" + dataset.datasetUUID}>Edit</Button>
-                                        <Button size="small" color="error" onClick={() => this.remove(dataset.datasetUUID)}>Delete</Button>
+                                        <Button size="small" color="error" onClick={() => remove(dataset.datasetUUID)}>Delete</Button>
                                     </Stack>
                                 </TableCell>
                             </TableRow>
