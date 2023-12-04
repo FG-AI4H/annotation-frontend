@@ -42,7 +42,7 @@ const CampaignDataset = (props) => {
                 .then(
                     response => {
                         setDatasets(response?.data)
-                        let updatedDatasets = [response?.data ?? ...response.data].filter(i => i.id == props.datasetsUUID);
+                        let updatedDatasets = [...(response ? response.data : undefined)].filter(i => i.id === props.datasetsUUID);
                         setSelectedDatasets(updatedDatasets);
                     })
 
