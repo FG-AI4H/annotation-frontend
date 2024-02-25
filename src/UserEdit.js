@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import AppNavbar from "./AppNavbar";
 
-import {Link as RouterLink, useParams} from "react-router-dom";
+import {Link as RouterLink, useNavigate, useParams} from "react-router-dom";
 import {Auth} from "aws-amplify";
 import UserClient from "./api/UserClient";
 
@@ -28,13 +28,17 @@ import {Add} from "@mui/icons-material";
 import {a11yProps} from "./components/allyProps";
 import {TabPanel} from "./components/TabPanel";
 
-const UserEdit = (props) => {
+const UserEdit = (_props) => {
 
     let params = useParams();
+    const navigate = useNavigate();
 
     const emptyItem = {
         name: '',
-        email: ''
+        email: '',
+        annotation_annotator_role: false,
+        annotation_reviewer_role: false,
+        annotation_supervisor_role: false
     };
 
     const [item, setItem] = useState(emptyItem);
@@ -51,31 +55,32 @@ const UserEdit = (props) => {
                 const client = new UserClient(response.signInUserSession.accessToken.jwtToken);
                 client.fetchUserById(params.id)
                     .then(
-                        response => {
+                        res => {
 
-                            let user = response?.data;
-                            user.annotation_annotator_role = user.annotatorRole != undefined
-                            user.yearsInPractice = user.annotatorRole?.yearsInPractice
-                            user.degree = user.annotatorRole?.degree
-                            user.workCountry = user.annotatorRole?.workCountry
-                            user.studyCountry = user.annotatorRole?.studyCountry
-                            user.selfAssessment = user.annotatorRole?.selfAssessment
-                            user.expectedSalary = user.annotatorRole?.expectedSalary
-
-
-                            user.annotation_reviewer_role = user.reviewerRole != undefined
-                            user.annotation_supervisor_role = user.supervisorRole != undefined
+                            let user = res?.data;
+                            user.annotation_annotator_role = user.annotator_role?.id !== undefined
+                            if(!user.annotation_annotator_role){
+                                user.annotator_role = {}
+                            }
+                            user.annotation_reviewer_role = user.reviewer_role?.id !== undefined
+                            if(!user.annotation_reviewer_role){
+                                user.reviewer_role = {}
+                            }
+                            user.annotation_supervisor_role = user.supervisor_role?.id !== undefined
+                            if(!user.annotation_supervisor_role){
+                                user.supervisor_role = {}
+                            }
 
                             setItem(user);
                             setIsLoading(false);
                         });
             }
-
+            setIsLoading(false);
         }).catch(err => console.log(err));
 
     }, [params.id])
 
-    const handleTabChange = (event, newValue) => {
+    const handleTabChange = (_event, newValue) => {
         setTabValue(newValue);
     };
 
@@ -89,53 +94,47 @@ const UserEdit = (props) => {
         }
 
         let user = {...item};
-        user[name] = value;
+        if(name.startsWith('annotator_role.')){
+            user.annotator_role[name.replace('annotator_role.', '')] = value
+        }
+        else{
+            user[name] = value;
+        }
+
         setItem(user);
     }
 
     async function handleSubmit(event) {
         event.preventDefault();
 
-        if(item.annotation_annotator_role){
-            item.annotatorRole = {
-                yearsInPractice: item.yearsInPractice,
-                workCountry: item.workCountry,
-                studyCountry: item.studyCountry,
-                selfAssessment: item.selfAssessment,
-                expectedSalary: item.expectedSalary,
-                degree: item.degree
-            }
+        if(!item.annotation_annotator_role){
+            item.annotator_role = undefined;
         }
-        if(item.annotation_reviewer_role){
-            item.reviewerRole = {
-
-            }
+        if(!item.annotation_reviewer_role){
+            item.reviewer_role = undefined;
         }
-        if(item.annotation_supervisor_role){
-            item.supervisorRole = {
-
-            }
+        if(!item.annotation_supervisor_role){
+            item.supervisor_role = undefined;
         }
 
         Auth.currentAuthenticatedUser({
             bypassCache: false
         }).then(response => {
             const client = new UserClient(response.signInUserSession.accessToken.jwtToken);
-            if(item.userUUID) {
+            if(item.id) {
                 client.updateUser(item)
                     .then(
-                        response => setItem(response?.data)
+                        res => setItem(res?.data)
                         );
             }
             else{
                 client.addUser(item)
                     .then(
-                            response => setItem(response?.data));
+                            res => setItem(res?.data));
             }
         }).catch(err => console.log(err));
 
-
-        props.history.push('/userManagement');
+        navigate('/userManagement');
     }
 
 
@@ -146,7 +145,7 @@ const UserEdit = (props) => {
                 <CircularProgress color="inherit" />
             </Backdrop>
             <Container maxWidth="xl" sx={{ mt: 5 }}>
-            <h2>{item.userUUID ? 'Edit User' : 'Add User'}</h2>
+            <h2>{item.id ? 'Edit User' : 'Add User'}</h2>
             <Grid item xs={12}>
                     <FormControl fullWidth margin={"normal"} >
                         <TextField
@@ -181,8 +180,8 @@ const UserEdit = (props) => {
                 <Grid item xs={6}>
                             <h4>Annotation Platform</h4>
                             <FormControl fullWidth margin={"normal"}>
-                                <FormControlLabel control={<Checkbox name="annotation_annotator_role" id="annotation_annotator_role" checked={item.annotation_annotator_role} onChange={handleChange}/>} label="Annotator" />
-                                <FormControlLabel control={<Checkbox name="annotation_reviewer_role" id="annotation_reviewer_role" checked={item.annotation_reviewer_role} onChange={handleChange}/>} label="Reviewer" />
+                                <FormControlLabel control={<Checkbox name="annotation_annotator_role" id="annotation_annotator_role" defaultValue={false} checked={item.annotation_annotator_role} onChange={handleChange}/>} label="Annotator" />
+                                <FormControlLabel control={<Checkbox name="annotation_reviewer_role" id="annotation_reviewer_role" defaultValue={false} checked={item.annotation_reviewer_role} onChange={handleChange}/>} label="Reviewer" />
                                 <FormControlLabel control={<Checkbox name="annotation_supervisor_role" id="annotation_supervisor_role" checked={item.annotation_supervisor_role} onChange={handleChange}/>} label="Supervisor" />
                                 <FormControlLabel control={<Checkbox name="annotation_manager_role" id="annotation_manager_role" checked={item.annotation_manager_role} onChange={handleChange}/>} label="Campaign Manager" />
                                 <FormControlLabel control={<Checkbox name="annotation_admin_role" id="annotation_admin_role" checked={item.annotation_admin_role} onChange={handleChange}/>} label="Admin" />
@@ -221,14 +220,12 @@ const UserEdit = (props) => {
                                     name="birthdate"
                                     value={item.birthdate}
                                     label="Birthdate"
+                                    InputLabelProps={{ shrink: true }}
                                     onChange={handleChange}
                                 />
                             </FormControl>
 
                         </Grid>
-                    </TabPanel>
-                    {(item.annotation_annotator_role || item.annotation_reviewer_role || item.annotation_supervisor_role || item.annotation_manager_role || item.annotation_admin_role) &&
-                    <TabPanel value={tabValue} index={1}>
                         <Grid item xs={6}>
                             <FormControl fullWidth margin={"normal"}>
                                 <InputLabel id="kind-label">Degree</InputLabel>
@@ -237,6 +234,7 @@ const UserEdit = (props) => {
                                     name="degree"
                                     value={item.degree}
                                     label="Kind"
+                                    InputLabelProps={{ shrink: true }}
                                     onChange={handleChange}
                                 >
                                     <MenuItem value={"1"}>Associate</MenuItem>
@@ -251,33 +249,52 @@ const UserEdit = (props) => {
                         </Grid>
                         <Grid item xs={6}>
                             <TextField fullWidth margin={"normal"}
-                                       id="studyCountry"
-                                       name="studyCountry"
-                                       value={item.studyCountry}
+                                       id="study_country"
+                                       name="study_country"
+                                       value={item.study_country}
                                        label="Study Country"
+                                       InputLabelProps={{ shrink: true }}
                                        onChange={handleChange}
                             />
                             <Grid item xs={12}>
 
                                 <TextField fullWidth margin={"normal"}
-                                           id="workCountry"
-                                           name="workCountry"
-                                           value={item.studyCountry}
+                                           id="work_country"
+                                           name="work_country"
+                                           value={item.study_country}
                                            label="Working Country"
+                                           InputLabelProps={{ shrink: true }}
                                            onChange={handleChange}
                                 />
                             </Grid>
                             <Grid item xs={6}>
                                 <TextField fullWidth margin={"normal"}
                                            type={"number"}
-                                           id="yearsInPractice"
-                                           name="yearsInPractice"
-                                           value={item.yearsInPractice}
+                                           id="years_in_practice"
+                                           name="years_in_practice"
+                                           value={item.years_in_practice}
                                            label="Years in practice"
+                                           InputLabelProps={{ shrink: true }}
                                            onChange={handleChange}
                                 />
 
                             </Grid>
+                            <Grid item xs={6}>
+
+                                <TextField fullWidth margin={"normal"}
+                                           id="timezone"
+                                           name="timezone"
+                                           value={item.timezone}
+                                           label="Timezone"
+                                           InputLabelProps={{ shrink: true }}
+                                           onChange={handleChange}
+                                />
+                            </Grid>
+                        </Grid>
+                    </TabPanel>
+                    {(item.annotation_annotator_role || item.annotation_reviewer_role || item.annotation_supervisor_role || item.annotation_manager_role || item.annotation_admin_role) &&
+                    <TabPanel value={tabValue} index={1}>
+                        <Grid item xs={6}>
                             <Grid item xs={12} className="d-flex align-items-end">
 
                                 <Stack direction="row" spacing={2}>
@@ -286,22 +303,13 @@ const UserEdit = (props) => {
 
                             </Grid>
                         </Grid>
-                        <Grid item xs={6}>
 
-                            <TextField fullWidth margin={"normal"}
-                                       id="timezone"
-                                       name="timezone"
-                                       value={item.timezone}
-                                       label="Timezone"
-                                       onChange={handleChange}
-                            />
-                        </Grid>
                         <Grid item xs={6}>
                             <TextField fullWidth margin={"normal"}
                                        type={"number"}
                                        id="availabilityPerWeek"
                                        name="availabilityPerWeek"
-                                       value={item.availabilityPerWeek}
+                                       value={item.annotator_role.availability_per_week}
                                        label="Availability per week (hours)"
                                        onChange={handleChange}
                             />
@@ -309,9 +317,9 @@ const UserEdit = (props) => {
                         <Grid item xs={6}>
                             <TextField fullWidth margin={"normal"}
                                        type={"number"}
-                                       id="selfAssessment"
-                                       name="selfAssessment"
-                                       value={item.selfAssessment}
+                                       id="annotator_role.self_assessment"
+                                       name="annotator_role.self_assessment"
+                                       value={item.annotator_role.self_assessment}
                                        label="Self Assessment"
                                        onChange={handleChange}
                             />
@@ -319,9 +327,9 @@ const UserEdit = (props) => {
                         <Grid item xs={6}>
                             <TextField fullWidth margin={"normal"}
                                        type={"number"}
-                                       id="expectedSalary"
-                                       name="expectedSalary"
-                                       value={item.expectedSalary}
+                                       id="expected_salary"
+                                       name="expected_salary"
+                                       value={item.annotator_role.expected_salary}
                                        label="Expected compensation ($ per hour)"
                                        onChange={handleChange}
                             />

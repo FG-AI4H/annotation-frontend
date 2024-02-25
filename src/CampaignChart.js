@@ -1,5 +1,6 @@
 import React, {PureComponent} from 'react';
 import {Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts';
+import {Typography} from "@mui/material";
 
 const data = [
     {
@@ -51,7 +52,9 @@ export default class CampaignChart extends PureComponent {
 
     render() {
         return (
+
             <div className="content c-white">
+                <Typography gutterBottom variant="h5" component="div">Number of Annotations</Typography>
                 <ResponsiveContainer height={300} width={"100%"}>
                 <AreaChart
                     width={500}

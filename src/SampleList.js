@@ -33,14 +33,13 @@ const SampleList = (props) => {
     }
 
     const sampleList = props.samples.map(sample => {
-        return <TableRow key={sample.sampleUUID} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+        return <TableRow key={sample.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
             <TableCell style={{whiteSpace: 'nowrap'}}>{sample.title}</TableCell>
             <TableCell style={{whiteSpace: 'nowrap'}}></TableCell>
             <TableCell>
                 <Stack direction={"row"} spacing={2} justifyContent="flex-end">
-                    <Button component={RouterLink} size="small" to={"/samples/" + sample.sampleUUID}>Edit</Button>
-                    <Button size="small" color={"error"} onClick={() => remove(sample.sampleUUID)}>Delete</Button>
-                    <Button component={RouterLink} size="small" color={"info"} to={"/imageViewer/" + sample.sampleUUID}>View</Button>
+                    <Button size="small" color={"error"} onClick={() => remove(sample.id)}>Delete</Button>
+                    <Button component={RouterLink} size="small" color={"info"} to={"/imageViewer/" + sample.id}>View</Button>
                 </Stack>
 
             </TableCell>

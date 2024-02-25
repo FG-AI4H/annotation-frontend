@@ -40,7 +40,7 @@ class CampaignList extends Component {
                 .then(
                     campaignListResponse =>
                         this.setState(
-                            {campaigns: campaignListResponse?.data?._embedded?.campaign, isLoading: false}
+                            {campaigns: campaignListResponse?.data, isLoading: false}
                         ));
         }).catch(err => console.log(err));
 
@@ -54,7 +54,7 @@ class CampaignList extends Component {
             client.removeCampaign(id)
                 .then(
                     _response => {
-                        let updatedCampaigns = [...this.state.campaigns].filter(i => i.campaignUUID !== id);
+                        let updatedCampaigns = [...this.state.campaigns].filter(i => i.id !== id);
                         this.setState({campaigns: updatedCampaigns});
                     });
         }).catch(err => console.log(err));
@@ -65,13 +65,14 @@ class CampaignList extends Component {
         const {campaigns, isLoading} = this.state;
 
         const campaignList = campaigns?.map(campaign => {
-            return <TableRow key={campaign.campaignUUID} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+            return <TableRow key={campaign.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell style={{whiteSpace: 'nowrap'}}>{campaign.name}</TableCell>
                 <TableCell>{campaign.description}</TableCell>
+                <TableCell>{campaign.status}</TableCell>
                 <TableCell>
                     <Stack direction={"row"} spacing={2} justifyContent="flex-end">
-                        <Button component={RouterLink} size="small" color="primary" to={"/campaigns/" + campaign.campaignUUID}>Edit</Button>
-                        <Button size="small" color="error" onClick={() => this.remove(campaign.campaignUUID)}>Delete</Button>
+                        <Button component={RouterLink} size="small" color="primary" to={"/campaigns/" + campaign.id}>Edit</Button>
+                        <Button size="small" color="error" onClick={() => this.remove(campaign.id)}>Delete</Button>
                     </Stack>
                 </TableCell>
 
@@ -98,7 +99,8 @@ class CampaignList extends Component {
                                 <TableRow>
                                     <TableCell width="30%">Name</TableCell>
                                     <TableCell width="30%">Description</TableCell>
-                                    <TableCell width="40%" align={"right"}>Actions</TableCell>
+                                    <TableCell width="20%">Status</TableCell>
+                                    <TableCell width="20%" align={"right"}>Actions</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>

@@ -6,6 +6,7 @@ import DatasetItemModal from "./DatasetItemModal.js"
 import 'react-medium-image-zoom/dist/styles.css'
 import {
     Backdrop,
+    Box,
     Button,
     CircularProgress,
     Container,
@@ -19,52 +20,61 @@ import {
     Paper,
     Stack,
     Switch,
+    Tab,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
-    TableRow
+    TableRow,
+    Tabs
 } from "@mui/material";
 import AppNavbar from "./AppNavbar";
 import DatasetForm from "./DatasetForm";
 import {initialItem} from "./DatasetItemModal";
 import axios from "axios";
 import DatasetClient from "./api/DatasetClient";
+import {a11yProps} from "./components/allyProps";
+import {TabPanel} from "./components/TabPanel";
+import DatasetPermission from "./DatasetPermission";
 
 export const initialDataset = {
     name: '',
     description: '',
     selectedFile: undefined,
+    catalog_auth_type: '',
+    catalog_location: '',
+    linked: false,
+    data_catalog_id: '',
     metadata: {
         //General Metadata
-        dataOwner: '',
-        dataSource: '',
-        dataSampleSize: '',
-        dataType: '',
-        dataRegistryURL: '',
-        dataUpdateVersion: '',
-        dataAssumptionsConstraintsDependencies: '',
+        data_owner_id: 'undefined',
+        data_source: '',
+        data_sample_size: '',
+        data_type: '',
+        data_registry_url: '',
+        data_update_version: '',
+        data_assumptions_constraints_dependencies: '',
         //Data Collection
-        dataAcquisitionSensingModality: '',
-        dataAcquisitionSensingDeviceType: '',
-        dataCollectionPlace: '',
-        dataCollectionPeriod: '',
-        datCollectionAuthorsAgency: '',
-        dataCollectionFundingAgency: '',
+        data_acquisition_sensing_modality: '',
+        data_acquisition_sensing_device_type: '',
+        data_collection_place: '',
+        data_collection_period: '',
+        data_collection_authors_agency: '',
+        data_collection_funding_agency: '',
         //Data Privacy
-        dataResolutionPrecision: '',
-        dataPrivacyDeIdentificationProtocol: '',
-        dataSafetySecurityProtocol: '',
-        dataExclusionCriteria: '',
-        dataAcceptanceStandardsCompliance: '',
+        data_resolution_precision: '',
+        data_privacy_de_identification_protocol: '',
+        data_safety_security_protocol: '',
+        data_exclusion_criteria: '',
+        data_acceptance_standards_compliance: '',
         //Data Preparation
-        dataSamplingRate: '',
-        dataDimension: '',
-        dataPreprocessingTechniques: '',
-        dataAnnotationProcessTool: '',
-        dataBiasAndVarianceMinimization: '',
-        trainTuningEvalDatasetPartitioningRatio: ''
+        data_sampling_rate: '',
+        data_dimension: '',
+        data_preprocessing_techniques: '',
+        data_annotation_process_tool: '',
+        data_bias_and_variance_minimization: '',
+        train_tuning_eval_dataset_partitioning_ratio: ''
     }
 }
 
@@ -81,36 +91,44 @@ const DatasetEdit = () => {
     const [nextContinuationToken, setNextContinuationToken] = useState(null);
     const [itemSize, setItemSize] = useState(489);
     const [fetchSize, setFetchSize] = useState(21);
+    const [tabValue, setTabValue] = useState(0);
 
 
     useEffect( () =>{
+
         setIsLoading(true);
+        dataset.linked = params.id === 'link';
 
-        Auth.currentAuthenticatedUser({
-            bypassCache: false
-        }).then(response => {
-            if (params.id !== 'new') {
+            Auth.currentAuthenticatedUser({
+                bypassCache: false
+            }).then(response => {
+                if (params.id !== 'new' && params.id !== 'link') {
 
-                const fetchData = async (prefix) => {
-                    await fetchBinary(prefix);
+                    const fetchData = async (prefix) => {
+                        await fetchBinary(prefix);
+                        setIsLoading(false);
+                    }
+
+                    const client = new DatasetClient(response.signInUserSession.accessToken.jwtToken);
+                    client.fetchDatasetById(params.id).then(datasetData => {
+                        setDatatset(datasetData.data);
+                        if(!datasetData.data.linked) {
+                            const prefix = datasetData.data.storage_location.replace('fhir-service-dev-fhirbinarybucket-yjeth32swz5m.s3.eu-central-1.amazonaws.com/', '');
+
+                            fetchData(prefix)
+                                // make sure to catch any error
+                                .catch(console.error);
+                        }
+                        else{
+                            setIsLoading(false);
+                        }
+                    })
+                } else {
                     setIsLoading(false);
                 }
 
-                const client = new DatasetClient(response.signInUserSession.accessToken.jwtToken);
-                client.fetchDatasetById(params.id).then(datasetData => {
-                    setDatatset(datasetData.data);
-                    const prefix = datasetData.data.storageLocation.replace('fhir-service-dev-fhirbinarybucket-yjeth32swz5m.s3.eu-central-1.amazonaws.com/','');
+            }).catch(err => console.log(err));
 
-                    fetchData(prefix)
-                        // make sure to catch any error
-                        .catch(console.error);
-                })
-            }
-            else {
-                setIsLoading(false);
-            }
-
-        }).catch(err => console.log(err));
 
     }, [itemSize])
 
@@ -174,6 +192,10 @@ const DatasetEdit = () => {
 
         }
     }
+
+    const handleChange = (event, newValue) => {
+        setTabValue(newValue);
+    };
 
     async function handleModalOpen(state){
 
@@ -260,7 +282,7 @@ const DatasetEdit = () => {
         </ImageList>
 
 
-    const title = <h2>{dataset.datasetUUID ? 'Edit Dataset' : 'Add Dataset'}</h2>;
+    const title = <h2>{dataset.id ? 'Edit Dataset' : params.id === 'new' ? 'Add Dataset' : 'Add Linked Dataset'}</h2>;
 
     const handleToggleChange = (event) => {
         setIsItemsAsList(event.target.checked);
@@ -284,8 +306,22 @@ const DatasetEdit = () => {
             </Backdrop>
             <Container maxWidth="xl" sx={{ mt: 5 }}>
                 {title}
+                <Box sx={{ width: '100%' }}>
+                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                        <Tabs
+                            value={tabValue}
+                            onChange={handleChange}
+                            aria-label="wrapped label tabs example"
+                        >
+                            <Tab label="Dataset" {...a11yProps(0)}/>
+                            <Tab label="Permissions" {...a11yProps(1)}/>
+
+                        </Tabs>
+                    </Box>
+                    <TabPanel value={tabValue} index={0}>
+
                 <DatasetForm readOnlyMode={false} formState={dataset}/>
-                {params.id !== 'new' &&
+                {params.id !== 'new' && params.id !== 'link' &&
                     <>
                     <Stack direction="row" spacing={2}>
 
@@ -313,7 +349,7 @@ const DatasetEdit = () => {
                                 />
                             </FormControl>
                             <Button
-                                onClick={() => fetchBinary(dataset?.storageLocation?.replace('fhir-service-dev-fhirbinarybucket-yjeth32swz5m.s3.eu-central-1.amazonaws.com/', ''))}>Next</Button>
+                                onClick={() => fetchBinary(dataset?.storage_location?.replace('fhir-service-dev-fhirbinarybucket-yjeth32swz5m.s3.eu-central-1.amazonaws.com/', ''))}>Next</Button>
                         </>
 
                         }
@@ -355,7 +391,11 @@ const DatasetEdit = () => {
                     </>
 
                 }
-
+                    </TabPanel>
+                    <TabPanel value={tabValue} index={1}>
+                        <DatasetPermission dataset={dataset}/>
+                    </TabPanel>
+                </Box>
 
 
             </Container>

@@ -54,6 +54,23 @@ class TaskClient {
             });
     }
 
+    async fetchAnnotationTaskById(annotationTaskId) {
+        console.log("Fetching annotation task for Id: " + annotationTaskId);
+
+        return callApiWithToken(this.accessToken, `${this.config.ANNOATATION_TASK_URL}/${annotationTaskId}`)
+            .then(([response, json]) => {
+                if (!response.ok) {
+                    return { success: false, error: json };
+                }
+                return { success: true, data: json };
+            })
+            .catch((e) => {
+                this.handleError(e);
+            });
+    }
+
+
+
     async addTask(task) {
         console.log("Creating task");
 
@@ -72,7 +89,7 @@ class TaskClient {
     async updateTask(task) {
         console.log("Updating task");
 
-        return postApiWithToken(this.accessToken, `${this.config.TASK_URL}/${task.taskUUID}`,task,"PUT")
+        return postApiWithToken(this.accessToken, `${this.config.TASK_URL}/${task.id}`,task,"PUT")
             .then(([response]) => {
                 if (!response.ok) {
                     return { success: false, error: response };
@@ -84,10 +101,10 @@ class TaskClient {
             });
     }
 
-    async removeTask(taskUUID) {
-        console.log("Deleting task for Id: " + taskUUID);
+    async removeTask(id) {
+        console.log("Deleting task for Id: " + id);
 
-        return callApiWithToken(this.accessToken, `${this.config.TASK_URL}/${taskUUID}`,"DELETE")
+        return callApiWithToken(this.accessToken, `${this.config.TASK_URL}/${id}`,"DELETE")
             .then(([response, json]) => {
                 if (!response.ok) {
                     return { success: false, error: json };
