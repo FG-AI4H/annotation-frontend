@@ -23,6 +23,7 @@ import {Check} from "@mui/icons-material";
 import DatasetClient from "../api/DatasetClient";
 import CampaignClient from "../api/CampaignClient";
 import Alert from "@mui/material/Alert";
+import PropTypes from 'prop-types';
 
 const CampaignDataset = (props) => {
 
@@ -206,4 +207,10 @@ const CampaignDataset = (props) => {
         </>
     )
 }
+
+CampaignDataset.propTypes = {
+    campaign: PropTypes.any,
+    datasetsUUID: PropTypes.string,
+};
+
 export default CampaignDataset
