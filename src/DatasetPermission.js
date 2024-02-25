@@ -14,6 +14,8 @@ import {
 import {Table, TableBody} from "@aws-amplify/ui-react";
 import {Auth} from "aws-amplify";
 import DatasetClient from "./api/DatasetClient";
+import PropTypes from "prop-types";
+import CampaignDataset from "./components/CampaignDataset";
 
 const DatasetPermission = (props) =>{
 
@@ -43,17 +45,7 @@ const DatasetPermission = (props) =>{
     }, [props.dataset])
 
     function handleChange(event) {
-        const target = event.target;
-        let value = target.value;
-        const name = target.name;
-
-        if(target.type === 'checkbox'){
-            value = target.checked;
-        }
-
-        let campaign = {...this.state.campaign};
-        campaign[name] = value;
-        this.setState({campaign: campaign});
+        return undefined;
     }
 
     function handleSubmit(e) {
@@ -112,4 +104,7 @@ const DatasetPermission = (props) =>{
     )
 
 }
+DatasetPermission.propTypes = {
+    dataset: PropTypes.any,
+};
 export default withNavigateHook(DatasetPermission)

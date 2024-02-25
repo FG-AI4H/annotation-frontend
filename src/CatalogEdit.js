@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import AppNavbar from './AppNavbar';
 import {Link as RouterLink, useNavigate, useParams} from 'react-router-dom';
-import AnnotationTaskList from "./AnnotationTaskList";
 import {Auth} from "aws-amplify";
 import {
     Backdrop,
@@ -64,19 +63,6 @@ const CatalogEdit = (_props) => {
             return;
         }
         setUpdated(false)
-    }
-
-    function handleChange(event) {
-        const target = event.target;
-        let value = target.value;
-        const name = target.name;
-
-        if(target.type === 'checkbox'){
-            value = target.checked;
-        }
-
-        item[name] = value;
-        setItem(item);
     }
 
     function handleChange(event) {

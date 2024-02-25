@@ -266,6 +266,7 @@ const DatasetEdit = () => {
                             alt={item.title}
                             loading="lazy"
                             onClick={() => handleModalOpen(item)}
+                            onKeyDown={() => handleModalOpen(item)}
                         />
 
                         <ImageListItemBar
