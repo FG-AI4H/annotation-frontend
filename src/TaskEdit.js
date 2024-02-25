@@ -22,6 +22,7 @@ import {
     TextField
 } from "@mui/material";
 import Alert from "@mui/material/Alert";
+import PropTypes from "prop-types";
 
 const emptyItem = {
     name: '',
@@ -32,7 +33,7 @@ const emptyItem = {
     annotations: []
 };
 
-const TaskEdit = (props) => {
+const TaskEdit = (_props) => {
 
     let params = useParams();
     const [isLoading, setIsLoading] = useState(false);
@@ -78,7 +79,6 @@ const TaskEdit = (props) => {
         }
 
         item[name] = value;
-        setItem(item);
     }
 
     async function handleSubmit(event) {
@@ -170,4 +170,5 @@ const TaskEdit = (props) => {
     </div>
     )
 }
+
 export default TaskEdit;

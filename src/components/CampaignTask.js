@@ -33,6 +33,7 @@ import CampaignClient from "../api/CampaignClient";
 import DeleteIcon from '@mui/icons-material/Delete';
 import DescriptionIcon from '@mui/icons-material/Description';
 import {Link as RouterLink} from "react-router-dom";
+import PropTypes from "prop-types";
 
 
 const CampaignTask = (props) => {
@@ -56,9 +57,7 @@ const CampaignTask = (props) => {
             return;
         }
 
-        this.setState(
-            {updated: false}
-        );
+        setUpdated(false)
     }
 
     async function handleSubmit(event) {
@@ -309,4 +308,9 @@ const CampaignTask = (props) => {
     );
 
 }
+
+CampaignTask.propTypes = {
+    campaign: PropTypes.any,
+};
+
 export default CampaignTask;
