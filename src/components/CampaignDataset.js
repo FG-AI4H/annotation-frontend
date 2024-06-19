@@ -17,13 +17,13 @@ import {
 } from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {Link as RouterLink} from "react-router-dom";
-import {style} from "../Datasets";
 import {Auth} from "aws-amplify";
 import {Check} from "@mui/icons-material";
 import DatasetClient from "../api/DatasetClient";
 import CampaignClient from "../api/CampaignClient";
 import Alert from "@mui/material/Alert";
 import PropTypes from 'prop-types';
+import { style } from "./Datasets";
 
 const CampaignDataset = (props) => {
 
