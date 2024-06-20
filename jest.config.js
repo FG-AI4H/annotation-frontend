@@ -17,8 +17,6 @@ module.exports = {
   moduleNameMapper: {
     '\\.(css|less|scss)$': '<rootDir>/__mock__/styleMock.js',
   },
-  setupFilesAfterEnv: ['<rootDir>/jest.setupTests.js'],
-  setupFiles: ['<rootDir>/jest.init.js'],
   moduleDirectories: ['node_modules'],
   clearMocks: true,
   coverageDirectory: 'coverage',
