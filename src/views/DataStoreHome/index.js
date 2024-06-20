@@ -15,9 +15,13 @@ import {
 import { Auth } from 'aws-amplify';
 import { Link as RouterLink } from 'react-router-dom';
 import DatasetClient from '../../api/DatasetClient';
+import {
+  CatalogDatasets,
+  DataAccessRequests,
+  Datasets,
+} from '../../components';
 import { TabPanel } from '../../components/TabPanel';
 import { a11yProps } from '../../components/allyProps';
-import { CatalogDatasets, DataAccessRequests, Datasets } from '../../components';
 
 export default function DataStoreHome(_props) {
   const [datasets, setDatasets] = useState([]);
