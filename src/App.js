@@ -6,6 +6,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { grey } from '@mui/material/colors';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import Layout from './components/Layout';
 import {
   AnnotationHome,
   AnnotationToolEdit,
@@ -24,9 +25,6 @@ import {
   UserManagement,
 } from './views';
 import AdminHome from './views/AdminHome';
-import AppNavBar from './components/AppNavbar';
-import Layout from './components/Layout';
-
 const theme = createTheme({
   palette: {
     mode: 'dark',
