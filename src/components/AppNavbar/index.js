@@ -1,17 +1,21 @@
-import React, { useEffect } from 'react';
-import { Auth } from 'aws-amplify';
+import MenuIcon from '@mui/icons-material/Menu';
 import {
   AppBar,
   Avatar,
   Box,
   Button,
+  Drawer,
   IconButton,
+  List,
+  ListItemButton,
+  ListItemText,
   Menu,
   MenuItem,
   Toolbar,
-  Tooltip,
+  Tooltip
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
+import { Auth } from 'aws-amplify';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const AppNavBar = () => {
@@ -21,6 +25,7 @@ const AppNavBar = () => {
   const [admin, setAdmin] = React.useState(false);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [username, setUsername] = React.useState(null);
+  const [openDrawer, setOpenDrawer] = React.useState(false);
 
   useEffect(() => {
     Auth.currentAuthenticatedUser({
@@ -60,16 +65,81 @@ const AppNavBar = () => {
     }
   };
 
+  const MENU = [
+    {
+      label: 'DATASTORE',
+      route: '/datasets',
+      admin: false,
+      openOutSide: false,
+    },
+    {
+      label: 'ANNOTATION',
+      route: '/annotation',
+      admin: false,
+      openOutSide: false,
+    },
+    {
+      label: 'EVALUATION',
+      route: 'https://health.aiaudit.org/',
+      admin: false,
+      openOutSide: true,
+    },
+    {
+      label: 'Admin',
+      route: '/admin',
+      admin: true,
+      openOutSide: false,
+    },
+  ];
+
+  const MAPPED_MENU = () => {
+    return MENU.map((item, idx) => {
+      if (item.admin) {
+        return admin ? (
+          <Button
+            key={idx}
+            onClick={() => {
+              if (item.openOutSide) {
+                window.open(item.route, '_blank');
+              } else {
+                navigate(item.route);
+              }
+            }}
+            sx={{ my: 2, color: 'white', display: 'block' }}
+          >
+            {item.label}
+          </Button>
+        ) : null;
+      }
+
+      return (
+        <Button
+          key={idx}
+          onClick={() => {
+            if (item.openOutSide) {
+              window.open(item.route, '_blank');
+            } else {
+              navigate(item.route);
+            }
+          }}
+          sx={{ my: 2, color: 'white', display: 'block' }}
+        >
+          {item.label}
+        </Button>
+      );
+    });
+  };
+
   return (
     <AppBar position='static'>
-      <Toolbar>
+      <Toolbar sx={{ justifyContent: { xs: 'space-between' } }}>
         <IconButton
           size='large'
           edge='start'
           color='inherit'
           aria-label='open drawer'
           sx={{ mr: 2 }}
-          onClick={() => navigate('/')}
+          onClick={() => setOpenDrawer(true)}
         >
           <MenuIcon />
         </IconButton>
@@ -79,6 +149,8 @@ const AppNavBar = () => {
           src='/AI4H_logo_blue_transparent.png'
           height='30'
           className='d-inline-block align-top'
+          onClick={() => navigate('/')}
+          style={{ cursor: 'pointer' }}
         />
 
         {auth && (
@@ -90,41 +162,7 @@ const AppNavBar = () => {
                 display: { xs: 'none', md: 'flex' },
               }}
             >
-              <Button
-                key='DataStore'
-                onClick={() => navigate('/datasets')}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                DataStore
-              </Button>
-              <Button
-                key='Annotation'
-                onClick={() => navigate('/annotation')}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                Annotation
-              </Button>
-              <Button
-                key='Evaluation'
-                onClick={() =>
-                  window.open('https://health.aiaudit.org/', '_blank')
-                }
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                Evaluation
-              </Button>
-
-              {admin ? (
-                <Button
-                  key='Admin'
-                  onClick={() => navigate('/admin')}
-                  sx={{ my: 2, color: 'white', display: 'block' }}
-                >
-                  Admin
-                </Button>
-              ) : (
-                <React.Fragment />
-              )}
+              {MAPPED_MENU()}
             </Box>
 
             <Box sx={{ flexGrow: 0 }}>
@@ -158,6 +196,68 @@ const AppNavBar = () => {
           </>
         )}
       </Toolbar>
+
+      <Drawer open={openDrawer} onClose={() => setOpenDrawer(false)}>
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            padding: '10px 0',
+          }}
+          onClick={() => {
+            navigate('/');
+            setOpenDrawer(false);
+          }}
+        >
+          <img
+            alt=''
+            src='/AI4H_logo_blue_transparent.png'
+            height='30'
+            className='d-inline-block align-top'
+            style={{ cursor: 'pointer', width: 'fit-content' }}
+          />
+        </div>
+        <List>
+          {MENU.map((item) => {
+            if (item.admin) {
+              return admin ? (
+                <ListItemButton
+                  key={item.label}
+                  sx={{ width: '200px' }}
+                  onClick={() => {
+                    if (item.openOutSide) {
+                      window.open(item.route, '_blank');
+                    } else {
+                      navigate(item.route);
+                    }
+                    setOpenDrawer(false);
+                  }}
+                >
+                  <ListItemText primary={item.label} />
+                </ListItemButton>
+              ) : null;
+            }
+
+            return (
+              <ListItemButton
+                key={item.label}
+                sx={{ width: '200px' }}
+                onClick={() => {
+                  if (item.openOutSide) {
+                    window.open(item.route, '_blank');
+                  } else {
+                    navigate(item.route);
+                  }
+                  setOpenDrawer(false);
+                }}
+              >
+                <ListItemText primary={item.label} />
+              </ListItemButton>
+            );
+          })}
+        </List>
+      </Drawer>
     </AppBar>
   );
 };
