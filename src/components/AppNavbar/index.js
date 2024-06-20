@@ -12,7 +12,7 @@ import {
   Menu,
   MenuItem,
   Toolbar,
-  Tooltip
+  Tooltip,
 } from '@mui/material';
 import { Auth } from 'aws-amplify';
 import React, { useEffect } from 'react';
@@ -150,6 +150,7 @@ const AppNavBar = () => {
           height='30'
           className='d-inline-block align-top'
           onClick={() => navigate('/')}
+          onKeyDown={() => navigate('/')}
           style={{ cursor: 'pointer' }}
         />
 
@@ -205,6 +206,7 @@ const AppNavBar = () => {
             justifyContent: 'center',
             padding: '10px 0',
           }}
+          onKeyDown={() => navigate('/')}
           onClick={() => {
             navigate('/');
             setOpenDrawer(false);
