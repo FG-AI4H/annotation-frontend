@@ -229,7 +229,7 @@ const AppNavBar = () => {
                   sx={{ width: '200px' }}
                   onClick={() => {
                     if (item.openOutSide) {
-                      window.open(item.route, '_blank');
+                      window.open(item.route, '_blank', 'noopener');
                     } else {
                       navigate(item.route);
                     }
