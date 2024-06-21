@@ -1,5 +1,5 @@
 import Config from "./Config";
-import {callApiWithToken, postApiWithToken} from "../fetch";
+import {callApiWithToken, postApiWithToken} from "../utils/fetch";
 
 class UserClient {
     accessToken
