@@ -1,9 +1,7 @@
-import AppNavbar from "../../components/AppNavbar";
-import {Box, Button, Container, Grid, IconButton, Paper} from "@mui/material";
-import {Replay} from "@mui/icons-material";
-import {Link as RouterLink} from "react-router-dom";
+import { Replay } from "@mui/icons-material";
+import { Box, Button, Container, Grid, IconButton, Paper } from "@mui/material";
 import React from "react";
-import AnnotationToolListComponent from "../../components/AnnotationToolListComponent";
+import { Link as RouterLink } from "react-router-dom";
 import DataCatalogListComponent from "../../components/DataCatalogListComponent";
 
 const CatalogManagement = (_props) => {

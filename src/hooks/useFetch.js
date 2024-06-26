@@ -1,4 +1,4 @@
-import { Auth } from 'aws-amplify';
+import { Auth } from "aws-amplify";
 
 export default function useFetch() {
   const fetchAPI = async (url, method, data) => {
@@ -8,16 +8,18 @@ export default function useFetch() {
     const accessToken = auth.signInUserSession.accessToken.jwtToken;
 
     const options = {
-      method: method || 'GET',
+      method: method || "GET",
       headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
+        "Content-Type": "application/json",
+        Accept: "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
       body: data,
     };
 
-    return fetch(url, options);
+    const res = await fetch(url, options);
+
+    return await res.json();
   };
 
   return { fetchAPI };
