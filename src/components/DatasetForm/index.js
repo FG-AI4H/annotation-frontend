@@ -112,7 +112,7 @@ const DatasetForm = (props) => {
     };
 
     if (!dataset.linked) {
-      const file = dataset.selectedFile[0];
+      const file = dataset?.selectedFile?.[0];
       setIsLoading(true);
 
       Auth.currentAuthenticatedUser({
@@ -220,6 +220,13 @@ const DatasetForm = (props) => {
         const client = new DatasetClient(
           response.signInUserSession.accessToken.jwtToken
         );
+        // const newDataset = {
+        //   ...dataset,
+        //   metadata: {
+        //     ...dataset.metadata,
+        //     data_owner_id: '1af3331c-853b-44f7-9348-21c41a7f5514',
+        //   },
+        // };
         client.addDataset(dataset).then(
           (response) => {
             setIsLoading(false);

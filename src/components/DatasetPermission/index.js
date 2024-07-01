@@ -1,4 +1,4 @@
-import { Table, TableBody } from "@aws-amplify/ui-react";
+import { Table, TableBody } from '@aws-amplify/ui-react';
 import {
   Button,
   Paper,
@@ -9,55 +9,56 @@ import {
   TableRow,
   TextField,
   Typography,
-} from "@mui/material";
-import { Auth } from "aws-amplify";
-import PropTypes from "prop-types";
-import React, { useEffect, useState } from "react";
-import DatasetClient from "../../api/DatasetClient";
-import { API_ROUTES } from "../../common/constants/apiRoutes";
-import withNavigateHook from "../../helpers/withNavigateHook";
-import useFetch from "../../hooks/useFetch";
-import UserPermissionList from "./UserPermissionList";
+} from '@mui/material';
+import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
+import { API_ROUTES } from '../../common/constants/apiRoutes';
+import withNavigateHook from '../../helpers/withNavigateHook';
+import useFetch from '../../hooks/useFetch';
+import UserPermissionList from './UserPermissionList';
 
 const DatasetPermission = (props) => {
-  const { fetchAPI } = useFetch();
+  const { axiosBase } = useFetch();
   const [isLoading, setIsLoading] = useState(false);
   const [dataset, setDataset] = useState(props.dataset);
-  const [usernameSearch, setUsernameSearch] = useState("");
+  const [usernameSearch, setUsernameSearch] = useState('');
   const [permisions, setPermissions] = useState([]);
   const [userList, setUserList] = useState([]);
   const [foundUsers, setFoundUsers] = useState([]);
   const [addedPermissions, setAddedPermission] = useState([]);
 
   useEffect(() => {
-    setIsLoading(true);
-
-    Auth.currentAuthenticatedUser({
-      bypassCache: false,
-    })
-      .then((response) => {
-        const datasetClient = new DatasetClient(
-          response.signInUserSession.accessToken.jwtToken
-        );
-        datasetClient
-          .fetchDatasetPermissionsById(dataset.id)
-          .then((response) => {
-            setIsLoading(false);
-            setPermissions(response?.data);
-          });
-      })
-      .catch((err) => console.log(err));
-  }, [dataset.id, props.dataset]);
-
-  // Get user list
-  useEffect(() => {
     (async () => {
-      const res = await fetchAPI(API_ROUTES.USER_URL);
-      setUserList(res);
-      // setUserList([{ id: "123", username: "khoa" }]);
+      try {
+        setIsLoading(true);
+        const res = await axiosBase.get(
+          API_ROUTES.GET_PERMISSION_LIST.replace(':datasetId', dataset?.id)
+        );
+        setPermissions(res?.data);
+
+        const resUser = await axiosBase.get(API_ROUTES.USER_URL);
+        const mappedUser = resUser?.data?.map((item) => {
+          const foundItem = res?.data?.find((u) => u?.user === item?.id);
+          if (foundItem) {
+            return {
+              ...item,
+              user_role: foundItem?.user_role,
+              role_id: foundItem?.id,
+            };
+          }
+          return item;
+        });
+
+        console.log(mappedUser);
+        setUserList(mappedUser);
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setIsLoading(false);
+      }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [dataset?.id]);
 
   function handleChange(event) {
     setUsernameSearch(event.target.value);
@@ -66,7 +67,7 @@ const DatasetPermission = (props) => {
   function handleSubmit(e) {
     e.preventDefault();
     const foundUserList = userList?.filter((item) =>
-      item?.username?.includes(usernameSearch)
+      item?.username?.toLowerCase()?.includes(usernameSearch?.toLowerCase())
     );
     setFoundUsers(foundUserList);
   }
@@ -83,15 +84,15 @@ const DatasetPermission = (props) => {
     return (
       <TableRow
         key={item.photoKey}
-        sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
       >
-        <TableCell style={{ whiteSpace: "nowrap" }}>{item.username}</TableCell>
-        <TableCell style={{ whiteSpace: "nowrap" }}>{item.user_role}</TableCell>
-        <TableCell style={{ whiteSpace: "nowrap" }}>
-          <Stack direction="row" spacing={2} justifyContent="flex-end">
+        <TableCell style={{ whiteSpace: 'nowrap' }}>{item.username}</TableCell>
+        <TableCell style={{ whiteSpace: 'nowrap' }}>{item.user_role}</TableCell>
+        <TableCell style={{ whiteSpace: 'nowrap' }}>
+          <Stack direction='row' spacing={2} justifyContent='flex-end'>
             <Button
-              size="small"
-              color="error"
+              size='small'
+              color='error'
               onClick={() => removePermission(item.id)}
             >
               Remove
@@ -104,14 +105,14 @@ const DatasetPermission = (props) => {
 
   return (
     <>
-      <Typography gutterBottom variant="h5" component="div">
+      <Typography gutterBottom variant='h5' component='div'>
         Add Permission
       </Typography>
       <form onSubmit={handleSubmit}>
         <TextField
           fullWidth
-          margin={"normal"}
-          label="Search username"
+          margin={'normal'}
+          label='Search username'
           required
           value={usernameSearch}
           onChange={(event) => handleChange(event)}
@@ -119,37 +120,34 @@ const DatasetPermission = (props) => {
           helperText={`${foundUsers?.length}/${userList?.length} results found`}
         />
 
-        <Stack direction="row" spacing={2}>
-          <Button color="primary" elementType={"submit"} type={"submit"}>
+        <Stack direction='row' spacing={2}>
+          <Button color='primary' elementType={'submit'} type={'submit'}>
             Search
           </Button>
         </Stack>
       </form>
 
-      <UserPermissionList
-        users={foundUsers}
-        onChange={(e) => setAddedPermission(e)}
-      />
-      <Stack direction="row" spacing={2} sx={{ marginTop: "20px" }}>
+      <UserPermissionList users={foundUsers} onSubmit={(e) => console.log(e)} />
+      <Stack direction='row' spacing={2} sx={{ marginTop: '20px' }}>
         <Button
-          variant="outlined"
-          color="primary"
+          variant='outlined'
+          color='primary'
           onClick={handleSubmitPermission}
         >
           Add Permissions
         </Button>
       </Stack>
 
-      <Typography gutterBottom variant="h5" component="div" sx={{ mt: 10 }}>
+      <Typography gutterBottom variant='h5' component='div' sx={{ mt: 10 }}>
         Current Permissions
       </Typography>
       <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <Table sx={{ minWidth: 650 }} aria-label='simple table'>
           <TableHead>
             <TableRow>
-              <TableCell width={"50%"}>Username</TableCell>
-              <TableCell width={"30%"}>Role</TableCell>
-              <TableCell width={"20%"} align={"right"}>
+              <TableCell width={'50%'}>Username</TableCell>
+              <TableCell width={'30%'}>Role</TableCell>
+              <TableCell width={'20%'} align={'right'}>
                 Actions
               </TableCell>
             </TableRow>

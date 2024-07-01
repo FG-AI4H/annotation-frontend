@@ -1,117 +1,124 @@
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 import {
-  Checkbox,
+  Box,
   FormControl,
-  InputLabel,
+  IconButton,
   List,
   ListItem,
   ListItemButton,
-  ListItemIcon,
   ListItemText,
+  MenuItem,
   Select,
-} from "@mui/material";
-import { useState } from "react";
+  Tooltip,
+} from '@mui/material';
+import { useEffect, useState } from 'react';
 
 const PERMISSIONS = [
   {
-    label: "Reader",
-    value: "READER",
+    label: 'Owner',
+    value: 'OWNER',
   },
   {
-    label: "Contributor",
-    value: "CONTRIBUTOR",
+    label: 'Reader',
+    value: 'READER',
+  },
+  {
+    label: 'Contributor',
+    value: 'CONTRIBUTOR',
   },
 ];
 
-export default function UserPermissionList({ users = [], onChange }) {
-  const [checked, setChecked] = useState([]);
-
-  const handleToggle = (record) => {
-    const currentIndex = checked.findIndex((item) => item?.id === record?.id);
-
-    const newChecked = [...checked];
-    if (currentIndex === -1) {
-      const newRecord = { ...record, user_role: "READER" };
-      newChecked.push(newRecord);
-    } else {
-      newChecked.splice(currentIndex, 1);
-    }
-
-    onChange(newChecked);
-    setChecked(newChecked);
-  };
+export default function UserPermissionList({
+  users = [],
+  onChange = () => {},
+  onSubmit = () => {},
+}) {
+  const [internalUsers, setInternalUser] = useState(users);
 
   const handleSelect = (e, id) => {
-    const foundIdx = checked?.findIndex((item) => item?.id === id);
-    const newChecked = [...checked];
+    const foundIdx = internalUsers?.findIndex((item) => item?.id === id);
+    const tempArr = [...internalUsers];
 
     if (foundIdx === -1) return;
-    newChecked[foundIdx].user_role = e?.target?.value;
+    tempArr[foundIdx].request_user_role = e?.target?.value;
 
-    onChange(newChecked);
-    setChecked(newChecked);
+    onChange(tempArr);
+    setInternalUser(tempArr);
   };
+
+  useEffect(() => {
+    setInternalUser(users);
+  }, [users]);
 
   return (
     <List
       sx={{
-        width: "100%",
-        maxWidth: "100%",
+        width: '100%',
+        maxWidth: '100%',
         maxHeight: 400,
-        overflow: "auto",
-        bgcolor: "background.paper",
-        background: users?.length ? "#1f1f1f" : "unset",
+        overflow: 'auto',
+        bgcolor: 'background.paper',
+        background: users?.length ? '#1f1f1f' : 'unset',
       }}
     >
       {users?.map((value) => {
         const labelId = value?.id;
-
         return (
           <ListItem
             key={value?.id}
             secondaryAction={
-              <FormControl fullWidth>
-                <InputLabel htmlFor="select-role">Role</InputLabel>
-                <Select
-                  value={null}
-                  defaultValue={"READER"}
-                  label="Role"
-                  disabled={
-                    checked.findIndex((item) => item?.id === value?.id) === -1
-                  }
-                  onChange={(e) => {
-                    handleSelect(e, value?.id);
-                  }}
-                  placeholder={"Role"}
-                  native
-                  sx={{ height: "40px" }}
-                >
-                  {PERMISSIONS.map((item, index) => (
-                    <option key={index} value={item?.value}>
-                      {item?.label}
-                    </option>
-                  ))}
-                </Select>
-              </FormControl>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  gap: '10px',
+                }}
+              >
+                <Box>
+                  <FormControl fullWidth sx={{ width: 150 }}>
+                    <Select
+                      defaultValue={
+                        value?.request_user_role || value?.user_role || ''
+                      }
+                      displayEmpty
+                      onChange={(e) => {
+                        handleSelect(e, value?.id);
+                      }}
+                      sx={{ height: '40px' }}
+                    >
+                      <MenuItem disabled value=''>
+                        <em>Choose role</em>
+                      </MenuItem>
+                      {PERMISSIONS.map((item, index) => (
+                        <MenuItem key={index} value={item?.value}>
+                          {item?.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Box>
+
+                <Box>
+                  <Tooltip title='Grant permission' placement='top'>
+                    <IconButton
+                      sx={{
+                        height: '40px',
+                        border: 'none',
+                      }}
+                      variant='contained'
+                      disabled={!value?.user_role && !value?.request_user_role}
+                      onClick={() => onSubmit(value)}
+                    >
+                      <AddCircleIcon />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+              </Box>
             }
             disablePadding
-            sx={{ margin: "10px 0" }}
+            sx={{ margin: '10px 0' }}
           >
-            <ListItemButton
-              role={undefined}
-              onClick={() => handleToggle(value)}
-              dense
-            >
-              <ListItemIcon>
-                <Checkbox
-                  edge="start"
-                  checked={
-                    checked.findIndex((item) => item?.id === value?.id) !== -1
-                  }
-                  tabIndex={-1}
-                  disableRipple
-                  inputProps={{ "aria-labelledby": labelId }}
-                />
-              </ListItemIcon>
+            <ListItemButton role={undefined} dense>
               <ListItemText id={labelId} primary={value?.username} />
             </ListItemButton>
           </ListItem>
