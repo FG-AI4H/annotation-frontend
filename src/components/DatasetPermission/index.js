@@ -15,7 +15,14 @@ import React, { useEffect, useState } from 'react';
 import { API_ROUTES } from '../../common/constants/apiRoutes';
 import withNavigateHook from '../../helpers/withNavigateHook';
 import useFetch from '../../hooks/useFetch';
+import { generateUpdatePermissionPayload } from '../../utils/common';
 import UserPermissionList from './UserPermissionList';
+import {
+  addPermission,
+  deletePermission,
+  getPermissionList,
+  updatePermission,
+} from '../../api/dataset.service';
 
 const DatasetPermission = (props) => {
   const { axiosBase } = useFetch();
@@ -25,20 +32,17 @@ const DatasetPermission = (props) => {
   const [permisions, setPermissions] = useState([]);
   const [userList, setUserList] = useState([]);
   const [foundUsers, setFoundUsers] = useState([]);
-  const [addedPermissions, setAddedPermission] = useState([]);
 
   useEffect(() => {
     (async () => {
       try {
         setIsLoading(true);
-        const res = await axiosBase.get(
-          API_ROUTES.GET_PERMISSION_LIST.replace(':datasetId', dataset?.id)
-        );
-        setPermissions(res?.data);
+        const res = await getPermissionList({ id: dataset?.id }, axiosBase);
+        setPermissions(res);
 
         const resUser = await axiosBase.get(API_ROUTES.USER_URL);
         const mappedUser = resUser?.data?.map((item) => {
-          const foundItem = res?.data?.find((u) => u?.user === item?.id);
+          const foundItem = res?.find((u) => u?.user === item?.id);
           if (foundItem) {
             return {
               ...item,
@@ -49,7 +53,6 @@ const DatasetPermission = (props) => {
           return item;
         });
 
-        console.log(mappedUser);
         setUserList(mappedUser);
       } catch (err) {
         console.log(err);
@@ -72,12 +75,34 @@ const DatasetPermission = (props) => {
     setFoundUsers(foundUserList);
   }
 
-  function removePermission(id) {
-    return undefined;
+  async function removePermission(id) {
+    const res = await deletePermission({ id }, axiosBase);
+
+    const resPermission = await getPermissionList(
+      { id: dataset?.id },
+      axiosBase
+    );
+    setPermissions(resPermission);
+
+    return res;
   }
 
-  const handleSubmitPermission = () => {
-    console.log(addedPermissions);
+  const handleSubmitPermission = async (data) => {
+    const payload = generateUpdatePermissionPayload({
+      ...data,
+      dataset: dataset?.id,
+    });
+    const res = data?.user_role
+      ? await updatePermission(payload, axiosBase)
+      : await addPermission(payload, axiosBase);
+
+    const resPermission = await getPermissionList(
+      { id: dataset?.id },
+      axiosBase
+    );
+    setPermissions(resPermission);
+
+    return res;
   };
 
   const permisionList = permisions?.map((item) => {
@@ -127,16 +152,10 @@ const DatasetPermission = (props) => {
         </Stack>
       </form>
 
-      <UserPermissionList users={foundUsers} onSubmit={(e) => console.log(e)} />
-      <Stack direction='row' spacing={2} sx={{ marginTop: '20px' }}>
-        <Button
-          variant='outlined'
-          color='primary'
-          onClick={handleSubmitPermission}
-        >
-          Add Permissions
-        </Button>
-      </Stack>
+      <UserPermissionList
+        users={foundUsers}
+        onSubmit={handleSubmitPermission}
+      />
 
       <Typography gutterBottom variant='h5' component='div' sx={{ mt: 10 }}>
         Current Permissions

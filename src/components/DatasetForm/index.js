@@ -33,8 +33,6 @@ const DatasetForm = (props) => {
   const [catalogs, setCatalogs] = useState([]);
   const [users, setUsers] = useState([]);
 
-  console.log(formState);
-
   useEffect(() => {
     Auth.currentAuthenticatedUser({
       bypassCache: false,

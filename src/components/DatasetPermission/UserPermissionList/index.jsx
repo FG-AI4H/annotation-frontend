@@ -106,7 +106,7 @@ export default function UserPermissionList({
                         border: 'none',
                       }}
                       variant='contained'
-                      disabled={!value?.user_role && !value?.request_user_role}
+                      disabled={!value?.request_user_role}
                       onClick={() => onSubmit(value)}
                     >
                       <AddCircleIcon />
