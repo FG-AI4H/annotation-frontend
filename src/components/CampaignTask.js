@@ -94,9 +94,9 @@ const CampaignTask = (props) => {
                         <Select
                             id="annotation_kind"
                             name="annotation_kind"
-                            value={campaign.annotation_kind}
+                            value={campaign.annotation_kind.toLowerCase()}
                             label="Task type"
-                            onChange={event => setInput('annotation_kind', event.target.value)}
+                            onChange={event => setInput('annotation_kind', event.target.value.toUpperCase())}
                         >
                             <MenuItem value={"semantic_segmentation"}>[Image] - Semantic Segmentation</MenuItem>
                             <MenuItem value={"image_classification"}>[Image] - Image Classification</MenuItem>

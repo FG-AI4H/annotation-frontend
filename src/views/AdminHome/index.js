@@ -1,7 +1,6 @@
+import { Button, Card, CardActions, CardContent, Container, Grid, Typography } from "@mui/material";
 import React from "react";
-import AppNavbar from "../../components/AppNavbar";
-import {Button, Card, CardActions, CardContent, Container, Grid, Typography} from "@mui/material";
-import {Link as RouterLink} from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 
 const AdminHome = (props) => {
 

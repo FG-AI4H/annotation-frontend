@@ -1,7 +1,3 @@
-import React, {Component} from 'react';
-import AppNavbar from '../../components/AppNavbar';
-import {Auth} from "aws-amplify";
-import CampaignClient from "../../api/CampaignClient";
 import {
     Backdrop,
     Box,
@@ -18,9 +14,12 @@ import {
     TableHead,
     TableRow
 } from "@mui/material";
-import {Link as RouterLink} from "react-router-dom";
+import { Auth } from "aws-amplify";
+import React, { Component } from 'react';
+import { Link as RouterLink } from "react-router-dom";
+import CampaignClient from "../../api/CampaignClient";
 
-import {Replay} from "@mui/icons-material";
+import { Replay } from "@mui/icons-material";
 
 class CampaignList extends Component {
 

@@ -22,58 +22,58 @@ import {
   TableHead,
   TableRow,
   Tabs,
-} from '@mui/material';
-import { Auth } from 'aws-amplify';
-import AWS from 'aws-sdk';
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import 'react-medium-image-zoom/dist/styles.css';
-import { useParams } from 'react-router-dom';
-import DatasetClient from '../../api/DatasetClient.js';
+} from "@mui/material";
+import { Auth } from "aws-amplify";
+import AWS from "aws-sdk";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import "react-medium-image-zoom/dist/styles.css";
+import { useParams } from "react-router-dom";
+import DatasetClient from "../../api/DatasetClient.js";
 import DatasetItemModal, {
   initialItem,
-} from '../../components/DatasetItemModal/index.js';
-import { TabPanel } from '../../components/TabPanel.js';
-import { a11yProps } from '../../components/allyProps.js';
-import { DatasetForm, DatasetPermission } from '../../components';
+} from "../../components/DatasetItemModal/index.js";
+import { TabPanel } from "../../components/TabPanel.js";
+import { a11yProps } from "../../components/allyProps.js";
+import { DatasetForm, DatasetPermission } from "../../components";
 
 export const initialDataset = {
-  name: '',
-  description: '',
+  name: "",
+  description: "",
   selectedFile: undefined,
-  catalog_auth_type: '',
-  catalog_location: '',
+  catalog_auth_type: "",
+  catalog_location: "",
   linked: false,
-  data_catalog_id: '',
+  data_catalog_id: "",
   metadata: {
     //General Metadata
-    data_owner_id: 'undefined',
-    data_source: '',
-    data_sample_size: '',
-    data_type: '',
-    data_registry_url: '',
-    data_update_version: '',
-    data_assumptions_constraints_dependencies: '',
+    data_owner_id: "undefined",
+    data_source: "",
+    data_sample_size: "",
+    data_type: "",
+    data_registry_url: "",
+    data_update_version: "",
+    data_assumptions_constraints_dependencies: "",
     //Data Collection
-    data_acquisition_sensing_modality: '',
-    data_acquisition_sensing_device_type: '',
-    data_collection_place: '',
-    data_collection_period: '',
-    data_collection_authors_agency: '',
-    data_collection_funding_agency: '',
+    data_acquisition_sensing_modality: "",
+    data_acquisition_sensing_device_type: "",
+    data_collection_place: "",
+    data_collection_period: "",
+    data_collection_authors_agency: "",
+    data_collection_funding_agency: "",
     //Data Privacy
-    data_resolution_precision: '',
-    data_privacy_de_identification_protocol: '',
-    data_safety_security_protocol: '',
-    data_exclusion_criteria: '',
-    data_acceptance_standards_compliance: '',
+    data_resolution_precision: "",
+    data_privacy_de_identification_protocol: "",
+    data_safety_security_protocol: "",
+    data_exclusion_criteria: "",
+    data_acceptance_standards_compliance: "",
     //Data Preparation
-    data_sampling_rate: '',
-    data_dimension: '',
-    data_preprocessing_techniques: '',
-    data_annotation_process_tool: '',
-    data_bias_and_variance_minimization: '',
-    train_tuning_eval_dataset_partitioning_ratio: '',
+    data_sampling_rate: "",
+    data_dimension: "",
+    data_preprocessing_techniques: "",
+    data_annotation_process_tool: "",
+    data_bias_and_variance_minimization: "",
+    train_tuning_eval_dataset_partitioning_ratio: "",
   },
 };
 
@@ -94,13 +94,13 @@ const DatasetEdit = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    dataset.linked = params.id === 'link';
+    dataset.linked = params.id === "link";
 
     Auth.currentAuthenticatedUser({
       bypassCache: false,
     })
       .then((response) => {
-        if (params.id !== 'new' && params.id !== 'link') {
+        if (params.id !== "new" && params.id !== "link") {
           const fetchData = async (prefix) => {
             await fetchBinary(prefix);
             setIsLoading(false);
@@ -113,8 +113,8 @@ const DatasetEdit = () => {
             setDatatset(datasetData.data);
             if (!datasetData.data.linked) {
               const prefix = datasetData.data.storage_location.replace(
-                'fhir-service-dev-fhirbinarybucket-yjeth32swz5m.s3.eu-central-1.amazonaws.com/',
-                ''
+                "fhir-service-dev-fhirbinarybucket-yjeth32swz5m.s3.eu-central-1.amazonaws.com/",
+                ""
               );
 
               fetchData(prefix)
@@ -139,19 +139,19 @@ const DatasetEdit = () => {
       // Add the User's Id Token to the Cognito credentials login map.
       AWS.config.credentials = new AWS.CognitoIdentityCredentials(
         {
-          IdentityPoolId: 'eu-central-1:8500a16d-459b-496d-8e87-0e3dea7e3bf6',
+          IdentityPoolId: "eu-central-1:8500a16d-459b-496d-8e87-0e3dea7e3bf6",
           Logins: {
-            'cognito-idp.eu-central-1.amazonaws.com/eu-central-1_1cFVgcU36':
+            "cognito-idp.eu-central-1.amazonaws.com/eu-central-1_1cFVgcU36":
               authSession.getIdToken().getJwtToken(),
           },
         },
-        { region: 'eu-central-1' }
+        { region: "eu-central-1" }
       );
 
       let s3 = new AWS.S3({
-        apiVersion: '2006-03-01',
-        region: 'eu-central-1',
-        params: { Bucket: 'fhir-service-dev-fhirbinarybucket-yjeth32swz5m' },
+        apiVersion: "2006-03-01",
+        region: "eu-central-1",
+        params: { Bucket: "fhir-service-dev-fhirbinarybucket-yjeth32swz5m" },
       });
 
       const listedObjects = await s3
@@ -180,8 +180,8 @@ const DatasetEdit = () => {
 
           const headers = {
             Authorization:
-              'Bearer ' + authSession.getAccessToken().getJwtToken(),
-            Accept: '*/*',
+              "Bearer " + authSession.getAccessToken().getJwtToken(),
+            Accept: "*/*",
           };
 
           let res = await axios
@@ -222,23 +222,23 @@ const DatasetEdit = () => {
       // Add the User's Id Token to the Cognito credentials login map.
       AWS.config.credentials = new AWS.CognitoIdentityCredentials(
         {
-          IdentityPoolId: 'eu-central-1:8500a16d-459b-496d-8e87-0e3dea7e3bf6',
+          IdentityPoolId: "eu-central-1:8500a16d-459b-496d-8e87-0e3dea7e3bf6",
           Logins: {
-            'cognito-idp.eu-central-1.amazonaws.com/eu-central-1_1cFVgcU36':
+            "cognito-idp.eu-central-1.amazonaws.com/eu-central-1_1cFVgcU36":
               authSession.getIdToken().getJwtToken(),
           },
         },
-        { region: 'eu-central-1' }
+        { region: "eu-central-1" }
       );
 
       let s3 = new AWS.S3({
-        apiVersion: '2006-03-01',
-        region: 'eu-central-1',
-        params: { Bucket: 'fhir-service-dev-fhirbinarybucket-yjeth32swz5m' },
+        apiVersion: "2006-03-01",
+        region: "eu-central-1",
+        params: { Bucket: "fhir-service-dev-fhirbinarybucket-yjeth32swz5m" },
       });
 
       params = {
-        Bucket: 'fhir-service-dev-fhirbinarybucket-yjeth32swz5m',
+        Bucket: "fhir-service-dev-fhirbinarybucket-yjeth32swz5m",
         Key: state.photoKey,
       };
 
@@ -246,7 +246,7 @@ const DatasetEdit = () => {
       const base64String = btoa(
         data.Body.reduce(function (data, byte) {
           return data + String.fromCharCode(byte);
-        }, '')
+        }, "")
       );
 
       let detailItem = { ...state };
@@ -265,11 +265,11 @@ const DatasetEdit = () => {
     return (
       <TableRow
         key={item.photoKey}
-        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+        sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
       >
-        <TableCell style={{ whiteSpace: 'nowrap' }}>{item.photoKey}</TableCell>
-        <TableCell style={{ whiteSpace: 'nowrap' }}>
-          <Stack direction={'row'} spacing={2} justifyContent='flex-end'>
+        <TableCell style={{ whiteSpace: "nowrap" }}>{item.photoKey}</TableCell>
+        <TableCell style={{ whiteSpace: "nowrap" }}>
+          <Stack direction={"row"} spacing={2} justifyContent="flex-end">
             <Button onClick={() => handleModalOpen(item)}>View</Button>
           </Stack>
         </TableCell>
@@ -281,21 +281,21 @@ const DatasetEdit = () => {
     <ImageList cols={3} gap={10} sx={{ width: 1 }}>
       {items.map((item) => (
         <>
-          <ImageListItem key={item.photoKey} sx={{ cursor: 'pointer' }}>
+          <ImageListItem key={item.photoKey} sx={{ cursor: "pointer" }}>
             <img
               src={`data:image/png;base64,${item.photoData}`}
               srcSet={`data:image/png;base64,${item.photoData}`}
               alt={item.title}
-              loading='lazy'
+              loading="lazy"
               onClick={() => handleModalOpen(item)}
               onKeyDown={() => handleModalOpen(item)}
             />
 
             <ImageListItemBar
-              sx={{ overflowWrap: 'break-word', maxWidth: 480 }}
+              sx={{ overflowWrap: "break-word", maxWidth: 480 }}
               title={item.photoKey}
               subtitle={<span>by: {item.author}</span>}
-              position='below'
+              position="below"
             />
           </ImageListItem>
         </>
@@ -306,10 +306,10 @@ const DatasetEdit = () => {
   const title = (
     <h2>
       {dataset.id
-        ? 'Edit Dataset'
-        : params.id === 'new'
-        ? 'Add Dataset'
-        : 'Add Linked Dataset'}
+        ? "Edit Dataset"
+        : params.id === "new"
+        ? "Add Dataset"
+        : "Add Linked Dataset"}
     </h2>
   );
 
@@ -329,28 +329,28 @@ const DatasetEdit = () => {
     <>
       <Backdrop
         open={isLoading}
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
       >
-        <CircularProgress color='inherit' />
+        <CircularProgress color="inherit" />
       </Backdrop>
-      <Container maxWidth='xl' sx={{ mt: 5 }}>
+      <Container maxWidth="xl" sx={{ mt: 5 }}>
         {title}
-        <Box sx={{ width: '100%' }}>
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Box sx={{ width: "100%" }}>
+          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
             <Tabs
               value={tabValue}
               onChange={handleChange}
-              aria-label='wrapped label tabs example'
+              aria-label="wrapped label tabs example"
             >
-              <Tab label='Dataset' {...a11yProps(0)} />
-              <Tab label='Permissions' {...a11yProps(1)} />
+              <Tab label="Dataset" {...a11yProps(0)} />
+              <Tab label="Permissions" {...a11yProps(1)} />
             </Tabs>
           </Box>
           <TabPanel value={tabValue} index={0}>
             <DatasetForm readOnlyMode={false} formState={dataset} />
-            {params.id !== 'new' && params.id !== 'link' && (
+            {params.id !== "new" && params.id !== "link" && (
               <>
-                <Stack direction='row' spacing={2}>
+                <Stack direction="row" spacing={2}>
                   <h3>Items</h3>
 
                   <FormControlLabel
@@ -360,28 +360,28 @@ const DatasetEdit = () => {
                         onChange={handleToggleChange}
                       />
                     }
-                    label='Show preview'
+                    label="Show preview"
                   />
                   {nextContinuationToken && (
                     <>
                       <FormControl>
-                        <InputLabel htmlFor='component-size'>
+                        <InputLabel htmlFor="component-size">
                           Fetch size
                         </InputLabel>
                         <OutlinedInput
-                          type={'number'}
-                          id='component-size'
+                          type={"number"}
+                          id="component-size"
                           value={fetchSize}
                           onChange={handleFetchSizeChange}
-                          label='Fetch size'
+                          label="Fetch size"
                         />
                       </FormControl>
                       <Button
                         onClick={() =>
                           fetchBinary(
                             dataset?.storage_location?.replace(
-                              'fhir-service-dev-fhirbinarybucket-yjeth32swz5m.s3.eu-central-1.amazonaws.com/',
-                              ''
+                              "fhir-service-dev-fhirbinarybucket-yjeth32swz5m.s3.eu-central-1.amazonaws.com/",
+                              ""
                             )
                           )
                         }
@@ -405,11 +405,11 @@ const DatasetEdit = () => {
 
                 {!isItemsAsList ? (
                   <TableContainer component={Paper}>
-                    <Table sx={{ minWidth: 650 }} aria-label='simple table'>
+                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
                       <TableHead>
                         <TableRow>
-                          <TableCell width={'80%'}>Key</TableCell>
-                          <TableCell width={'20%'} align={'right'}>
+                          <TableCell width={"80%"}>Key</TableCell>
+                          <TableCell width={"20%"} align={"right"}>
                             Actions
                           </TableCell>
                         </TableRow>
