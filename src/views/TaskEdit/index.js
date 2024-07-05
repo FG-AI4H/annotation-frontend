@@ -60,7 +60,7 @@ const TaskEdit = (_props) => {
         }
       })
       .catch((err) => console.log(err));
-  }, []);
+  }, [params.id]);
 
   function handleClose(event, reason) {
     if (reason === 'clickaway') {

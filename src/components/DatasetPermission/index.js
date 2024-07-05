@@ -10,49 +10,100 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { Auth } from 'aws-amplify';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
-import DatasetClient from '../../api/DatasetClient';
+import { API_ROUTES } from '../../common/constants/apiRoutes';
 import withNavigateHook from '../../helpers/withNavigateHook';
+import useFetch from '../../hooks/useFetch';
+import { generateUpdatePermissionPayload } from '../../utils/common';
+import UserPermissionList from './UserPermissionList';
+import {
+  addPermission,
+  deletePermission,
+  getPermissionList,
+  updatePermission,
+} from '../../api/dataset.service';
 
 const DatasetPermission = (props) => {
+  const { axiosBase } = useFetch();
   const [isLoading, setIsLoading] = useState(false);
   const [dataset, setDataset] = useState(props.dataset);
   const [usernameSearch, setUsernameSearch] = useState('');
   const [permisions, setPermissions] = useState([]);
+  const [userList, setUserList] = useState([]);
+  const [foundUsers, setFoundUsers] = useState([]);
 
   useEffect(() => {
-    setIsLoading(true);
+    (async () => {
+      try {
+        setIsLoading(true);
+        const res = await getPermissionList({ id: dataset?.id }, axiosBase);
+        setPermissions(res);
 
-    Auth.currentAuthenticatedUser({
-      bypassCache: false,
-    })
-      .then((response) => {
-        const datasetClient = new DatasetClient(
-          response.signInUserSession.accessToken.jwtToken
-        );
-        datasetClient
-          .fetchDatasetPermissionsById(dataset.id)
-          .then((response) => {
-            setIsLoading(false);
-            setPermissions(response?.data);
-          });
-      })
-      .catch((err) => console.log(err));
-  }, [props.dataset]);
+        const resUser = await axiosBase.get(API_ROUTES.USER_URL);
+        const mappedUser = resUser?.data?.map((item) => {
+          const foundItem = res?.find((u) => u?.user === item?.id);
+          if (foundItem) {
+            return {
+              ...item,
+              user_role: foundItem?.user_role,
+              role_id: foundItem?.id,
+            };
+          }
+          return item;
+        });
+
+        setUserList(mappedUser);
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataset?.id]);
 
   function handleChange(event) {
-    return undefined;
+    setUsernameSearch(event.target.value);
   }
 
   function handleSubmit(e) {
-    return undefined;
+    e.preventDefault();
+    const foundUserList = userList?.filter((item) =>
+      item?.username?.toLowerCase()?.includes(usernameSearch?.toLowerCase())
+    );
+    setFoundUsers(foundUserList);
   }
 
-  function removePermission(id) {
-    return undefined;
+  async function removePermission(id) {
+    const res = await deletePermission({ id }, axiosBase);
+
+    const resPermission = await getPermissionList(
+      { id: dataset?.id },
+      axiosBase
+    );
+    setPermissions(resPermission);
+
+    return res;
   }
+
+  const handleSubmitPermission = async (data) => {
+    const payload = generateUpdatePermissionPayload({
+      ...data,
+      dataset: dataset?.id,
+    });
+    const res = data?.user_role
+      ? await updatePermission(payload, axiosBase)
+      : await addPermission(payload, axiosBase);
+
+    const resPermission = await getPermissionList(
+      { id: dataset?.id },
+      axiosBase
+    );
+    setPermissions(resPermission);
+
+    return res;
+  };
 
   const permisionList = permisions?.map((item) => {
     return (
@@ -82,21 +133,29 @@ const DatasetPermission = (props) => {
       <Typography gutterBottom variant='h5' component='div'>
         Add Permission
       </Typography>
-      <TextField
-        fullWidth
-        margin={'normal'}
-        label='Search username'
-        required
-        value={usernameSearch}
-        onChange={(event) => handleChange(event)}
-        InputLabelProps={{ shrink: true }}
-      />
+      <form onSubmit={handleSubmit}>
+        <TextField
+          fullWidth
+          margin={'normal'}
+          label='Search username'
+          required
+          value={usernameSearch}
+          onChange={(event) => handleChange(event)}
+          InputLabelProps={{ shrink: true }}
+          helperText={`${foundUsers?.length}/${userList?.length} results found`}
+        />
 
-      <Stack direction='row' spacing={2}>
-        <Button color='primary' onClick={(e) => handleSubmit(e)}>
-          Search
-        </Button>
-      </Stack>
+        <Stack direction='row' spacing={2}>
+          <Button color='primary' elementType={'submit'} type={'submit'}>
+            Search
+          </Button>
+        </Stack>
+      </form>
+
+      <UserPermissionList
+        users={foundUsers}
+        onSubmit={handleSubmitPermission}
+      />
 
       <Typography gutterBottom variant='h5' component='div' sx={{ mt: 10 }}>
         Current Permissions
