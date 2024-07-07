@@ -18,8 +18,10 @@ export default function Home() {
   const { axiosBase } = useFetch();
 
   useEffect(() => {
-    const user = getUserInfo(axiosBase);
-    user && localStorage.setItem('user', user);
+    (async () => {
+      const user = await getUserInfo(axiosBase);
+      user && localStorage.setItem('user', user);
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

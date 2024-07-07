@@ -17,7 +17,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { API_ROUTES } from '../../common/constants/apiRoutes';
 import withNavigateHook from '../../helpers/withNavigateHook';
 import useFetch from '../../hooks/useFetch';
-import { generateUpdatePermissionPayload } from '../../utils/common';
+import { generateUpdatePermissionPayload, getArray } from '../../utils/common';
 import UserPermissionList from './UserPermissionList';
 import {
   addPermission,
@@ -47,7 +47,7 @@ const DatasetPermission = (props) => {
 
         const resUser = await axiosBase.get(API_ROUTES.USER_URL);
         const mappedUser = resUser?.data?.map((item) => {
-          const foundItem = res?.find((u) => u?.user === item?.id);
+          const foundItem = getArray(res)?.find((u) => u?.user === item?.id);
           if (foundItem) {
             return {
               ...item,
