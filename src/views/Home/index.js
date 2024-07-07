@@ -1,4 +1,4 @@
-import React, { Component, useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 import {
   Button,
@@ -11,14 +11,16 @@ import {
   Typography,
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
+import { getUserInfo } from '../../api/common.service';
 import useFetch from '../../hooks/useFetch';
-import { baseUrl } from '../../common/constants/apiRoutes';
 
 export default function Home() {
   const { axiosBase } = useFetch();
 
   useEffect(() => {
-    const res = axiosBase.get(`${baseUrl}/api/v1/users/current`);
+    const user = getUserInfo(axiosBase);
+    user && localStorage.setItem('user', user);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

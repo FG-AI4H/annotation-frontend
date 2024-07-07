@@ -66,10 +66,10 @@ const DatasetItemModal = (props) => {
               justifyContent='center'
               component='img'
               sx={{
-                width: undefined,
+                width: '100%',
+                aspectRatio: 'auto',
                 height: '100%',
                 maxWidth: '100%',
-                aspectRatio: 1,
                 mr: 'auto',
                 ml: 'auto',
               }}

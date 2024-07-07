@@ -28,4 +28,5 @@ export const API_ROUTES = {
   DATA_ACCESS_REQUEST_URL: `${baseUrl}/api/v1/data_access_request`,
   CREATE_DATASET_ROLE: `${baseUrl}/api/v1/datasetRoles`,
   EDIT_DATASET_ROLE: `${baseUrl}/api/v1/datasetRoles/:dataset_role_id`,
+  GET_USER_INFO: `${baseUrl}/api/v1/users/current`,
 };

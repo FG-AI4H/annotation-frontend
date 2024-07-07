@@ -1,6 +1,8 @@
 import { Table, TableBody } from '@aws-amplify/ui-react';
 import {
+  Backdrop,
   Button,
+  CircularProgress,
   Paper,
   Stack,
   TableCell,
@@ -11,7 +13,7 @@ import {
   Typography,
 } from '@mui/material';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { API_ROUTES } from '../../common/constants/apiRoutes';
 import withNavigateHook from '../../helpers/withNavigateHook';
 import useFetch from '../../hooks/useFetch';
@@ -27,7 +29,7 @@ import {
 const DatasetPermission = (props) => {
   const { axiosBase } = useFetch();
   const [isLoading, setIsLoading] = useState(false);
-  const [dataset, setDataset] = useState(props.dataset);
+  const dataset = useMemo(() => props.dataset, [props.dataset]);
   const [usernameSearch, setUsernameSearch] = useState('');
   const [permisions, setPermissions] = useState([]);
   const [userList, setUserList] = useState([]);
@@ -37,8 +39,11 @@ const DatasetPermission = (props) => {
     (async () => {
       try {
         setIsLoading(true);
-        const res = await getPermissionList({ id: dataset?.id }, axiosBase);
-        setPermissions(res);
+        let res = [];
+        if (dataset?.id) {
+          const res = await getPermissionList({ id: dataset?.id }, axiosBase);
+          setPermissions(res);
+        }
 
         const resUser = await axiosBase.get(API_ROUTES.USER_URL);
         const mappedUser = resUser?.data?.map((item) => {
@@ -130,6 +135,10 @@ const DatasetPermission = (props) => {
 
   return (
     <>
+      <Backdrop open={isLoading}>
+        <CircularProgress color='inherit' />
+      </Backdrop>
+
       <Typography gutterBottom variant='h5' component='div'>
         Add Permission
       </Typography>
