@@ -19,8 +19,13 @@ export default function Home() {
 
   useEffect(() => {
     (async () => {
-      const user = await getUserInfo(axiosBase);
-      user && localStorage.setItem('user', user);
+      let userInfo = localStorage.getItem('user');
+      userInfo = JSON.parse(userInfo || null);
+      if (!userInfo) {
+        const user = await getUserInfo(axiosBase);
+        console.log(user);
+        user && localStorage.setItem('user', JSON.stringify(user));
+      }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
