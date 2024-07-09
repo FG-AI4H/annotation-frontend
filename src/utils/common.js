@@ -9,3 +9,5 @@ export const generateUpdatePermissionPayload = (data) => {
     user_role: data?.request_user_role,
   };
 };
+
+export const getArray = (arr) => (Array.isArray(arr) ? arr : []);

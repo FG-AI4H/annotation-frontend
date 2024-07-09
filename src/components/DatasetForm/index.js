@@ -341,7 +341,7 @@ const DatasetForm = (props) => {
         />
         {!formState.linked && (
           <>
-            <Accordion sx={{ mt: 5 }}>
+            <Accordion sx={{ mt: 2 }}>
               <AccordionSummary
                 expandIcon={<ExpandMore />}
                 aria-controls='panel1a-content'
@@ -845,8 +845,6 @@ const DatasetForm = (props) => {
               </AccordionDetails>
             </Accordion>
 
-            <br />
-
             <FormControl fullWidth margin={'normal'}>
               <InputLabel>Published in catalog</InputLabel>
               <Select
@@ -1006,7 +1004,7 @@ const DatasetForm = (props) => {
         )}
       </form>
 
-      <Stack direction='row' spacing={2} sx={{ mt: 5 }}>
+      <Stack direction='row' spacing={2} sx={{ my: 4 }}>
         {!readOnlyMode && (
           <>
             <Button variant='contained' onClick={handleDataset}>
