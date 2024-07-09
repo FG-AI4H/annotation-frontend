@@ -58,6 +58,7 @@ export default function Home() {
                 component='img'
                 height='180'
                 image='home_datasets.png'
+                sx={{ objectPosition: 'right' }}
               />
               <CardContent>
                 <Typography gutterBottom variant='h5' component='div'>
@@ -88,6 +89,7 @@ export default function Home() {
                 component='img'
                 height='180'
                 image='home_annotation.png'
+                sx={{ objectPosition: 'right' }}
               />
               <CardContent>
                 <Typography gutterBottom variant='h5' component='div'>
@@ -114,7 +116,12 @@ export default function Home() {
 
           <Grid item xs={12} md={4}>
             <Card>
-              <CardMedia component='img' height='180' image='home_eval.png' />
+              <CardMedia
+                component='img'
+                height='180'
+                image='home_eval.png'
+                sx={{ objectPosition: 'right' }}
+              />
               <CardContent>
                 <Typography gutterBottom variant='h5' component='div'>
                   Evaluation Platform
