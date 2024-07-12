@@ -19,8 +19,13 @@ export default function Home() {
 
   useEffect(() => {
     (async () => {
-      const user = await getUserInfo(axiosBase);
-      user && localStorage.setItem('user', user);
+      let userInfo = localStorage.getItem('user');
+      userInfo = JSON.parse(userInfo || null);
+      if (!userInfo) {
+        const user = await getUserInfo(axiosBase);
+        console.log(user);
+        user && localStorage.setItem('user', JSON.stringify(user));
+      }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -53,6 +58,7 @@ export default function Home() {
                 component='img'
                 height='180'
                 image='home_datasets.png'
+                sx={{ objectPosition: 'right' }}
               />
               <CardContent>
                 <Typography gutterBottom variant='h5' component='div'>
@@ -83,6 +89,7 @@ export default function Home() {
                 component='img'
                 height='180'
                 image='home_annotation.png'
+                sx={{ objectPosition: 'right' }}
               />
               <CardContent>
                 <Typography gutterBottom variant='h5' component='div'>
@@ -109,7 +116,12 @@ export default function Home() {
 
           <Grid item xs={12} md={4}>
             <Card>
-              <CardMedia component='img' height='180' image='home_eval.png' />
+              <CardMedia
+                component='img'
+                height='180'
+                image='home_eval.png'
+                sx={{ objectPosition: 'right' }}
+              />
               <CardContent>
                 <Typography gutterBottom variant='h5' component='div'>
                   Evaluation Platform

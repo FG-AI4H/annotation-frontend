@@ -218,14 +218,16 @@ const DatasetForm = (props) => {
         const client = new DatasetClient(
           response.signInUserSession.accessToken.jwtToken
         );
-        // const newDataset = {
-        //   ...dataset,
-        //   metadata: {
-        //     ...dataset.metadata,
-        //     data_owner_id: '1af3331c-853b-44f7-9348-21c41a7f5514',
-        //   },
-        // };
-        client.addDataset(dataset).then(
+        let userInfo = localStorage.getItem('user');
+        userInfo = JSON.parse(userInfo || null);
+        const tempDataset = {
+          ...dataset,
+          metadata: {
+            ...dataset?.metadata,
+            data_owner_id: userInfo?.id,
+          },
+        };
+        client.addDataset(tempDataset).then(
           (response) => {
             setIsLoading(false);
             props.navigation(
