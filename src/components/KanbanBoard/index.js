@@ -19,8 +19,6 @@ const wrapperStyle = {
 export default function KanbanBoard({ data }) {
   const [items, setItems] = useState({});
 
-  console.log(items);
-
   useEffect(() => {
     setItems(data);
   }, [data]);

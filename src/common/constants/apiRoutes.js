@@ -18,6 +18,7 @@ export const API_ROUTES = {
   USER_URL: `${baseUrl}/api/v1/users`,
   CAMPAIGN_URL: `${baseUrl}/api/v1/campaigns`,
   TASK_URL: `${baseUrl}/api/v1/tasks`,
+  TASK_BY_CAMPAIGN_URL: `${baseUrl}/api/v1/tasks/campaign/:campaign_id`,
   ANNOATATION_TASK_URL: `${baseUrl}/api/v1/annotation_tasks`,
   ANNOTATION_URL: `${baseUrl}/api/v1/annotations`,
   ANNOTATION_TOOL_URL: `${baseUrl}/api/v1/annotation_tools`,

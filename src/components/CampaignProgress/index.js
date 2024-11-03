@@ -1,85 +1,33 @@
-import { Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import { ResponsivePie } from '@nivo/pie';
-import React, { useState } from 'react';
-import DataTable from '../DataTable';
 import { uniqBy } from 'lodash';
+import React, { useEffect, useState } from 'react';
+import useFetch from '../../hooks/useFetch';
+import DataTable from '../DataTable';
+import { getTaskByCampaign } from '../../api/task.service';
+import { TASK_STATUS } from '../../common/constants';
 
 const CampaignProgress = (props) => {
-  const [campaign, setCampaign] = useState(props.campaign);
+  const [tasks, setTasks] = useState([]);
+  const { axiosBase } = useFetch();
 
-  const data = [
-    {
-      id: 'Completed',
-      label: 'Completed',
-      value: 10,
-      // color: 'hsl(225, 70%, 50%)',
-    },
-    {
-      id: 'Not started',
-      label: 'Not started',
-      value: 11,
-      // color: 'hsl(116, 70%, 50%)',
-    },
-    {
-      id: 'In progress',
-      label: 'In progress',
-      value: 30,
-      // color: 'hsl(219, 70%, 50%)',
-    },
-  ];
+  useEffect(() => {
+    (async () => {
+      const res = await getTaskByCampaign(
+        // props?.campaign?.id,
+        '02725a0e-9c72-43bb-b88d-5c2819c5ddf3',
+        axiosBase
+      );
+      setTasks(res);
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props?.campaign?.id]);
 
   const columns = [
     { id: 'assignee_username', fieldName: 'Assignee' },
     { id: 'completed', fieldName: 'Completed' },
     { id: 'notStarted', fieldName: 'Not started' },
     { id: 'inProgress', fieldName: 'In progress' },
-  ];
-
-  const tasks = [
-    {
-      id: '0b2fb698-6e1d-4682-a986-78b115178d94',
-      status: 'IN_PROGRESS',
-      kind: 'CREATE',
-      read_only: false,
-      assignee: '0df5d02a-9ae1-4f65-9f80-abae2c9d57aa_adam',
-      assignee_username: 'adam_annotator',
-      campaign: null,
-      campaign_status: null,
-      campaign_task_kind: null,
-    },
-    {
-      id: '0b2fb698-6e1d-4682-a986-78b115178d94',
-      status: 'COMPLETED',
-      kind: 'CREATE',
-      read_only: false,
-      assignee: '0df5d02a-9ae1-4f65-9f80-abae2c9d57aa_adam',
-      assignee_username: 'adam_annotator',
-      campaign: null,
-      campaign_status: null,
-      campaign_task_kind: null,
-    },
-    {
-      id: '0b2fb698-6e1d-4682-a986-78b115178d94',
-      status: 'NOT_STARTED',
-      kind: 'CREATE',
-      read_only: false,
-      assignee: '0df5d02a-9ae1-4f65-9f80-abae2c9d57aa_khoa',
-      assignee_username: 'dangkhoa',
-      campaign: null,
-      campaign_status: null,
-      campaign_task_kind: null,
-    },
-    {
-      id: '0b2fb698-6e1d-4682-a986-78b115178d94',
-      status: 'COMPLETED',
-      kind: 'CREATE',
-      read_only: false,
-      assignee: '0df5d02a-9ae1-4f65-9f80-abae2c9d57aa_khoa',
-      assignee_username: 'dangkhoa',
-      campaign: null,
-      campaign_status: null,
-      campaign_task_kind: null,
-    },
   ];
 
   const mappingData = (data) => {
@@ -90,13 +38,13 @@ const CampaignProgress = (props) => {
     arrUser.forEach((item) => {
       const filteredAssignee = data?.filter((task) => task?.assignee === item);
       const completedTask = filteredAssignee?.filter(
-        (item) => item?.status === 'COMPLETED'
+        (item) => item?.task_status === TASK_STATUS.COMPLETED
       );
       const notStartedTask = filteredAssignee?.filter(
-        (item) => item?.status === 'NOT_STARTED'
+        (item) => item?.task_status === TASK_STATUS.INITIALIZED
       );
       const inProgressTask = filteredAssignee?.filter(
-        (item) => item?.status === 'IN_PROGRESS'
+        (item) => item?.task_status === TASK_STATUS.IN_PROGRESS
       );
 
       result.push({
@@ -110,9 +58,35 @@ const CampaignProgress = (props) => {
         notStartedTask,
       });
     });
-    console.log(result);
     return result;
   };
+
+  const data = [
+    {
+      id: 'Completed',
+      label: 'Completed',
+      value:
+        tasks?.filter((item) => item?.task_status === TASK_STATUS.COMPLETED)
+          ?.length || 0,
+      color: 'hsl(219, 70%, 50%)',
+    },
+    {
+      id: 'Not started',
+      label: 'Not started',
+      value:
+        tasks?.filter((item) => item?.task_status === TASK_STATUS.INITIALIZED)
+          ?.length || 0,
+      color: 'hsl(219, 70%, 50%)',
+    },
+    {
+      id: 'In progress',
+      label: 'In progress',
+      value:
+        tasks?.filter((item) => item?.task_status === TASK_STATUS.IN_PROGRESS)
+          ?.length || 0,
+      // color: 'hsl(219, 70%, 50%)',
+    },
+  ];
 
   return (
     <div style={{ color: 'black' }}>
@@ -125,24 +99,28 @@ const CampaignProgress = (props) => {
         Campaign Progression
       </Typography>
 
-      <div style={{ display: 'flex', height: '400px', gap: '10px' }}>
-        <div
-          style={{
+      <Grid container columnGap={1} rowGap={2} justifyContent={'space-between'}>
+        <Grid
+          item
+          xs={11.7}
+          sm={5.7}
+          md={5.7}
+          sx={{
             height: '400px',
             backgroundColor: '#1e1e1e',
-            borderRadius: 10,
+            borderRadius: '10px !important',
             boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
-            width: '50%',
           }}
         >
           <ResponsivePie
             data={data}
             margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
             innerRadius={0.5}
-            padAngle={0.7}
+            padAngle={0}
             cornerRadius={3}
             activeOuterRadiusOffset={8}
             borderWidth={1}
+            arcLabel={(e) => (e?.value === 0 ? '' : e?.value)}
             borderColor={{
               from: 'color',
               modifiers: [['darker', 0.2]],
@@ -170,11 +148,11 @@ const CampaignProgress = (props) => {
             ]}
             legends={[
               {
-                anchor: 'left',
-                direction: 'column',
+                anchor: 'bottom',
+                direction: 'row',
                 justify: false,
                 translateX: 0,
-                translateY: 0,
+                translateY: 40,
                 itemsSpacing: 10,
                 itemWidth: 100,
                 itemHeight: 18,
@@ -183,22 +161,17 @@ const CampaignProgress = (props) => {
                 itemOpacity: 1,
                 symbolSize: 18,
                 symbolShape: 'circle',
-                effects: [
-                  {
-                    on: 'hover',
-                    style: {
-                      itemTextColor: '#000',
-                    },
-                  },
-                ],
               },
             ]}
           />
-        </div>
+        </Grid>
 
-        <div
-          style={{
-            width: '50%',
+        <Grid
+          item
+          xs={11.7}
+          sm={5.7}
+          md={5.7}
+          sx={{
             height: '100%',
           }}
         >
@@ -207,8 +180,8 @@ const CampaignProgress = (props) => {
             data={mappingData(tasks)}
             maxHeight='400px'
           />
-        </div>
-      </div>
+        </Grid>
+      </Grid>
     </div>
   );
 };

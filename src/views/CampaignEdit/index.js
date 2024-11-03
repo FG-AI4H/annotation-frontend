@@ -16,7 +16,7 @@ import { Auth } from 'aws-amplify';
 import React, { useEffect, useState } from 'react';
 import { Link as RouterLink, useParams } from 'react-router-dom';
 import CampaignClient from '../../api/CampaignClient';
-import { CampaignProgress, KanbanBoard } from '../../components';
+import { CampaignProgress } from '../../components';
 import CampaignDataset from '../../components/CampaignDataset';
 import CampaignForm from '../../components/CampaignForm';
 import CampaignTask from '../../components/CampaignTask';
