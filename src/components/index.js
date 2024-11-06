@@ -2,7 +2,7 @@ export { default as AppNavbar } from './AppNavbar';
 export { default as Layout } from './Layout';
 export { default as AnnotationTaskList } from './AnnotationTaskList';
 export { default as AnnotationList } from './AnnotationList';
-export { default as CampaignChart } from './CampaignChart';
+export { default as KanbanBoard } from './KanbanBoard';
 export { default as CampaignProgress } from './CampaignProgress';
 export { default as CatalogDatasets } from './CatalogDatasets';
 export { default as DataAccessRequestForm } from './DataAccessRequestForm';

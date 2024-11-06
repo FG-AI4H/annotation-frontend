@@ -16,13 +16,14 @@ import { Auth } from 'aws-amplify';
 import React, { useEffect, useState } from 'react';
 import { Link as RouterLink, useParams } from 'react-router-dom';
 import CampaignClient from '../../api/CampaignClient';
+import { CampaignProgress } from '../../components';
 import CampaignDataset from '../../components/CampaignDataset';
 import CampaignForm from '../../components/CampaignForm';
 import CampaignTask from '../../components/CampaignTask';
 import CampaignUsers from '../../components/CampaignUsers';
 import { TabPanel } from '../../components/TabPanel';
 import { a11yProps } from '../../components/allyProps';
-import { CampaignChart, CampaignProgress } from '../../components';
+import TaskManagement from './components/TaskManagement';
 
 const CampaignEdit = () => {
   let params = useParams();
@@ -62,7 +63,9 @@ const CampaignEdit = () => {
   }, [params.id]);
 
   const title = (
-    <h2>{item.id ? 'Edit Campaign (' + item.status + ')' : 'Add Campaign'}</h2>
+    <h2>
+      {item?.id ? 'Edit Campaign (' + item?.status + ')' : 'Add Campaign'}
+    </h2>
   );
 
   const handleChange = (event, newValue) => {
@@ -134,7 +137,7 @@ const CampaignEdit = () => {
       <Container maxWidth='xl' sx={{ mt: 5 }}>
         {title}
 
-        {item.id && (
+        {item?.id && (
           <Box sx={{ width: '100%' }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <Tabs
@@ -165,9 +168,11 @@ const CampaignEdit = () => {
               <div className={'panel-wrapper'}>
                 {item.status === 'RUNNING' && (
                   <>
-                    <CampaignChart />
                     <div className={'panel-wrapper'}>
                       <CampaignProgress campaign={item} />
+                    </div>
+                    <div style={{ marginTop: '20px' }}>
+                      <TaskManagement data={item} />
                     </div>
                   </>
                 )}
